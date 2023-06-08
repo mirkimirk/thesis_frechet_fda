@@ -1,25 +1,42 @@
-\documentclass[11pt, a4paper, leqno]{article}
-\usepackage{a4wide}
+\documentclass[12pt, a4paper, bibtotoc, liststotoc]{scrartcl}
+
+% Margins
+\usepackage[paper = a4paper, left = 30mm, right = 30mm, top = 25mm, bottom = 25mm]{geometry}
+\geometry{a4paper}
+% Spacing
+\usepackage{setspace}
+\onehalfspacing
+% Fonts
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\setkomafont{sectioning}{\rmfamily\bfseries\boldmath}
+% Headings above each page
+\pagestyle{headings}
+
+% Useful packages
 \usepackage{float, afterpage, rotating, graphicx}
 \usepackage{epstopdf}
 \usepackage{longtable, booktabs, tabularx}
 \usepackage{fancyvrb, moreverb, relsize}
 \usepackage{eurosym, calc}
-% \usepackage{chngcntr}
 \usepackage{amsmath, amssymb, amsfonts, amsthm, bm}
 \usepackage{caption}
+\usepackage{subcaption}
+% \captionsetup[subfigure]{labelformat=empty}
 \usepackage{mdwlist}
 \usepackage{xfrac}
-\usepackage{setspace}
 \usepackage[dvipsnames]{xcolor}
-\usepackage{subcaption}
 \usepackage{minibox}
-% \usepackage{pdf14} % Enable for Manuscriptcentral -- can't handle pdf 1.5
-% \usepackage{endfloat} % Enable to move tables / figures to the end. Useful for some
-% submissions.
 
+% Environments for mathematical stuff
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{prop}{Proposition}
+% \newtheorem*{proof}{Proof}
+% \DeclareMathOperator*{\argmin}{arg\,min}
+% \DeclareMathOperator*{\argmax}{arg\,max}
+
+% Bibliography
 \usepackage[
     natbib=true,
     bibencoding=inputenc,
@@ -41,11 +58,13 @@
     colorlinks=true,
     linkcolor=black,
     anchorcolor=black,
-    citecolor=NavyBlue,
+    citecolor=black,
     filecolor=black,
     menucolor=black,
     runcolor=black,
-    urlcolor=NavyBlue
+    urlcolor=black,
+    pdftitle={Fréchet Regression and Functional Data},
+    pdfauthor={Mirkan Öcal}
 }
 
 
@@ -70,69 +89,63 @@
 }
 
 \maketitle
-
+\thispagestyle{empty}
 
 \begin{abstract}
-    Some abstract here.
+    My master thesis, submitted at University Bonn in the examination for Economics
+    (M.Sc.).
 \end{abstract}
 
 \clearpage
 
+% Table of Contents
+\newpage % force start of new page
+\pagenumbering{roman}
+\tableofcontents	%	add TOC
+\listoftables		%	add list of tables
+\listoffigures		%	add list of figures
 
-\section{Introduction} % (fold)
+% Main text
+\newpage % Seitenumbruch
+\pagenumbering{arabic}
+
+\section{Introduction}
 \label{sec:introduction}
+\input{1_Introduction.tex}
 
-If you are using this template, please cite this item from the references:
-\citet{GaudeckerEconProjectTemplates}.
+\section{Theory}
+\label{sec:theory}
 
-The data set for the example project is taken from
-\url{https://www.stem.org.uk/resources/elibrary/resource/28452/large-datasets-stats4schools}.
-It contains data on smoking habits in the UK, with 1691 observations and 12 variables.
-We consider only 4 of the 12 features for the prediction of the variable
-\texttt{smoking}: \texttt{marital\_status}, \texttt{highest\_qualification},
-\texttt{gender} and \texttt{age}. We model the dependence using a Logistic model. All
-numerical features are included linearly, while categorical features are expanded into
-dummy variables. Figures below illustrate the model predictions over the lifetime. You
-will find one figure and one estimation summary table for each installed programming
-language.
+\section{Simulation Study}
+\label{sec:simulation study}
 
+\section{Discussion}
+\label{sec:discussion}
 
-
-\begin{figure}[H]
-
-    \centering
-    \includegraphics[width=0.85\textwidth]{../python/figures/smoking_by_marital_status}
-
-    \caption{\emph{Python:} Model predictions of the smoking probability over the
-        lifetime. Each colored line represents a case where marital status is fixed to one
-        of the values present in the data set.}
-    \label{fig:python-predictions}
-
-\end{figure}
-
-
-\begin{table}[!h]
-    \input{../python/tables/estimation_results.tex}
-    \caption{\label{tab:python-summary}\emph{Python:} Estimation results of the
-        linear Logistic regression.}
-\end{table}
+\section{Conclusion}
+\label{sec:conclusion}
 
 
 
 
-% section introduction (end)
+%%%%%%%% APPPENDIX %%%%%%%%%
+
+\newpage
+\appendix
+\pagenumbering{Roman}
+
+\section{First Order Conditions}
+\label{sec:first order conditions}
+
+\section{Data Preparation}
+\label{sec:data preparation}
+
+%%%%%%%%%% BIBLIOGRAPY %%%%%%%%%%
 
 
+\newpage
 
-\setstretch{1}
+\nocite{von_gaudecker_templates_2019}
 \printbibliography
-\setstretch{1.5}
-
-
-% \appendix
-
-% The chngctr package is needed for the following lines.
-% \counterwithin{table}{section}
-% \counterwithin{figure}{section}
 
 \end{document}

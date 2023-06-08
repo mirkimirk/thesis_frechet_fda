@@ -5,6 +5,8 @@ dependencies:
   - conda-lock
   - ipykernel
   - jupyterlab
+  - matplotlib
+  - numpy
   - pandas
   - pdbpp
   - pip >=21.1
