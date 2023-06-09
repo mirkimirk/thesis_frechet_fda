@@ -1,7 +1,7 @@
 \documentclass[12pt, a4paper, bibtotoc, liststotoc]{scrartcl}
 
 % Margins
-\usepackage[paper = a4paper, left = 30mm, right = 30mm, top = 25mm, bottom = 25mm]{geometry}
+\usepackage[paper = a4paper, left = 30mm, right = 20mm, top = 20mm, bottom = 20mm]{geometry}
 \geometry{a4paper}
 % Spacing
 \usepackage{setspace}
@@ -29,47 +29,40 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{minibox}
 
-% Environments for mathematical stuff
-% \newtheorem{theorem}{Theorem}
-% \newtheorem{prop}{Proposition}
-% \newtheorem*{proof}{Proof}
-% \DeclareMathOperator*{\argmin}{arg\,min}
-% \DeclareMathOperator*{\argmax}{arg\,max}
-
 % Bibliography
 \usepackage[
-    natbib=true,
-    bibencoding=inputenc,
-    bibstyle=authoryear-ibid,
-    citestyle=authoryear-comp,
-    maxcitenames=3,
-    maxbibnames=10,
-    useprefix=false,
-    sortcites=true,
-    backend=biber
+    natbib = true,
+    bibencoding = inputenc,
+    bibstyle = authoryear-ibid,
+    citestyle = authoryear-comp,
+    maxcitenames = 3,
+    maxbibnames = 10,
+    useprefix = false,
+    sortcites = true,
+    backend = biber
 ]{biblatex}
 \AtBeginDocument{\toggletrue{blx@useprefix}}
 \AtBeginBibliography{\togglefalse{blx@useprefix}}
-\setlength{\bibitemsep}{1.5ex}
+% \setlength{\bibitemsep}{1.5ex}
 \addbibresource{../../paper/refs.bib}
 
 \usepackage[unicode=true]{hyperref}
 \hypersetup{
-    colorlinks=true,
-    linkcolor=black,
-    anchorcolor=black,
-    citecolor=black,
-    filecolor=black,
-    menucolor=black,
-    runcolor=black,
-    urlcolor=black,
-    pdftitle={Fréchet Regression and Functional Data},
-    pdfauthor={Mirkan Öcal}
+    colorlinks = true,
+    linkcolor = black,
+    anchorcolor = black,
+    citecolor = black,
+    filecolor = black,
+    menucolor = black,
+    runcolor = black,
+    urlcolor = black,
+    pdftitle = {Fréchet Regression and Functional Data},
+    pdfauthor = {Mirkan Öcal}
 }
+\ExecuteBibliographyOptions{doi = false, url = false, isbn = false}
 
-
-\widowpenalty=10000
-\clubpenalty=10000
+\widowpenalty = 10000
+\clubpenalty = 10000
 
 \setlength{\parskip}{1ex}
 \setlength{\parindent}{0ex}
@@ -78,40 +71,54 @@
 
 \begin{document}
 
-\title{Fréchet Regression and Functional Data\thanks{Mirkan Öcal, University Bonn. Email: \href{mailto:mirkanoecal@live.de}{\nolinkurl{mirkanoecal [at] live [dot] de}}.}}
+%Title Page
+\begin{titlepage}
+    \title{
+        Fréchet Regression \\
+        and Functional Data
+    }
+    \vspace{\fill}
+    \author{Mirkan Öcal \\ Matriculation Number: 3346115}
+    \date{Submitted in September 2023}
+    \maketitle
 
-\author{Mirkan Öcal}
+    \vspace{\fill}
+    \begin{center}
+        \large
+        Supervisor: Prof. Dr. Alois Kneip \\
+        % Submitted in September 2023 \\
+        % Matriculation Number: 3346115
+        \vspace{\fill}
+        Master Thesis Presented to the Department of Economics at the
+        Rheinische Friedrich-Wilhelms-Universität Bonn \\
 
-\date{
-    {\bf Preliminary -- please do not quote}
-    \\[1ex]
-    \today
-}
+        In Partial Fulfillment of the Requirements for the Degree of Master
+        of Science (M.Sc.)
+    \end{center}
 
-\maketitle
-\thispagestyle{empty}
+    \thispagestyle{empty}
+\end{titlepage}
 
-\begin{abstract}
-    My master thesis, submitted at University Bonn in the examination for Economics
-    (M.Sc.).
-\end{abstract}
-
-\clearpage
 
 % Table of Contents
 \newpage % force start of new page
 \pagenumbering{roman}
-\tableofcontents	%	add TOC
-\listoftables		%	add list of tables
-\listoffigures		%	add list of figures
+\tableofcontents    %   add TOC
+\listoftables       %   add list of tables
+\listoffigures      %   add list of figures
 
 % Main text
-\newpage % Seitenumbruch
+\newpage
 \pagenumbering{arabic}
 
 \section{Introduction}
 \label{sec:introduction}
 \input{1_Introduction.tex}
+\citet{petersen_frechet_2019}
+\citet{hall_methodology_2007}
+
+And some more text that is long long long long long long long long long long to see how
+it looks like.
 
 \section{Theory}
 \label{sec:theory}
