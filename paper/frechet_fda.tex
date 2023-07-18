@@ -42,9 +42,10 @@
     backend = biber
 ]{biblatex}
 \AtBeginDocument{\toggletrue{blx@useprefix}}
-\AtBeginBibliography{\togglefalse{blx@useprefix}}
+% \AtBeginBibliography{\togglefalse{blx@useprefix}} % das is unnötig denke ich
+\renewbibmacro*{begentry}{\midsentence} % damit Hans-Martin Präfix richtig funktioniert
 % \setlength{\bibitemsep}{1.5ex}
-\addbibresource{../../paper/refs.bib}
+\addbibresource{refs.bib}
 
 \usepackage[unicode=true]{hyperref}
 \hypersetup{
@@ -153,10 +154,10 @@ it looks like.
 \pagenumbering{Roman}
 
 \section{Mathematical Basics}
-\label{sec:first order conditions}
+\label{sec:mathematical basics}
 
 \section{Code}
-\label{sec:data preparation}
+\label{sec:code}
 
 %%%%%%%%%% BIBLIOGRAPY %%%%%%%%%%
 
