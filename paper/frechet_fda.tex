@@ -13,6 +13,12 @@
 \setkomafont{sectioning}{\rmfamily\bfseries\boldmath}
 % Headings above each page
 \pagestyle{headings}
+% Formatting
+\widowpenalty = 10000
+\clubpenalty = 10000
+\setlength{\parskip}{1ex}
+\setlength{\parindent}{0ex}
+\setstretch{1.5}
 
 % Useful packages
 \usepackage{float, afterpage, rotating, graphicx}
@@ -41,12 +47,6 @@
     sortcites = true,
     backend = biber
 ]{biblatex}
-\AtBeginDocument{\toggletrue{blx@useprefix}}
-% \AtBeginBibliography{\togglefalse{blx@useprefix}} % das is unnötig denke ich
-\renewbibmacro*{begentry}{\midsentence} % damit Hans-Martin Präfix richtig funktioniert
-% \setlength{\bibitemsep}{1.5ex}
-\addbibresource{refs.bib}
-
 \usepackage[unicode=true]{hyperref}
 \hypersetup{
     colorlinks = true,
@@ -61,13 +61,14 @@
     pdfauthor = {Mirkan Öcal}
 }
 \ExecuteBibliographyOptions{doi = false, url = false, isbn = false}
+\AtBeginDocument{\toggletrue{blx@useprefix}}
+% \AtBeginBibliography{\togglefalse{blx@useprefix}} % das is unnötig denke ich
+\renewbibmacro*{begentry}{\midsentence} % damit Hans-Martin Präfix richtig funktioniert
+% \setlength{\bibitemsep}{1.5ex}
+\addbibresource{refs.bib}
 
-\widowpenalty = 10000
-\clubpenalty = 10000
-
-\setlength{\parskip}{1ex}
-\setlength{\parindent}{0ex}
-\setstretch{1.5}
+% Custom commands
+\newcommand{\inpr}[2]{\langle #1, #2 \rangle}
 
 
 \begin{document}
@@ -132,11 +133,12 @@
 And some more text that is long long long long long long long long long long to see how
 it looks like.
 
-\section{Theory}
-\label{sec:theory}
+\section{Functional Data Analysis and Density Regression}
+\label{sec:fda}
+\input{2_FDA.tex}
 
-\section{Simulation Study}
-\label{sec:simulation study}
+\section{Fréchet Regression}
+\label{sec:fréchet regression}
 
 \section{Discussion}
 \label{sec:discussion}
