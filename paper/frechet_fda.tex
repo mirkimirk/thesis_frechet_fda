@@ -1,5 +1,7 @@
 \documentclass[12pt, a4paper, bibtotoc, liststotoc]{scrartcl}
 
+% Language
+\usepackage[english]{babel}
 % Margins
 \usepackage[paper = a4paper, left = 30mm, right = 20mm, top = 20mm, bottom = 20mm]{geometry}
 \geometry{a4paper}
@@ -39,8 +41,9 @@
 \usepackage[
     natbib = true,
     bibencoding = inputenc,
-    bibstyle = authoryear-ibid,
+    bibstyle = ext-authoryear-ibid, % "ext" adds some finer configuration options
     citestyle = authoryear-comp,
+    date=year,
     maxcitenames = 3,
     maxbibnames = 10,
     useprefix = false,
@@ -60,15 +63,27 @@
     pdftitle = {Fréchet Regression and Functional Data},
     pdfauthor = {Mirkan Öcal}
 }
+% Dont show doi, url, or isbn
 \ExecuteBibliographyOptions{doi = false, url = false, isbn = false}
+% Make titles sentence case
+% \DeclareCaseLangs{english}
+\DeclareFieldFormat
+  [article,inbook,incollection,inproceedings,patent,thesis,unpublished]
+  {titlecase:title}{\MakeSentenceCase*{#1}}
+
+
+\DeclareFieldFormat{titlecase:issuetitle}{\MakeSentenceCase*{#1}}
+% \DeclareFieldFormat{titlecase:title}{\MakeSentenceCase*{#1}}
+% \DeclareFieldFormat*{title}{\mkbibquote{#1\isdot}}
+% \DeclareFieldFormat*{citetitle}{\mkbibquote{\MakeSentenceCase{#1}\isdot}}
 \AtBeginDocument{\toggletrue{blx@useprefix}}
 % \AtBeginBibliography{\togglefalse{blx@useprefix}} % das is unnötig denke ich
-\renewbibmacro*{begentry}{\midsentence} % damit Hans-Martin Präfix richtig funktioniert
+\renewbibmacro*{begentry}{\midsentence} % damit Hans-Martins Präfix richtig funktioniert
 % \setlength{\bibitemsep}{1.5ex}
 \addbibresource{refs.bib}
 
 % Custom commands
-\newcommand{\inpr}[2]{\langle #1, #2 \rangle}
+\newcommand{\inpr}[2]{\left \langle #1, #2 \right \rangle}
 
 
 \begin{document}
@@ -155,8 +170,11 @@ it looks like.
 \appendix
 \pagenumbering{Roman}
 
-\section{Mathematical Basics}
-\label{sec:mathematical basics}
+\section{Nonparametric Regression}
+\label{sec:npregression}
+
+\section{Proofs}
+\label{sec:proofs}
 
 \section{Code}
 \label{sec:code}
