@@ -2,8 +2,8 @@
 import shutil
 
 import pytask
-from pytask_latex import compilation_steps as cs
 from frechet_fda.config import BLD, PAPER_DIR
+from pytask_latex import compilation_steps as cs
 
 documents = ["frechet_fda", "frechet_fda_pres"]
 
@@ -17,6 +17,14 @@ for document in documents:
         ),
     )
     @pytask.mark.task(id=document)
+    @pytask.mark.depends_on(
+        {
+            "Chapter 1": PAPER_DIR / "1_Introduction.tex",
+            "Chapter 2": PAPER_DIR / "2_FDA.tex",
+            "Chapter 3": PAPER_DIR / "3_Fréchet.tex",
+            "Appendix A": PAPER_DIR / "A_NPRegression.tex",
+        },
+    )
     def task_compile_document():
         """Compile the document specified in the latex decorator."""
 

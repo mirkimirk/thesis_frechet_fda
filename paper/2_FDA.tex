@@ -1,0 +1,27 @@
+This section gives a brief introduction to some foundations of FDA as well as basic
+methods in the context of functional responses. The relation and applicability to the
+case of densities as responses is discussed.
+
+\subsection{$L^2([a, b])$ and Hilbert Spaces}
+\label{sec:l2 and hilbert spaces}
+In the context of FDA, it is assumed that the functional data live in
+the space of square integrable functions $L^2([a,b])$, with common
+support $[a,b]$. This space is a Hilbert space, i.e., a complete inner
+product space, equipped with the norm induced by the inner product.
+This allows to generalize notions of distance (as the norm induces a
+metric), magnitude (given by the norm), and orthogonality (defined by
+$\inpr{x}{y} = 0$, with $\inpr{\cdot}{\cdot}$ being the inner product) of elements
+in the space from the Euclidean space, in which we usually work, to more
+abstract and potentially infinite dimensional spaces, such as function
+spaces.
+
+\subsection{Functional Principal Component Analysis}
+\label{sec:fpca}
+The most popular method for describing structure in our functional data is Functional
+Principal Component analysis (FPCA). This is an analogue to Principal Component Analysis
+(PCA) in multivariate statistics to the case of infinite dimensions. It builds on the
+Karhunen-Loève decomposition (described in the following subsection) to recover functions
+that describe the main modes of variation, in descending order.
+
+\subsubsection{Karhunen-Loève Decomposition and Mercer's Theorem}
+\label{sec:kh and mercer}
