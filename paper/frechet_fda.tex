@@ -1,7 +1,5 @@
 \documentclass[12pt, a4paper, bibtotoc, liststotoc]{scrartcl}
 
-% Language
-\usepackage[english]{babel}
 % Margins
 \usepackage[paper = a4paper, left = 30mm, right = 20mm, top = 20mm, bottom = 20mm]{geometry}
 \geometry{a4paper}
@@ -65,17 +63,12 @@
 }
 % Dont show doi, url, or isbn
 \ExecuteBibliographyOptions{doi = false, url = false, isbn = false}
+% Supress pagetotal in textbook citations
+\AtEveryBibitem{\clearfield{pagetotal}}
 % Make titles sentence case
-% \DeclareCaseLangs{english}
 \DeclareFieldFormat
   [article,inbook,incollection,inproceedings,patent,thesis,unpublished]
   {titlecase:title}{\MakeSentenceCase*{#1}}
-
-
-\DeclareFieldFormat{titlecase:issuetitle}{\MakeSentenceCase*{#1}}
-% \DeclareFieldFormat{titlecase:title}{\MakeSentenceCase*{#1}}
-% \DeclareFieldFormat*{title}{\mkbibquote{#1\isdot}}
-% \DeclareFieldFormat*{citetitle}{\mkbibquote{\MakeSentenceCase{#1}\isdot}}
 \AtBeginDocument{\toggletrue{blx@useprefix}}
 % \AtBeginBibliography{\togglefalse{blx@useprefix}} % das is unnötig denke ich
 \renewbibmacro*{begentry}{\midsentence} % damit Hans-Martins Präfix richtig funktioniert
@@ -142,8 +135,12 @@
 \section{Introduction}
 \label{sec:introduction}
 \input{1_Introduction.tex}
-\citet{petersen_frechet_2019}
-\citet{hall_methodology_2007}
+\citet{HorvathKokoszka2012}
+\citet{HallHorowitz2007}
+\citet{PetersenMüller2019}
+\citet{VanDerVaartWellner1996}
+\citet{Bosq2000}
+\citet{HastiTibshiraniFriedman2009}
 
 And some more text that is long long long long long long long long long long to see how
 it looks like.
@@ -154,6 +151,7 @@ it looks like.
 
 \section{Fréchet Regression}
 \label{sec:fréchet regression}
+\input{3_Fréchet.tex}
 
 \section{Discussion}
 \label{sec:discussion}
