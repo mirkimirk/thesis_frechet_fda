@@ -2,12 +2,31 @@ This section gives a brief introduction to some foundations of FDA as well as ba
 methods in the context of functional responses. The relation and applicability to the
 case of densities as responses is discussed.
 
+\subsection{Hilbert Spaces and Linear Operators}
+\label{sec:hilber spaces and linear operators}
+This section will introduce basic mathematical concepts needed for functional data
+analysis before they will be explained in their relation to specific methods in the
+following sections.
+
+A Hilbert Space is this and that....
+
+An operator is a functional of elements in this space. It serves as a generalization of
+a matrix and will play the same conceptual role in the FDA analogues to mv methods
+that matrices do in them.
+
+This is the covariance operator... it is symmetric and positive semi-definite, so
+a Hilbert-Schmidt operator ()\cite{WangChiouMüller2016} say because of the integral form,
+its a trace class, so compact Hilbert-Schmidt operator). It allows for the spectral
+decomposition (in terms of eigenfunctions and eigenvalues). The space of Hilbert-Schmidt
+operators is itself a separable Hilbert Space.
+
 \subsection{$L^2([a, b])$ and Hilbert Spaces}
 \label{sec:l2 and hilbert spaces}
 In the context of FDA, it is assumed that the functional data live in
 the space of square integrable functions $L^2([a,b])$, with common
-support $[a,b]$. This space is a Hilbert space, i.e., a complete inner
-product space, equipped with the norm induced by the inner product.
+support $[a,b]$. This space is a separable Hilbert space, i.e., a complete inner
+product space, equipped with the norm induced by the inner product. Separability means
+its elements can arbitrarily well be approximated by a
 This allows to generalize notions of distance (as the norm induces a
 metric), magnitude (given by the norm), and orthogonality (defined by
 $\inpr{x}{y} = 0$, with $\inpr{\cdot}{\cdot}$ being the inner product) of elements
