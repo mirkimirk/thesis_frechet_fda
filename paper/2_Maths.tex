@@ -2,7 +2,7 @@ This section gives a brief introduction to some foundations of FDA as well as ba
 methods in the context of functional responses. The relation and applicability to the
 case of densities as responses is discussed.
 
-\subsection{Hilbert Spaces and Linear Operators}
+\subsection{Hilbert Space Theory}
 \label{sec:hilber spaces and linear operators}
 This section will introduce basic mathematical concepts needed for functional data
 analysis before they will be explained in their relation to specific methods in the
@@ -20,8 +20,11 @@ its a trace class, so compact Hilbert-Schmidt operator). It allows for the spect
 decomposition (in terms of eigenfunctions and eigenvalues). The space of Hilbert-Schmidt
 operators is itself a separable Hilbert Space.
 
-\subsection{$L^2([a, b])$ and Hilbert Spaces}
-\label{sec:l2 and hilbert spaces}
+\subsubsection{Mercer's Theorem and Karhunen-Loève Decomposition}
+\label{sec:mercer and kh}
+
+\subsection{$L^2([a, b])$ Space}
+\label{sec:l2 space}
 In the context of FDA, it is assumed that the functional data live in
 the space of square integrable functions $L^2([a,b])$, with common
 support $[a,b]$. This space is a separable Hilbert space, i.e., a complete inner
@@ -39,9 +42,6 @@ spaces.
 \label{sec:fpca}
 The most popular method for describing structure in our functional data is Functional
 Principal Component analysis (FPCA). This is an analogue to Principal Component Analysis
-(PCA) in multivariate statistics to the case of infinite dimensions. It builds on the
-Karhunen-Loève decomposition (described in the following subsection) to recover functions
+(PCA) from multivariate statistics in the case of infinite dimensions. It builds on the
+Karhunen-Loève decomposition (described in the \ref{sec:mercer and kh}) to recover functions
 that describe the main modes of variation, in descending order.
-
-\subsubsection{Karhunen-Loève Decomposition and Mercer's Theorem}
-\label{sec:kh and mercer}
