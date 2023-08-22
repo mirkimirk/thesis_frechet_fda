@@ -3,7 +3,6 @@ from functools import partial
 
 import numpy as np
 
-
 kernels = {
     "epanechnikov": lambda u: 3
     / (4 * np.sqrt(5))
@@ -13,11 +12,13 @@ kernels = {
     "triangular": lambda u: (1 - np.abs(u)) * (np.abs(u) <= 1),
 }
 
+
 # Normal density
 def norm_density(x, mu, sigma):
     """Define normal density function.
 
     To test: columns of x must align with mu and sigma.
+
     """
     x = np.array(x)  # to vectorize the input
     mu = np.array(mu)
@@ -28,12 +29,12 @@ def norm_density(x, mu, sigma):
 
 
 # Normal cdf
-def norm_cdf(x, mu, sigma, m):
+def norm_cdf(x, mu, sigma):
     """Compute the CDF of the normal distribution at a given point x."""
     a = -10  # Lower limit of integration (approximation of negative infinity)
     b = x  # Upper limit of integration
     # Integrate the normal density function from a to b
-    return riemann_sum(a, b, m, lambda y: norm_density(y, mu, sigma))
+    return riemann_sum(a, b, lambda y: norm_density(y, mu, sigma))
 
 
 def kernel_estimator(x, h, sample, kernel_type="epanechnikov"):
@@ -56,7 +57,11 @@ def cdf_estimator(
     step_size=None,
     kernel_type="epanechnikov",
 ):
-    """Nonparametric cdf estimator (Li and Racine 2007, p. 20)."""
+    """Nonparametric cdf estimator (Li and Racine 2007, p.
+
+    20).
+
+    """
     kd_estimator = partial(f, h=h, sample=sample, kernel_type=kernel_type)
     return riemann_sum(
         a=left_bound,
@@ -65,6 +70,38 @@ def cdf_estimator(
         method=method,
         step_size=step_size,
     )
+
+
+def quantile_estimator(
+    prob_levels,
+    f,
+    h,
+    sample,
+    x_grid,
+    left_bound=-100,
+    method="midpoint",
+    step_size=None,
+    kernel_type="epanechnikov",
+):
+    """Estimator of quantiles."""
+    # Compute the CDF values for the x_grid
+    prob_levels = np.atleast_1d(prob_levels)
+    cdf_values = cdf_estimator(
+        x=x_grid,
+        f=f,
+        h=h,
+        sample=sample,
+        left_bound=left_bound,
+        method=method,
+        step_size=step_size,
+        kernel_type=kernel_type,
+    )
+
+    # Find the quantiles for the desired probability levels
+    idx = np.searchsorted(cdf_values, prob_levels)
+    quantiles = x_grid[idx - 1]
+
+    return np.array(quantiles)
 
 
 def riemann_sum(a, b, f, method="midpoint", step_size=None):
@@ -117,4 +154,3 @@ def quantile_distance(quantile_1, quantile_2):
     """Compute Wasserstein / Quantile distance."""
     diff_squared = (quantile_1 - quantile_2) ** 2
     return riemann_sum_arrays(left_bound=0, right_bound=1, array=diff_squared, axis=0)
-
