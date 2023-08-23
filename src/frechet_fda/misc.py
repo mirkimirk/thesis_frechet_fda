@@ -37,7 +37,7 @@ def norm_cdf(x, mu, sigma):
     return riemann_sum(a, b, lambda y: norm_density(y, mu, sigma))
 
 
-def kernel_estimator(x, h, sample, kernel_type="epanechnikov"):
+def density_estimator(x, h, sample, kernel_type="epanechnikov"):
     """Kernel density estimator function."""
     # Select kernel function
     k = kernels[kernel_type]
@@ -49,7 +49,6 @@ def kernel_estimator(x, h, sample, kernel_type="epanechnikov"):
 
 def cdf_estimator(
     x,
-    f,
     h,
     sample,
     left_bound=-100,
@@ -57,12 +56,13 @@ def cdf_estimator(
     step_size=None,
     kernel_type="epanechnikov",
 ):
-    """Nonparametric cdf estimator (Li and Racine 2007, p.
-
-    20).
-
-    """
-    kd_estimator = partial(f, h=h, sample=sample, kernel_type=kernel_type)
+    """Nonparametric cdf estimator (Li and Racine 2007, p.20)."""
+    kd_estimator = partial(
+        density_estimator,
+        h=h,
+        sample=sample,
+        kernel_type=kernel_type,
+    )
     return riemann_sum(
         a=left_bound,
         b=x,
@@ -74,7 +74,6 @@ def cdf_estimator(
 
 def quantile_estimator(
     prob_levels,
-    f,
     h,
     sample,
     x_grid,
@@ -88,7 +87,6 @@ def quantile_estimator(
     prob_levels = np.atleast_1d(prob_levels)
     cdf_values = cdf_estimator(
         x=x_grid,
-        f=f,
         h=h,
         sample=sample,
         left_bound=left_bound,
@@ -104,8 +102,13 @@ def quantile_estimator(
     return np.array(quantiles)
 
 
+def cdf_from_density(support_grid, density):
+    """Calculate cdf values from discretized densities."""
+    return riemann_sum_arrays(support_grid[0], support_grid[-1], density, axis=0)
+
+
 def riemann_sum(a, b, f, method="midpoint", step_size=None):
-    """Approximate integral from to scalar a to any value in vector b."""
+    """Approximate integral from scalar a to any value in vector b."""
     # For calculating cdf values when grid b is supplied.
     b = np.atleast_1d(b)
     max_b = np.max(b)
