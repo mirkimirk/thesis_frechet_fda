@@ -14,7 +14,7 @@ kernels = {
 
 
 # Normal density
-def norm_density(x, mu, sigma):
+def norm_pdf(x, mu, sigma):
     """Define normal density function.
 
     To test: columns of x must align with mu and sigma.
@@ -34,7 +34,31 @@ def norm_cdf(x, mu, sigma):
     a = -10  # Lower limit of integration (approximation of negative infinity)
     b = x  # Upper limit of integration
     # Integrate the normal density function from a to b
-    return riemann_sum(a, b, lambda y: norm_density(y, mu, sigma))
+    return riemann_sum(a, b, lambda y: norm_pdf(y, mu, sigma))
+
+
+# Truncated normal pdf
+def trunc_norm_pdf(x, mu, sigma, a, b):
+    """Define truncated normal density function.
+
+    To test: columns of x must align with mu and sigma.
+
+    """
+    x = np.array(x)  # to vectorize the input
+    mu = np.array(mu)
+    sigma = np.array(sigma)
+    x_std = (x - mu) / sigma
+    a_std = (a - mu) / sigma
+    b_std = (b - mu) / sigma
+    numerator = norm_pdf(x_std, 0, 1)
+    denominator = norm_cdf(b_std, 0, 1) - norm_cdf(a_std, 0, 1)
+
+    result = numerator / denominator / sigma
+
+    # Set the PDF to zero for values of x outside the interval [a, b]
+    result[(x < a) | (x > b)] = 0
+
+    return result
 
 
 def density_estimator(x, h, sample, kernel_type="epanechnikov"):
@@ -102,9 +126,31 @@ def quantile_estimator(
     return np.array(quantiles)
 
 
-def cdf_from_density(support_grid, density):
+def cdf_from_density(support_grid, density, axis):
     """Calculate cdf values from discretized densities."""
-    return riemann_sum_arrays(support_grid[0], support_grid[-1], density, axis=0)
+    cdfs = riemann_sum_arrays(support_grid[0], support_grid, density, axis=axis)
+    cdfs /= cdfs[..., -1, np.newaxis]
+    return cdfs
+
+
+def density_from_qd(qd, dSup, qdSup=None):
+    """Compute density from a quantile density function.
+
+    'Inspired' from qd2dens in fdadensity package in R.
+
+    """
+    if qdSup is None:
+        qdSup = np.linspace(0, 1, len(qd))
+    dtemp = dSup[0] + riemann_sum_arrays(qdSup[0], qdSup, qd, axis=0)
+
+    dens_temp = 1 / qd
+    ind = np.unique(dtemp, return_index=True)[1]
+    dtemp = np.atleast_1d(dtemp)[ind]
+    dens_temp = dens_temp[~ind]
+    dens = np.interp(dSup, dtemp, dens_temp)
+    dens /= riemann_sum_arrays(dSup[0], dSup[-1], dens, axis=0)
+
+    return dens
 
 
 def riemann_sum(a, b, f, method="midpoint", step_size=None):
