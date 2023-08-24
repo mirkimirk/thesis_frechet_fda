@@ -3,3 +3,33 @@ and some background.
 
 \subsection{Fréchet Mean and Variance}
 \label{sec:fr mean and variance}
+
+
+
+It can be shown that $d_Q(f,g)$ = $d_W(f,g)$, for any two densities $f$ and $g$ in the
+space.
+\begin{lemma}
+    $a = b$
+\end{lemma}
+\begin{proof}
+    asdsadasdads
+\end{proof}
+
+Then we can see that:
+\begin{lemma}
+    The Wasserstein-Fréchet mean estimator is given by
+    $f_\oplus(x) = \frac{1}{q_\oplus(F_\oplus(x))}$
+\end{lemma}
+\begin{proof}
+    We define $Q_\oplus(t) = E[Q(t)]$ \citep[cf.][Ch. 3.1.4]{PanaretosZemel2020}. This
+    makes sense because $Q_\oplus(t)$ is the minimizer of
+    \begin{equation}
+    \label{eq:wf_mean}
+        \begin{aligned}
+            E[d_w^2(f_i, f_\oplus)]	& =
+            E\left[\int_{0}^{1}(F_i^{-1}(t) - F_\oplus^{-1}(t))^2 \,dt\right] \\
+                                    & = 
+            E\left[\int_{0}^{1}(Q_i(t) - Q_\oplus(t))^2 \,dt\right]
+        \end{aligned}
+    \end{equation}
+\end{proof}

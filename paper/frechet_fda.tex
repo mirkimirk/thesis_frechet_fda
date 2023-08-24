@@ -48,6 +48,7 @@
     sortcites = true,
     backend = biber
 ]{biblatex}
+\renewcommand*{\nameyeardelim}{\space}
 \usepackage[unicode=true]{hyperref}
 \hypersetup{
     colorlinks = true,
@@ -77,6 +78,12 @@
 
 % Custom commands
 \newcommand{\inpr}[2]{\left \langle #1, #2 \right \rangle}
+
+
+% Theorems etc.
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
 
 
 \begin{document}
