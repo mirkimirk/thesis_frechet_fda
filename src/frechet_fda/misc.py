@@ -1,4 +1,5 @@
 """Contains various functions needed in different modules."""
+import warnings
 from functools import partial
 
 import numpy as np
@@ -128,9 +129,36 @@ def quantile_estimator(
 
 def cdf_from_density(support_grid, density, axis):
     """Calculate cdf values from discretized densities."""
-    cdfs = riemann_sum_arrays(support_grid[0], support_grid, density, axis=axis)
+    cdfs = riemann_sum_arrays(support_grid, density, axis=axis)
+    if np.any(abs(cdfs[..., -1] - 1) > 1e-2):
+        warnings.warn(
+            "Not all provided densities integrate to 1!"
+            f"\n Min case is: {cdfs[..., -1].min()} "
+            f"\n Max case is: {cdfs[..., -1].max()} "
+            "\n Performing normalization...",
+        )
     cdfs /= cdfs[..., -1, np.newaxis]
     return cdfs
+
+
+def quantiles_from_cdf(x_grid, cdf_values, prob_levels):
+    """Compute discretized quantiles grid from discretized cdfs.
+
+    x_grid and prob_levels need to be of same shape as cdf_values.
+
+    """
+    # Find where the CDF values are less than the probability levels
+    condition = cdf_values < prob_levels
+
+    # Find the indices of the first True value along the last axis
+    idx = np.argmax(condition, axis=-1)
+
+    # Clip the indices to ensure they are within bounds
+    idx = np.clip(idx, 1, len(x_grid) - 1)
+
+    # Retrieve the corresponding quantiles from x_grid
+    quantiles = x_grid[idx]
+    return quantiles
 
 
 def density_from_qd(qd, dSup, qdSup=None):
@@ -176,15 +204,26 @@ def riemann_sum(a, b, f, method="midpoint", step_size=None):
     return np.interp(b, grid, cdf_values)
 
 
-def riemann_sum_arrays(left_bound, right_bound, array, axis):
-    """"Computes riemann sum for given array, along the axis that contains the grid of
+# def riemann_sum_arrays(left_bound, right_bound, array, axis):
+#     """"Computes riemann sum for given array, along the axis that contains the grid of
+#     values.
+#     """
+
+#     # Compute the Riemann sum along the axis of grid values using vectorized computation
+
+
+def riemann_sum_arrays(support_grid, array, axis):
+    """Computes Riemann sum for given array, along the axis that contains the grid of
     values.
     """
-    m = array.shape[axis]  # Number of points along the axis of grid values
-    step_size = (right_bound - left_bound) / m
+    # Calculate the step size between consecutive grid points
+    step_size = (support_grid[-1] - support_grid[0]) / (len(support_grid) - 1)
 
-    # Compute the Riemann sum along the axis of grid values using vectorized computation
-    return np.sum(array, axis=axis) * step_size
+    # Compute the cumulative sum along the specified axis (i.e., the integral up to each grid point)
+    cumulative_sums = np.cumsum(array, axis=axis) * step_size
+
+    # Return the cumulative sums, which represent the CDF at each grid point
+    return cumulative_sums
 
 
 def l2_norm(left_bound_support, right_bound_support, array, axis):
