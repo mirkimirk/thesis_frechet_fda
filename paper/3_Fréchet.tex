@@ -9,7 +9,8 @@ and some background.
 It can be shown that $d_Q(f,g)$ = $d_W(f,g)$, for any two densities $f$ and $g$ in the
 space.
 \begin{lemma}
-    $a = b$
+    \label{lemma:dqeqdw}
+    $d_Q = d_W$
 \end{lemma}
 \begin{proof}
     asdsadasdads
@@ -18,18 +19,31 @@ space.
 Then we can see that:
 \begin{lemma}
     The Wasserstein-Fréchet mean estimator is given by
-    $f_\oplus(x) = \frac{1}{q_\oplus(F_\oplus(x))}$
+    \begin{equation}
+        \hat{f}_\oplus(x) = \frac{1}{\hat{q}_\oplus(\hat{F}_\oplus(x))},
+    \end{equation}
+    with $\hat{q}_\oplus = \frac{1}{n} \sum_{1}^{n} q_i$.
 \end{lemma}
 \begin{proof}
-    We define $Q_\oplus(t) = E[Q(t)]$ \citep[cf.][Ch. 3.1.4]{PanaretosZemel2020}. This
-    makes sense because $Q_\oplus(t)$ is the minimizer of
+    By \ref{lemma:dqeqdw}, we can substitute the quantile distance for the 
+    Wasserstein distance in the computation of the Fréchet mean. We set
+    $Q_\oplus(t) = E[Q(t)]$ because $E[Q(t)]$ is the minimizer of
     \begin{equation}
     \label{eq:wf_mean}
         \begin{aligned}
             E[d_w^2(f_i, f_\oplus)]	& =
             E\left[\int_{0}^{1}(F_i^{-1}(t) - F_\oplus^{-1}(t))^2 \,dt\right] \\
                                     & = 
-            E\left[\int_{0}^{1}(Q_i(t) - Q_\oplus(t))^2 \,dt\right]
+            E\left[\int_{0}^{1}(Q_i(t) - Q_\oplus(t))^2 \,dt\right],
         \end{aligned}
     \end{equation}
+    see \cite[Ch. 3.1.4]{PanaretosZemel2020}. To compute the corresponding density
+    function, use inverse function rule to get 
+    $f_\oplus(x) = \frac{1}{q_\oplus(F_\oplus(x))}$, which shows that it suffices to
+    estimate $q_\oplus$. Remember that
+    $q_\oplus = \frac{\mathrm{d}Q_\oplus}{\mathrm{d}t}$. Because of Assumption REFER A1,
+    we can pass the differentiation inside the expectation to see
+    $q_\oplus = E\left[\frac{\mathrm{d}Q}{\mathrm{d}t}\right]$, which by analogy
+    principle suggests to average the sample observed (or previously estimated)
+    quantile densities $q_i$ to obtain an estimator $\hat{q}_\oplus$ for $q_\oplus$.
 \end{proof}
