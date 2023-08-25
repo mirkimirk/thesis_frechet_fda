@@ -127,10 +127,11 @@ def quantile_estimator(
     return np.array(quantiles)
 
 
-def cdf_from_density(support_grid, density, axis):
+def cdf_from_density(support_grid, density, axis, cumsum=True):
     """Calculate cdf values from discretized densities."""
-    cdfs = riemann_sum_arrays(support_grid, density, axis=axis)
-    if np.any(abs(cdfs[..., -1] - 1) > 1e-2):
+    cdfs = riemann_sum_arrays(support_grid, density, axis=axis, cumsum=cumsum)
+    eps = 1e-2
+    if np.any(abs(cdfs[..., -1] - 1) > eps):
         warnings.warn(
             "Not all provided densities integrate to 1!"
             f"\n Min case is: {cdfs[..., -1].min()} "
@@ -141,42 +142,40 @@ def cdf_from_density(support_grid, density, axis):
     return cdfs
 
 
-def quantiles_from_cdf(x_grid, cdf_values, prob_levels):
+def quantile_from_cdf(x_grid, cdf_values, prob_levels):
     """Compute discretized quantiles grid from discretized cdfs.
 
     x_grid and prob_levels need to be of same shape as cdf_values.
 
     """
-    # Find where the CDF values are less than the probability levels
-    condition = cdf_values < prob_levels
+    # Apply np.searchsorted along each row of cdf_values
+    idx = np.apply_along_axis(np.searchsorted, 1, cdf_values, prob_levels, side="left")
 
-    # Find the indices of the first True value along the last axis
-    idx = np.argmax(condition, axis=-1)
+    # Clip indices to ensure they are within bounds
+    idx = np.clip(idx, 1, cdf_values.shape[1] - 1)
 
-    # Clip the indices to ensure they are within bounds
-    idx = np.clip(idx, 1, len(x_grid) - 1)
+    # Use advanced indexing to get the corresponding x_grid values
+    row_idx = np.arange(x_grid.shape[0])[:, np.newaxis]
 
-    # Retrieve the corresponding quantiles from x_grid
-    quantiles = x_grid[idx]
-    return quantiles
+    return x_grid[row_idx, idx]
 
 
-def density_from_qd(qd, dSup, qdSup=None):
+def density_from_qd(qd, dsup, qdsup=None, cumsum=False):
     """Compute density from a quantile density function.
 
     'Inspired' from qd2dens in fdadensity package in R.
 
     """
-    if qdSup is None:
-        qdSup = np.linspace(0, 1, len(qd))
-    dtemp = dSup[0] + riemann_sum_arrays(qdSup[0], qdSup, qd, axis=0)
+    if qdsup is None:
+        qdsup = np.linspace(0, 1, len(qd))
+    dtemp = dsup[0] + riemann_sum_arrays(qdsup, qd, axis=0)
 
     dens_temp = 1 / qd
     ind = np.unique(dtemp, return_index=True)[1]
     dtemp = np.atleast_1d(dtemp)[ind]
     dens_temp = dens_temp[~ind]
-    dens = np.interp(dSup, dtemp, dens_temp)
-    dens /= riemann_sum_arrays(dSup[0], dSup[-1], dens, axis=0)
+    dens = np.interp(dsup, dtemp, dens_temp)
+    dens /= riemann_sum_arrays(dsup, dens, axis=0, cumsum=cumsum)
 
     return dens
 
@@ -204,41 +203,42 @@ def riemann_sum(a, b, f, method="midpoint", step_size=None):
     return np.interp(b, grid, cdf_values)
 
 
-# def riemann_sum_arrays(left_bound, right_bound, array, axis):
-#     """"Computes riemann sum for given array, along the axis that contains the grid of
-#     values.
-#     """
-
-#     # Compute the Riemann sum along the axis of grid values using vectorized computation
-
-
-def riemann_sum_arrays(support_grid, array, axis):
+def riemann_sum_arrays(support_grid, array, axis, cumsum=False):
     """Computes Riemann sum for given array, along the axis that contains the grid of
     values.
     """
     # Calculate the step size between consecutive grid points
     step_size = (support_grid[-1] - support_grid[0]) / (len(support_grid) - 1)
 
-    # Compute the cumulative sum along the specified axis (i.e., the integral up to each grid point)
-    cumulative_sums = np.cumsum(array, axis=axis) * step_size
+    # Compute the cumulative sum along the specified axis (i.e.,
+    # the integral up to each grid point)
+    if cumsum:
+        result = np.cumsum(array, axis=axis) * step_size
+    else:
+        result = np.sum(array, axis=axis) * step_size
 
     # Return the cumulative sums, which represent the CDF at each grid point
-    return cumulative_sums
+    return result
 
 
-def l2_norm(left_bound_support, right_bound_support, array, axis):
+def l2_norm(support_grid, array, axis, cumsum=False):
     """Compute L2 norm of (approximate) function."""
     return np.sqrt(
         riemann_sum_arrays(
-            left_bound=left_bound_support,
-            right_bound=right_bound_support,
+            support_grid=support_grid,
             array=array**2,
             axis=axis,
+            cumsum=cumsum,
         ),
     )
 
 
-def quantile_distance(quantile_1, quantile_2):
+def quantile_distance(quantile_1, quantile_2, support_grid, cumsum = False):
     """Compute Wasserstein / Quantile distance."""
     diff_squared = (quantile_1 - quantile_2) ** 2
-    return riemann_sum_arrays(left_bound=0, right_bound=1, array=diff_squared, axis=0)
+    return riemann_sum_arrays(
+        support_grid=support_grid,
+        array=diff_squared,
+        axis=0,
+        cumsum=cumsum,
+    )

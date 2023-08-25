@@ -25,7 +25,7 @@ Then we can see that:
     with $\hat{q}_\oplus = \frac{1}{n} \sum_{1}^{n} q_i$.
 \end{lemma}
 \begin{proof}
-    By \ref{lemma:dqeqdw}, we can substitute the quantile distance for the 
+    By \ref{lemma:dqeqdw}, we can substitute the quantile distance for the
     Wasserstein distance in the computation of the Fréchet mean. We set
     $Q_\oplus(t) = E[Q(t)]$ because $E[Q(t)]$ is the minimizer of
     \begin{equation}
@@ -33,12 +33,12 @@ Then we can see that:
         \begin{aligned}
             E[d_w^2(f_i, f_\oplus)]	& =
             E\left[\int_{0}^{1}(F_i^{-1}(t) - F_\oplus^{-1}(t))^2 \,dt\right] \\
-                                    & = 
+                                    & =
             E\left[\int_{0}^{1}(Q_i(t) - Q_\oplus(t))^2 \,dt\right],
         \end{aligned}
     \end{equation}
-    see \cite[Ch. 3.1.4]{PanaretosZemel2020}. To compute the corresponding density
-    function, use inverse function rule to get 
+    see \citet[Chapter~3.1.4]{PanaretosZemel2020}. To compute the corresponding density
+    function, use inverse function rule to get
     $f_\oplus(x) = \frac{1}{q_\oplus(F_\oplus(x))}$, which shows that it suffices to
     estimate $q_\oplus$. Remember that
     $q_\oplus = \frac{\mathrm{d}Q_\oplus}{\mathrm{d}t}$. Because of Assumption REFER A1,
