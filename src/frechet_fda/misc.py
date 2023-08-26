@@ -130,12 +130,14 @@ def quantile_estimator(
 def cdf_from_density(support_grid, density, axis, cumsum=True):
     """Calculate cdf values from discretized densities."""
     cdfs = riemann_sum_arrays(support_grid, density, axis=axis, cumsum=cumsum)
+    # Check whether each density integrates to 1
     eps = 1e-2
-    if np.any(abs(cdfs[..., -1] - 1) > eps):
+    deviations_from_1 = abs(cdfs[..., -1] - 1)
+    if np.any(deviations_from_1 > eps):
         warnings.warn(
             "Not all provided densities integrate to 1!"
-            f"\n Min case is: {cdfs[..., -1].min()} "
-            f"\n Max case is: {cdfs[..., -1].max()} "
+            f"\n Max case of deviation is: {deviations_from_1.max()} "
+            f"\n In position: {deviations_from_1.argmax()} "
             "\n Performing normalization...",
         )
     cdfs /= cdfs[..., -1, np.newaxis]
