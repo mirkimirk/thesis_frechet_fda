@@ -14,12 +14,12 @@ def compute_moments(density_sample):
     mean_function = np.mean(density_sample, axis=0)
 
     # Center the data
-    centered_densities = density_sample - mean_function
+    centered_data = density_sample - mean_function
 
     # Estimate the covariance function using a discrete approximation
-    cov_matrix = np.cov(centered_densities, rowvar=False)
+    cov_matrix = np.cov(centered_data, rowvar=False)
 
-    return mean_function, centered_densities, cov_matrix
+    return mean_function, centered_data, cov_matrix
 
 
 def compute_principal_components(cov_matrix, support_grid):

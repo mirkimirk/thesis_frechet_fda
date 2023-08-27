@@ -55,9 +55,12 @@ def trunc_norm_pdf(x, mu, sigma, a, b):
     denominator = norm_cdf(b_std, 0, 1) - norm_cdf(a_std, 0, 1)
 
     result = numerator / denominator / sigma
+    
+    # Create a boolean mask for values outside the interval [a, b]
+    mask = (x_std < a_std) | (x_std > b_std)
 
     # Set the PDF to zero for values of x outside the interval [a, b]
-    result[(x < a) | (x > b)] = 0
+    result[mask] = 0
 
     return result
 
@@ -210,14 +213,17 @@ def riemann_sum_arrays(support_grid, array, axis, cumsum=False):
     values.
     """
     # Calculate the step size between consecutive grid points
-    step_size = (support_grid[-1] - support_grid[0]) / (len(support_grid) - 1)
+    step_sizes = np.diff(support_grid)
+    # Repeat last element so the output is not one element shorter. Should be approx.
+    # ok
+    step_sizes = np.append(np.diff(support_grid), np.diff(support_grid)[0])
 
     # Compute the cumulative sum along the specified axis (i.e.,
     # the integral up to each grid point)
     if cumsum:
-        result = np.cumsum(array, axis=axis) * step_size
+        result = np.cumsum(array * step_sizes, axis=axis)
     else:
-        result = np.sum(array, axis=axis) * step_size
+        result = np.sum(array * step_sizes, axis=axis)
 
     # Return the cumulative sums, which represent the CDF at each grid point
     return result
