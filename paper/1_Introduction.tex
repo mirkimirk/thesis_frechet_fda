@@ -1,1 +1,27 @@
-This is an introductory text.
+This thesis is about comparing different methods to solving the task of density
+regression. In functional data analysis (FDA) literature, several modifications to
+the usuaal methods to examine functional data have been proposed to handle the case of
+density functions as our atom of analysis. As the space of density functions is itself
+not a linear space, key assumptions from FDA literature are violated and the results
+of the usual procedures are not guaranteed to stay in the density space.
+
+We will focus on the transformation method described in \citet{PetersenMüller2016}.
+This approach guarantees to get results in the density space when applying the usual
+FDA methods on a transformed space and mapping the transformed values back via an
+inverse mapping into the density space.
+
+A different strand of literature is the one about object-oriented data analysis. To this,
+functional data is a special case of a general random object. \citet{PetersenMüller2019}
+explored a method for a general form of regression where the response is only assumed to
+be metric space-valued. As this is a general approach encompassing the case of the
+response space being the space of densities (with a suitable metric defined on it),
+this method should be more flexible in adjusting to the structure of the space and
+provide a more direct alternative to the transformation method and other approaches
+trying to make FDA methods work.
+
+In the following we will compare both methods in a simulation study, both in a case
+where the sample of densities is directly observed an in the more realistic case of
+first having to obtain the sample via density estimation. Before, section 2 will give
+a review of the mathematical requisites for FDA and the Fréchet regression framework.
+Section 3 will explain the setup and results of the simulation study, and chapter 4
+concludes.
