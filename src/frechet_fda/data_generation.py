@@ -5,7 +5,8 @@ import numpy as np
 from misc import (
     trunc_norm_pdf,
     cdf_from_density,
-    quantile_from_cdf
+    quantile_from_cdf,
+    riemann_sum_arrays
 )
 
 def gen_grids_and_parameters(n, gridnum, truncation_point):
@@ -66,5 +67,12 @@ def gen_discretized_distributions(grid_pdfs, grid_qfs, mus, sigmas, truncation_p
             truncation_point,
         ),
     ).transpose()
+
+    # Normalize quantile densities
+    qdfs_discretized = (
+        qdfs_discretized
+        * (grid_pdfs[-1] - grid_pdfs[0])
+        / riemann_sum_arrays(grid_qfs, qdfs_discretized, axis = 1)[:, np.newaxis]
+    )
 
     return pdfs_discretized, cdfs_discretized, qfs_discretized, qdfs_discretized
