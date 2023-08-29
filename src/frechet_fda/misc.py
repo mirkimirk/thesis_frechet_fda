@@ -55,12 +55,24 @@ def trunc_norm_pdf(x, mu, sigma, a, b):
     denominator = norm_cdf(b_std, 0, 1) - norm_cdf(a_std, 0, 1)
 
     result = numerator / denominator / sigma
-    
+
     # Create a boolean mask for values outside the interval [a, b]
     mask = (x_std < a_std) | (x_std > b_std)
 
     # Set the PDF to zero for values of x outside the interval [a, b]
     result[mask] = 0
+
+    # Check whether each density integrates to 1
+    eps = 1e-5
+    integrals = riemann_sum_arrays(np.linspace(a, b, x.shape[..., -1]), result, axis=1)
+    deviations_from_1 = abs(integrals[..., -1] - 1)
+    if np.any(deviations_from_1 > eps):
+        warnings.warn(
+            "Not all provided densities integrate to 1!"
+            f"\n Max case of deviation is: {deviations_from_1.max()} "
+            f"\n In position: {deviations_from_1.argmax()} "
+            "\n Performing normalization...",
+        )
 
     return result
 
@@ -134,7 +146,7 @@ def cdf_from_density(support_grid, density, axis, cumsum=True):
     """Calculate cdf values from discretized densities."""
     cdfs = riemann_sum_arrays(support_grid, density, axis=axis, cumsum=cumsum)
     # Check whether each density integrates to 1
-    eps = 1e-2
+    eps = 1e-3
     deviations_from_1 = abs(cdfs[..., -1] - 1)
     if np.any(deviations_from_1 > eps):
         warnings.warn(
@@ -143,7 +155,7 @@ def cdf_from_density(support_grid, density, axis, cumsum=True):
             f"\n In position: {deviations_from_1.argmax()} "
             "\n Performing normalization...",
         )
-    cdfs /= cdfs[..., -1, np.newaxis]
+        cdfs /= cdfs[..., -1, np.newaxis]
     return cdfs
 
 
@@ -216,7 +228,7 @@ def riemann_sum_arrays(support_grid, array, axis, cumsum=False):
     step_sizes = np.diff(support_grid)
     # Repeat last element so the output is not one element shorter. Should be approx.
     # ok
-    step_sizes = np.append(np.diff(support_grid), np.diff(support_grid)[0])
+    step_sizes = np.append(np.diff(support_grid), np.diff(support_grid)[-1])
 
     # Compute the cumulative sum along the specified axis (i.e.,
     # the integral up to each grid point)
@@ -241,7 +253,7 @@ def l2_norm(support_grid, array, axis, cumsum=False):
     )
 
 
-def quantile_distance(quantile_1, quantile_2, support_grid, cumsum = False):
+def quantile_distance(quantile_1, quantile_2, support_grid, cumsum=False):
     """Compute Wasserstein / Quantile distance."""
     diff_squared = (quantile_1 - quantile_2) ** 2
     return riemann_sum_arrays(
