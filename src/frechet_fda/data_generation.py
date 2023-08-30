@@ -69,10 +69,9 @@ def gen_discretized_distributions(grid_pdfs, grid_qfs, mus, sigmas, truncation_p
     ).transpose()
 
     # Normalize quantile densities
-    qdfs_discretized = (
-        qdfs_discretized
-        * (grid_pdfs[-1] - grid_pdfs[0])
-        / riemann_sum_arrays(grid_qfs, qdfs_discretized, axis = 1)[:, np.newaxis]
-    )
+    range_pdfs = grid_pdfs[-1] - grid_pdfs[0]
+    integrals_qdfs = riemann_sum_arrays(grid_qfs, qdfs_discretized, axis = 1)[:, np.newaxis]
+    qdfs_discretized *= range_pdfs / integrals_qdfs
+    print(riemann_sum_arrays(grid_qfs, qdfs_discretized, axis = 1))
 
     return pdfs_discretized, cdfs_discretized, qfs_discretized, qdfs_discretized
