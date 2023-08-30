@@ -178,6 +178,43 @@ def quantile_from_cdf(x_grid, cdf_values, prob_levels):
     return x_grid[row_idx, idx]
 
 
+def quantile_from_density(dens, dsup, qsup=None):
+    """Compute quantiles from densities."""
+    if qsup is None:
+        qsup = np.linspace(0, 1, dens.shape[-1])
+
+    eps = 1e-4
+    if not np.allclose([np.min(qsup), np.max(qsup)], [0, 1], atol=eps):
+        print(
+            "Problem with support of the quantile domain's boundaries - resetting to default.",
+        )
+        qsup = np.linspace(0, 1, dens.shape[-1])
+
+    integral_dens = riemann_sum_arrays(dsup, dens, axis=-1, cumsum=True)
+    deviations_from_1 = abs(integral_dens[..., -1] - 1)
+    if np.any(deviations_from_1 > eps):
+        warnings.warn(
+            f"Not all provided densities integrate to 1 with tolerance {eps}!"
+            f"\n Max case of deviation is: {deviations_from_1.max()}"
+            f"\n In position: {deviations_from_1.argmax()} "
+            "\n Performing normalization...",
+        )
+        dens = dens / integral_dens[..., -1, np.newaxis]
+
+    qsuptmp = integral_dens
+
+    qtmp = dsup
+    ind = np.unique(qsuptmp, return_index=True, axis=-1)[1]
+    qsuptmp = qsuptmp[..., ind]
+    qtmp = qtmp[..., ind]
+
+    q = np.zeros(dens.shape)
+    for i in range(len(dens)):
+        q[i] = np.interp(qsup, qsuptmp[i], qtmp)
+
+    return q
+
+
 def dens_from_qd(qds_discretized, qdsup=None, dsup=None):
     """Compute density from a quantile density function.
 
@@ -193,10 +230,12 @@ def dens_from_qd(qds_discretized, qdsup=None, dsup=None):
 
     integral_qd = riemann_sum_arrays(qdsup, array=qds_discretized, axis=-1, cumsum=True)
     if not np.isclose(integral_qd[-1], np.ptp(dsup), atol=eps):
-        msg = "Quantile Density does not integrate to the range of the densities with "
-        f"tolerance {eps}."
-        f"\n Integral is: {integral_qd[...,-1]}"
-        f"\n Range is: {np.ptp(dsup)}"
+        msg = (
+            "Quantile Density does not integrate to the range of the densities with "
+            f"tolerance {eps}."
+            f"\n Integral is: {integral_qd[...,-1]}"
+            f"\n Range is: {np.ptp(dsup)}"
+        )
         raise ValueError(msg)
 
     # Calculate new support grid
@@ -214,7 +253,7 @@ def dens_from_qd(qds_discretized, qdsup=None, dsup=None):
     return dens
 
 
-def qd_from_dens(dens, dsup=None, qdsup=None):
+def qdf_from_density(dens, dsup=None, qdsup=None):
     """Compute quantile densities directly from densities.
 
     'Inspired' from dens2qd in fdadensity package in R.
@@ -282,10 +321,11 @@ def riemann_sum_arrays(support_grid, array, axis=-1, cumsum=False):
     # the integral up to each grid point)
     if cumsum:
         result = np.cumsum(array * step_sizes, axis=axis)
+    # Or just the integral
     else:
         result = np.sum(array * step_sizes, axis=axis)
 
-    # Return the cumulative sums, which represent the CDF at each grid point
+    # Return result
     return result
 
 

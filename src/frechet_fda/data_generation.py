@@ -3,8 +3,8 @@
 import numpy as np
 from misc import (
     cdf_from_density,
-    qd_from_dens,
-    quantile_from_cdf,
+    qdf_from_density,
+    quantile_from_density,
     trunc_norm_pdf,
 )
 
@@ -45,13 +45,15 @@ def gen_discretized_distributions(grid_pdfs, grid_qfs, mus, sigmas, truncation_p
     )
 
     # Truncated qfs
-    qfs_discretized = quantile_from_cdf(
-        grid_pdfs[:, np.newaxis].transpose(),
-        cdfs_discretized,
+    qfs_discretized = quantile_from_density(
+        pdfs_discretized,
+        grid_pdfs,
         grid_qfs,
     )
 
     # Truncated qdfs
-    qdfs_discretized = qd_from_dens(pdfs_discretized, dsup=grid_pdfs, qdsup=grid_qfs)
+    qdfs_discretized = qdf_from_density(
+        pdfs_discretized, dsup=grid_pdfs, qdsup=grid_qfs,
+    )
 
     return pdfs_discretized, cdfs_discretized, qfs_discretized, qdfs_discretized
