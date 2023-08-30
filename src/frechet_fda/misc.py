@@ -64,17 +64,17 @@ def trunc_norm_pdf(x, mu, sigma, a, b):
     result = result.transpose()
 
     # Check whether each density integrates to 1
-    eps = 1e-3
-    integrals = riemann_sum_arrays(np.linspace(a, b, len(x)), result, axis=1)
+    eps = 1e-5
+    integrals = riemann_sum_arrays(np.linspace(a, b, len(x)), result, axis=-1)
     deviations_from_1 = abs(integrals - 1)
     if np.any(deviations_from_1 > eps):
         warnings.warn(
-            "Not all provided densities integrate to 1!"
-            f"\n Max case of deviation is: {deviations_from_1.max()} "
-            f"\n In position: {deviations_from_1.argmax()} "
+            f"Not all provided densities integrate to 1 with tolerance {eps}!"
+            f"\n Max case of deviation is: {deviations_from_1.max()}"
+            f"\n In position: {deviations_from_1.argmax()}"
             "\n Performing normalization...",
         )
-        result /= integrals[:, np.newaxis]
+        result /= integrals[..., np.newaxis]
     return result
 
 
@@ -152,8 +152,8 @@ def cdf_from_density(support_grid, density, axis, cumsum=True):
     if np.any(deviations_from_1 > eps):
         warnings.warn(
             "Not all provided densities integrate to 1!"
-            f"\n Max case of deviation is: {deviations_from_1.max()} "
-            f"\n In position: {deviations_from_1.argmax()} "
+            f"\n Max case of deviation is: {deviations_from_1.max()}"
+            f"\n In position: {deviations_from_1.argmax()}"
             "\n Performing normalization...",
         )
     cdfs /= cdfs[..., -1, np.newaxis]
@@ -178,24 +178,71 @@ def quantile_from_cdf(x_grid, cdf_values, prob_levels):
     return x_grid[row_idx, idx]
 
 
-def density_from_qd(qd, dsup, qdsup=None, cumsum=False):
+def dens_from_qd(qds_discretized, qdsup=None, dsup=None):
     """Compute density from a quantile density function.
 
     'Inspired' from qd2dens in fdadensity package in R.
 
     """
-    if qdsup is None:
-        qdsup = np.linspace(0, 1, len(qd))
-    dtemp = dsup[0] + riemann_sum_arrays(qdsup, qd, axis=0)
+    # Validate input
+    eps = 1e-5
+    boundaries = [np.min(qdsup), np.max(qdsup)]
+    if not np.allclose(boundaries, [0, 1], atol=eps):
+        msg = f"Please check the support of the QF domain's boundaries: {boundaries}"
+        raise ValueError(msg)
 
-    dens_temp = 1 / qd
-    ind = np.unique(dtemp, return_index=True)[1]
-    dtemp = np.atleast_1d(dtemp)[ind]
-    dens_temp = dens_temp[~ind]
+    integral_qd = riemann_sum_arrays(qdsup, array=qds_discretized, axis=-1, cumsum=True)
+    if not np.isclose(integral_qd[-1], np.ptp(dsup), atol=eps):
+        msg = "Quantile Density does not integrate to the range of the densities with "
+        f"tolerance {eps}."
+        f"\n Integral is: {integral_qd[...,-1]}"
+        f"\n Range is: {np.ptp(dsup)}"
+        raise ValueError(msg)
+
+    # Calculate new support grid
+    dtemp = dsup[0] + integral_qd
+
+    # Calculate density
+    dens_temp = 1 / qds_discretized
+    dtemp, idx_unique = np.unique(dtemp, return_index=True, axis=-1)
+    dens_temp = dens_temp[idx_unique]
     dens = np.interp(dsup, dtemp, dens_temp)
-    dens /= riemann_sum_arrays(dsup, dens, axis=0, cumsum=cumsum)
+
+    # Normalize the density
+    dens /= riemann_sum_arrays(dsup, dens, axis=-1, cumsum=False)[..., np.newaxis]
 
     return dens
+
+
+def qd_from_dens(dens, dsup=None, qdsup=None):
+    """Compute quantile densities directly from densities.
+
+    'Inspired' from dens2qd in fdadensity package in R.
+
+    """
+    # Validate input
+    eps = 1e-5
+    boundaries = [np.min(qdsup), np.max(qdsup)]
+    if not np.allclose(boundaries, [0, 1], atol=eps):
+        msg = f"Please check the support of the QF domain's boundaries: {boundaries}"
+        raise ValueError(msg)
+
+    integral_dens = riemann_sum_arrays(dsup, array=dens, axis=-1, cumsum=False)
+    deviations_from_1 = abs(integral_dens - 1)
+    if np.any(deviations_from_1 > eps):
+        warnings.warn(
+            f"Not all provided densities integrate to 1 with tolerance {eps}!"
+            f"\n Max case of deviation is: {deviations_from_1.max()}"
+            f"\n In position: {deviations_from_1.argmax()} "
+            "\n Performing normalization...",
+        )
+        dens /= integral_dens[..., np.newaxis]
+
+    qd = 1 / dens
+    integral_qd = riemann_sum_arrays(qdsup, qd, axis=-1, cumsum=False)
+    qd *= np.ptp(dsup) / integral_qd[..., np.newaxis]
+
+    return qd
 
 
 def riemann_sum(a, b, f, method="midpoint", step_size=None):
@@ -221,7 +268,7 @@ def riemann_sum(a, b, f, method="midpoint", step_size=None):
     return np.interp(b, grid, cdf_values)
 
 
-def riemann_sum_arrays(support_grid, array, axis, cumsum=False):
+def riemann_sum_arrays(support_grid, array, axis=-1, cumsum=False):
     """Computes Riemann sum for given array, along the axis that contains the grid of
     values.
     """
@@ -229,7 +276,7 @@ def riemann_sum_arrays(support_grid, array, axis, cumsum=False):
     step_sizes = np.diff(support_grid)
     # Repeat last element so the output is not one element shorter. Should be approx.
     # ok
-    step_sizes = np.append(np.diff(support_grid), np.diff(support_grid)[..., -1])
+    step_sizes = np.append(step_sizes, step_sizes[..., -1][..., np.newaxis], axis=-1)
 
     # Compute the cumulative sum along the specified axis (i.e.,
     # the integral up to each grid point)
@@ -242,7 +289,7 @@ def riemann_sum_arrays(support_grid, array, axis, cumsum=False):
     return result
 
 
-def l2_norm(support_grid, array, axis, cumsum=False):
+def l2_norm(support_grid, array, axis=-1, cumsum=False):
     """Compute L2 norm of (approximate) function."""
     return np.sqrt(
         riemann_sum_arrays(
@@ -252,6 +299,16 @@ def l2_norm(support_grid, array, axis, cumsum=False):
             cumsum=cumsum,
         ),
     )
+
+
+def wasserstein_frechet_mean(qds_discretized, dsup, qdsup=None):
+    """Compute Wasserstein-Fréchet mean from sample."""
+    if qdsup is None:
+        qdsup = np.linspace(0, 1, qds_discretized.shape[-1])
+    mean_qdf = np.mean(qds_discretized, axis=0)
+    integral = riemann_sum_arrays(qdsup, array=mean_qdf, axis=-1, cumsum=False)
+    mean_qdf *= (dsup[-1] - dsup[0]) / integral
+    return dens_from_qd(mean_qdf, qdsup, dsup)
 
 
 def quantile_distance(quantile_1, quantile_2, support_grid, cumsum=False):

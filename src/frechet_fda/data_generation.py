@@ -1,7 +1,12 @@
 """This module contains functions for generating density samples in a simulation."""
 
 import numpy as np
-from misc import cdf_from_density, quantile_from_cdf, riemann_sum_arrays, trunc_norm_pdf
+from misc import (
+    cdf_from_density,
+    qd_from_dens,
+    quantile_from_cdf,
+    trunc_norm_pdf,
+)
 
 
 def gen_grids_and_parameters(n, gridnum, truncation_point, delta):
@@ -30,13 +35,13 @@ def gen_discretized_distributions(grid_pdfs, grid_qfs, mus, sigmas, truncation_p
         sigmas,
         -truncation_point,
         truncation_point,
-    ).transpose()
+    )
 
     # Truncated cdfs
     cdfs_discretized = cdf_from_density(
         grid_pdfs,
         pdfs_discretized,
-        axis=1,
+        axis=-1,
     )
 
     # Truncated qfs
@@ -47,21 +52,6 @@ def gen_discretized_distributions(grid_pdfs, grid_qfs, mus, sigmas, truncation_p
     )
 
     # Truncated qdfs
-    qdfs_discretized = np.reciprocal(
-        trunc_norm_pdf(
-            qfs_discretized.transpose(),
-            mus,
-            sigmas,
-            -truncation_point,
-            truncation_point,
-        ),
-    ).transpose()
-
-    # Normalize quantile densities
-    qdfs_discretized = (
-        qdfs_discretized
-        * (grid_pdfs[-1] - grid_pdfs[0])
-        / riemann_sum_arrays(grid_qfs, qdfs_discretized, axis=1)[:, np.newaxis]
-    )
+    qdfs_discretized = qd_from_dens(pdfs_discretized, dsup=grid_pdfs, qdsup=grid_qfs)
 
     return pdfs_discretized, cdfs_discretized, qfs_discretized, qdfs_discretized

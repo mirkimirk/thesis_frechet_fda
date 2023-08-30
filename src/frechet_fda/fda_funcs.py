@@ -1,12 +1,8 @@
 """This module contains functions needed for functional data analysis methods."""
 
 import numpy as np
+from misc import l2_norm, riemann_sum_arrays
 
-
-from misc import (
-    l2_norm,
-    riemann_sum_arrays
-)
 
 def compute_moments(density_sample):
     """Compute mean function, centered data, and covariance matrix."""
@@ -26,7 +22,7 @@ def compute_principal_components(cov_matrix, support_grid):
     """Compute functional principal components of a covariance function."""
     # Compute the eigenfunctions (principal components) of the covariance matrix
     eigenvalues, eigenfunctions = np.linalg.eigh(cov_matrix)
-    
+
     # Sort eigenvalues and eigenfunctions in decreasing order
     eigenvalues_sorted = eigenvalues[np.argsort(-eigenvalues)]
     eigenfunctions_sorted = eigenfunctions[:, np.argsort(-eigenvalues)]
@@ -35,7 +31,7 @@ def compute_principal_components(cov_matrix, support_grid):
     l2_norms = l2_norm(
         support_grid=support_grid,
         array=eigenfunctions_sorted,
-        axis=1,
+        axis=-1,
         cumsum=False,
     )
 
@@ -52,8 +48,8 @@ def compute_fpc_scores(centered_densities, eigenfunctions, support_grid):
     return riemann_sum_arrays(
         support_grid=support_grid,
         array=products,
-        axis=1,
-        cumsum=False
+        axis=-1,
+        cumsum=False,
     )
 
 
