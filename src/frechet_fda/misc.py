@@ -147,7 +147,7 @@ def cdf_from_density(support_grid, density, axis, cumsum=True):
     """Calculate cdf values from discretized densities."""
     cdfs = riemann_sum_arrays(support_grid, density, axis=axis, cumsum=cumsum)
     # Check whether each density integrates to 1
-    eps = 1e-2
+    eps = 1e-3
     deviations_from_1 = abs(cdfs[..., -1] - 1)
     if np.any(deviations_from_1 > eps):
         warnings.warn(
@@ -156,7 +156,7 @@ def cdf_from_density(support_grid, density, axis, cumsum=True):
             f"\n In position: {deviations_from_1.argmax()}"
             "\n Performing normalization...",
         )
-    cdfs /= cdfs[..., -1, np.newaxis]
+        cdfs /= cdfs[..., -1, np.newaxis]
     return cdfs
 
 
@@ -170,7 +170,7 @@ def quantile_from_cdf(x_grid, cdf_values, prob_levels):
     idx = np.apply_along_axis(np.searchsorted, 1, cdf_values, prob_levels, side="left")
 
     # Clip indices to ensure they are within bounds
-    idx = np.clip(idx, 1, cdf_values.shape[1] - 1)
+    idx = np.clip(idx, 1, cdf_values.shape[-1] - 1)
 
     # Use advanced indexing to get the corresponding x_grid values
     row_idx = np.arange(x_grid.shape[0])[:, np.newaxis]
@@ -183,7 +183,7 @@ def quantile_from_density(dens, dsup, qsup=None):
     if qsup is None:
         qsup = np.linspace(0, 1, dens.shape[-1])
 
-    eps = 1e-4
+    eps = 1e-3
     if not np.allclose([np.min(qsup), np.max(qsup)], [0, 1], atol=eps):
         print(
             "Problem with support of the quantile domain's boundaries - resetting to default.",
@@ -222,7 +222,7 @@ def dens_from_qd(qds_discretized, qdsup=None, dsup=None):
 
     """
     # Validate input
-    eps = 1e-5
+    eps = 1e-3
     boundaries = [np.min(qdsup), np.max(qdsup)]
     if not np.allclose(boundaries, [0, 1], atol=eps):
         msg = f"Please check the support of the QF domain's boundaries: {boundaries}"
@@ -253,14 +253,14 @@ def dens_from_qd(qds_discretized, qdsup=None, dsup=None):
     return dens
 
 
-def qdf_from_density(dens, dsup=None, qdsup=None):
+def qd_from_dens(dens, dsup=None, qdsup=None):
     """Compute quantile densities directly from densities.
 
     'Inspired' from dens2qd in fdadensity package in R.
 
     """
     # Validate input
-    eps = 1e-5
+    eps = 1e-3
     boundaries = [np.min(qdsup), np.max(qdsup)]
     if not np.allclose(boundaries, [0, 1], atol=eps):
         msg = f"Please check the support of the QF domain's boundaries: {boundaries}"
@@ -357,6 +357,6 @@ def quantile_distance(quantile_1, quantile_2, support_grid, cumsum=False):
     return riemann_sum_arrays(
         support_grid=support_grid,
         array=diff_squared,
-        axis=0,
+        axis=-1,
         cumsum=cumsum,
     )

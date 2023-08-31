@@ -3,7 +3,7 @@
 import numpy as np
 from misc import (
     cdf_from_density,
-    qdf_from_density,
+    qd_from_dens,
     quantile_from_density,
     trunc_norm_pdf,
 )
@@ -23,7 +23,7 @@ def gen_grids_and_parameters(n, gridnum, truncation_point, delta):
     mus = np.zeros(n)
     sigmas = np.exp(log_sigmas)
 
-    return (grid_densities, grid_quantiles, mus, sigmas)
+    return grid_densities, grid_quantiles, mus, sigmas
 
 
 def gen_discretized_distributions(grid_pdfs, grid_qfs, mus, sigmas, truncation_point):
@@ -52,7 +52,7 @@ def gen_discretized_distributions(grid_pdfs, grid_qfs, mus, sigmas, truncation_p
     )
 
     # Truncated qdfs
-    qdfs_discretized = qdf_from_density(
+    qdfs_discretized = qd_from_dens(
         pdfs_discretized, dsup=grid_pdfs, qdsup=grid_qfs,
     )
 
