@@ -243,8 +243,9 @@ def dens_from_qd(qds_discretized, qdsup=None, dsup=None):
 
     # Calculate density
     dens_temp = 1 / qds_discretized
-    dtemp, idx_unique = np.unique(dtemp, return_index=True, axis=-1)
-    dens_temp = dens_temp[idx_unique]
+    idx_unique = np.unique(dtemp, return_index=True, axis=-1)[1]
+    dtemp = dtemp[..., idx_unique]
+    dens_temp = dens_temp[..., idx_unique]
     dens = np.interp(dsup, dtemp, dens_temp)
 
     # Normalize the density
