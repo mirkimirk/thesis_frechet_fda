@@ -309,6 +309,36 @@ def riemann_sum(a, b, f, method="midpoint", step_size=None):
 
 
 def riemann_sum_arrays(support_grid, array, axis=-1, cumsum=False):
+    """Computes the Riemann sum using the Midpoint rule for the given array, along the
+    axis that contains the grid of values.
+    """
+    # Calculate the step size between consecutive grid points
+    step_sizes = np.diff(support_grid)
+
+    # Calculate midpoints
+    midpoints = (support_grid[..., 1:] + support_grid[..., :-1]) / 2
+
+    # Sample the function at the midpoints
+    if array.ndim > 1:
+        midpoint_values = np.zeros((array.shape[0], array.shape[-1] - 1))
+        for i in range(len(midpoint_values)):
+            midpoint_values[i] = np.interp(midpoints, support_grid, array[i])
+    else:
+        midpoint_values = np.interp(midpoints, support_grid, array)
+
+    # Compute the cumulative sum along the specified axis (i.e.,
+    # the integral up to each grid point)
+    if cumsum:
+        result = np.cumsum(midpoint_values * step_sizes, axis=axis)
+        # Append last value so we have same shape as before
+        result = np.append(result, result[..., -1][..., np.newaxis], axis=-1)
+    # Or just the integral
+    else:
+        result = np.sum(midpoint_values * step_sizes, axis=axis)
+    return result
+
+
+def riemann_sum_arrays2(support_grid, array, axis=-1, cumsum=False):
     """Computes Riemann sum for given array, along the axis that contains the grid of
     values.
     """
