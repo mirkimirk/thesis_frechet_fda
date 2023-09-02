@@ -32,7 +32,7 @@ def norm_pdf(x, mu, sigma):
 # Normal cdf
 def norm_cdf(x, mu, sigma):
     """Compute the CDF of the normal distribution at a given point x."""
-    a = -10  # Lower limit of integration (approximation of negative infinity)
+    a = -20  # Lower limit of integration (approximation of negative infinity)
     b = x  # Upper limit of integration
     # Integrate the normal density function from a to b
     return riemann_sum(a, b, lambda y: norm_pdf(y, mu, sigma))
