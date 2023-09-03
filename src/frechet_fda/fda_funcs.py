@@ -1,60 +1,87 @@
 """This module contains functions needed for functional data analysis methods."""
 
 import numpy as np
-from misc import l2_norm, riemann_sum_arrays
+from scipy.sparse.linalg import eigsh
+
+from frechet_fda.distribution_class import Distribution
+from frechet_fda.distribution_tools import mean_func
+from frechet_fda.numerics_helpers import riemann_sum_cumulative
 
 
-def compute_moments(density_sample):
+def compute_centered_data(density_sample: list[Distribution]) -> list[Distribution]:
     """Compute mean function, centered data, and covariance matrix."""
     # Compute the mean function
-    mean_function = np.mean(density_sample, axis=0)
+    mean_function = mean_func(density_sample)
 
     # Center the data
-    centered_data = density_sample - mean_function
+    centered_data = [density - mean_function for density in density_sample]
 
-    # Estimate the covariance function using a discrete approximation
-    cov_matrix = np.cov(centered_data, rowvar=False)
-
-    return mean_function, centered_data, cov_matrix
+    return centered_data
 
 
-def compute_principal_components(cov_matrix, support_grid):
+def compute_cov_function(centered_sample: list[Distribution]) -> np.ndarray:
+    """Compute discretized covariance function."""
+    # Create an empty list to store the y-values of each Distribution instance
+    y_values_list = []
+
+    # Loop through each Distribution instance and append its y-values to y_values_list
+    for dist in centered_sample:
+        y_values_list.append(dist.y)
+
+    # Convert the list of y-values to a 2D NumPy array
+    y_values_matrix = np.array(y_values_list)
+
+    # Compute the covariance matrix
+    cov_matrix = np.cov(y_values_matrix, rowvar=False)
+
+    return cov_matrix
+
+
+def compute_principal_components(
+    x_vals: np.ndarray,
+    cov_matrix: np.ndarray,
+    k: int = 5,
+) -> tuple:
     """Compute functional principal components of a covariance function."""
     # Compute the eigenfunctions (principal components) of the covariance matrix
-    eigenvalues, eigenfunctions = np.linalg.eigh(cov_matrix)
+    eigenvalues, eigenfunctions = eigsh(cov_matrix, k=k, which="LM")
+    eigenfunctions = eigenfunctions.transpose()
 
     # Sort eigenvalues and eigenfunctions in decreasing order
     eigenvalues_sorted = eigenvalues[np.argsort(-eigenvalues)]
-    eigenfunctions_sorted = eigenfunctions[:, np.argsort(-eigenvalues)]
+    eigenfunctions_sorted = eigenfunctions[np.argsort(-eigenvalues)]
 
-    # Compute the L2 norm for each column (eigenvector) for rescaling to L2 norm
-    l2_norms = l2_norm(
-        support_grid=support_grid,
-        array=eigenfunctions_sorted,
-        axis=-1,
-        cumsum=False,
-    )
+    eigenfunctions = [
+        Distribution(x_vals, eigenfunc) for eigenfunc in eigenfunctions_sorted
+    ]
 
     # Scale each column of the eigenfunctions matrix by its respective L^2 norm
-    eigenfunctions_scaled = eigenfunctions_sorted / l2_norms
+    eigenfunctions_scaled = [
+        eigenfunction / eigenfunction.l2norm() for eigenfunction in eigenfunctions
+    ]
 
     return eigenvalues_sorted, eigenfunctions_scaled
 
 
-def compute_fpc_scores(centered_densities, eigenfunctions, support_grid):
+def compute_fpc_scores(x_vals, centered_sample, eigenfunctions_trunc):
     """Computes factor loadings / FPC scores."""
     # Compute FPC scores / factor loadings
-    products = np.einsum("ij,jk->ijk", centered_densities, eigenfunctions)
-    return riemann_sum_arrays(
-        support_grid=support_grid,
-        array=products,
-        axis=-1,
-        cumsum=False,
-    )
+    y_values_densities = []
+    y_values_eigfuncs = []
+    # Loop through each Distribution instance and append its y-values to a list
+    for dist in centered_sample:
+        y_values_densities.append(dist.y)
+    for eigfunc in eigenfunctions_trunc:
+        y_values_eigfuncs.append(eigfunc.y)
+    # Convert the list of y-values to a 2D NumPy array
+    y_values_densities_arr = np.array(y_values_densities)
+    y_values_eigfuncs_arr = np.array(y_values_eigfuncs)
+    products = np.einsum("ij,jk->ijk", y_values_densities_arr, y_values_eigfuncs_arr)
+    return riemann_sum_cumulative(x_vals=x_vals, y_vals=products)[1][..., -1]
 
 
-def mode_of_variation(mean_func, eigval, eigfunc, alpha):
+def mode_of_variation(mean, eigval, eigfunc, alpha):
     """Compute kth mode of variation."""
     if np.ndim(eigval) != 0:
-        mean_func = mean_func[:, np.newaxis]
-    return mean_func + alpha * np.sqrt(eigval) * eigfunc
+        mean = mean[:, np.newaxis]
+    return mean + alpha * np.sqrt(eigval) * eigfunc

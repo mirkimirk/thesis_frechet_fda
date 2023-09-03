@@ -20,9 +20,11 @@ for document in documents:
     @pytask.mark.depends_on(
         {
             "Chapter 1": PAPER_DIR / "1_Introduction.tex",
-            "Chapter 2": PAPER_DIR / "2_Maths.tex",
-            "Chapter 3": PAPER_DIR / "3_Fréchet.tex",
+            "Chapter 2": PAPER_DIR / "2_FDA.tex",
+            "Chapter 3": PAPER_DIR / "3_Density_Regression.tex",
+            "Chapter 4": PAPER_DIR / "4_Fréchet.tex",
             "Appendix A": PAPER_DIR / "A_NPRegression.tex",
+            "Appendix B": PAPER_DIR / "B_Numerics.tex",
         },
     )
     def task_compile_document():

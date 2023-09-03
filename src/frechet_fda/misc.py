@@ -331,7 +331,7 @@ def riemann_sum_arrays(support_grid, array, axis=-1, cumsum=False):
 def l2_norm(support_grid, array, axis=-1, cumsum=False):
     """Compute L2 norm of (approximate) function."""
     return np.sqrt(
-        riemann_sum_arrays(
+        riemann_sum_cumulative(
             support_grid=support_grid,
             array=array**2,
             axis=axis,

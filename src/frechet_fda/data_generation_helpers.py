@@ -1,10 +1,12 @@
 """This module contains code for generating data from a truncated normal distribution,
 and functions that generate parameters according to the three scenarios outlined in
-Petersen and Mueller (2016)'s simulation study."""
+Petersen and Mueller (2016)'s simulation study.
+"""
 
 import warnings
 
 import numpy as np
+
 from frechet_fda.numerics_helpers import riemann_sum_cumulative
 
 
@@ -20,13 +22,21 @@ def gen_params_scenario_one(
     return mus, sigmas
 
 
+def make_smart_pdf(sigma: float, tol: float = 1e-5) -> tuple:
+    span = 0.2
+    for pdf in make_truncnorm_pdf(-span, span, 0, sigma)[1]:
+        while pdf[0] >= tol:
+            span *= 1.05
+    return make_truncnorm_pdf(-span, span, 0, sigma)
+
+
 # Truncated normal pdf
 def make_truncnorm_pdf(
-    a: float = 0,
-    b: float = 1,
+    a: np.ndarray = 0,
+    b: np.ndarray = 1,
     mu: np.ndarray = 0,
     sigma: np.ndarray = 1,
-    grid_size: int = 1000
+    grid_size: int = 1000,
 ) -> tuple:
     """Define truncated normal density function.
 
@@ -54,9 +64,10 @@ def make_truncnorm_pdf(
 
     # Check whether each density integrates to 1
     eps = 1e-5
-    integrals = riemann_sum_cumulative(
-        np.linspace(a, b, len(x)), pdfs_y, axis=-1
-    )[1][..., -1]
+    integrals = riemann_sum_cumulative(np.linspace(a, b, len(x)), pdfs_y, axis=-1)[1][
+        ...,
+        -1,
+    ]
     deviations_from_1 = abs(integrals - 1)
     if np.any(deviations_from_1 > eps):
         warnings.warn(
@@ -66,9 +77,7 @@ def make_truncnorm_pdf(
             "\n Performing normalization...",
         )
         pdfs_y /= integrals[..., -1]
-    return pdf_x, pdfs_y
-
-
+    return [(pdf_x, pdf_y) for pdf_y in pdfs_y]
 
 
 # Normal pdf
@@ -88,8 +97,11 @@ def _norm_pdf(x: np.ndarray, mu: np.ndarray, sigma: np.ndarray) -> np.ndarray:
 
 # Normal cdf
 def _norm_cdf(
-        x: np.ndarray, mu: np.ndarray, sigma: np.ndarray, grid_size : int = 1000
-    ) -> np.ndarray:
+    x: np.ndarray,
+    mu: np.ndarray,
+    sigma: np.ndarray,
+    grid_size: int = 1000,
+) -> np.ndarray:
     """Compute the CDF of the normal distribution at a given point x.
 
     `x` can be a 2d array, with the number of rows corresponding to the number of
@@ -100,5 +112,6 @@ def _norm_cdf(
     grid_to_integrate = np.linspace(minus_inf, x, grid_size).transpose()
     # Integrate the normal density function from a to b
     return riemann_sum_cumulative(
-        grid_to_integrate, _norm_pdf(grid_to_integrate, mu, sigma),
+        grid_to_integrate,
+        _norm_pdf(grid_to_integrate, mu, sigma),
     )[1][..., -1]
