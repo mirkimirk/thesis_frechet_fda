@@ -6,10 +6,8 @@ from frechet_fda.distribution_class import Distribution
 
 
 def make_distribution_objects(xy_tuples: list[tuple]) -> list[Distribution]:
-    """Takes an x range and possibly multiple densitites defined on it in the y_array.
-
-    Assumes that rows of
-
+    """Takes list of tuples of a support range and the associated function values, and
+    gives a Distribution object.
     """
     return [Distribution(*xy_tuple) for xy_tuple in xy_tuples]
 
@@ -44,15 +42,16 @@ def mean_func(funcs: list[Distribution]) -> Distribution:
     return agg_func
 
 
-def log_qd_transform(densities_sample : list[Distribution]) -> list[Distribution]:
+def log_qd_transform(densities_sample: list[Distribution]) -> list[Distribution]:
     """Perfrom log quantile density transformation on a density sample."""
     qdfs = [pdf_to_qdf(density) for density in densities_sample]
     return [qdf.log() for qdf in qdfs]
 
 
 def inverse_log_qd_transform(
-        transformed_funcs : list[Distribution]
-    ) -> list[Distribution]:
+    transformed_funcs: list[Distribution],
+) -> list[Distribution]:
+    """Transform back into density space."""
     natural_qfs = [func.exp().integrate().vcenter() for func in transformed_funcs]
     cdfs = [qf.invert() for qf in natural_qfs]
     exponents = [-func.compose(cdf) for func, cdf in zip(transformed_funcs, cdfs)]
@@ -60,16 +59,14 @@ def inverse_log_qd_transform(
 
 
 def inverse_log_qd_transform_corrected(
-        transformed_funcs : list[Distribution]
-    ) -> list[Distribution]:
+    transformed_funcs: list[Distribution],
+) -> list[Distribution]:
     """Invert the log quantile density transform to get back into density space."""
     # First compute quantile function via natural inverse
     natural_qfs = [func.exp().integrate().vcenter() for func in transformed_funcs]
     # Compute correction factors to normalize quantiles
     thetas = [qf.y[-1] for qf in natural_qfs]
-    corrected_qfs = [
-        qf / theta for qf, theta in zip(natural_qfs, thetas)
-    ]
+    corrected_qfs = [qf / theta for qf, theta in zip(natural_qfs, thetas)]
     cdfs = [qf.invert() for qf in corrected_qfs]
     exponents = [func.compose(cdf) for func, cdf in zip(transformed_funcs, cdfs)]
     inverses = [theta / exponent.exp() for theta, exponent in zip(thetas, exponents)]
@@ -77,32 +74,14 @@ def inverse_log_qd_transform_corrected(
     return inverses
 
 
-def frechet_mean(density_sample : list[Distribution]) -> Distribution:
+def frechet_mean(density_sample: list[Distribution]) -> Distribution:
     """Compute Fréchet mean of a given sample of densities."""
     qdfs = [pdf_to_qdf(density) for density in density_sample]
     mean_qdf = mean_func(qdfs)
     return qdf_to_pdf(mean_qdf)
 
 
-def quantile_distance(pdf1 : Distribution, pdf2 : Distribution) -> float:
+def quantile_distance(pdf1: Distribution, pdf2: Distribution) -> float:
     """Compute Wasserstein / Quantile distance."""
     diff_squared = (pdf1 - pdf2) ** 2
     return diff_squared.integrate().y[-1]
-
-
-def total_frechet_variance(
-        fmean : Distribution, densities_sample : list[Distribution]
-    ) -> float:
-    """Computes total frechet variance."""
-    distances = []
-    for density in densities_sample:
-        distances.append(quantile_distance(density, fmean) ** 2)
-    return np.mean(distances)
-
-
-def k_frechet_variance(total_var, densities_sample, truncated_reps):
-    distances = []
-    for density, trunc in zip(densities_sample, truncated_reps):
-        distances.append(quantile_distance(density, trunc) ** 2)
-    mean_dist = np.mean(distances)
-    return total_var - mean_dist

@@ -11,7 +11,10 @@ kernels = {
     * (np.abs(u) <= np.sqrt(5)),
     "uniform": lambda u: 0.5 * (np.abs(u) <= 1),
     "triangular": lambda u: (1 - np.abs(u)) * (np.abs(u) <= 1),
+    "std_normal": lambda u: (1 - np.sqrt(2 * np.pi))
+    * np.exp(-0.5 * u),  # p. 8 Li/Racine
 }
+
 
 def density_estimator(x, h, sample, kernel_type="epanechnikov"):
     """Kernel density estimator function."""
@@ -39,7 +42,7 @@ def cdf_estimator(
         sample=sample,
         kernel_type=kernel_type,
     )
-    return riemann_sum(
+    return riemann_sum_cumulative(
         a=left_bound,
         b=x,
         f=kd_estimator,

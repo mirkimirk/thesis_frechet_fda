@@ -4,7 +4,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from frechet_fda.numerics_helpers import difference_quotient, riemann_sum_cumulative
+from frechet_fda.numerics_tools import difference_quotient, riemann_sum_cumulative
 
 
 class Distribution:
@@ -17,10 +17,19 @@ class Distribution:
         self.y = y
         self.grid_size = len(x)
 
-    def standardize_shape(self, grid_size : int = 10000):
+    def standardize_shape(self, grid_size: int = 10000):
+        """Set the number of discretization points."""
         x = np.copy(self.x)
         y = np.copy(self.y)
         new_x = np.linspace(x.min(), x.max(), grid_size)
+        new_y = np.interp(new_x, x, y)
+        return Distribution(new_x, new_y)
+
+    def warp_range(self, left: float, right: float, grid_size: int = 10000):
+        """Use interpolation to define function on different range."""
+        x = np.copy(self.x)
+        y = np.copy(self.y)
+        new_x = np.linspace(left, right, grid_size)
         new_y = np.interp(new_x, x, y)
         return Distribution(new_x, new_y)
 
@@ -189,14 +198,14 @@ class Distribution:
         x = np.copy(self.x)
         y = val / np.copy(self.y)
         return Distribution(x, y)
-    
+
     def __pow__(self, exponent: float | int):
         if not isinstance(exponent, float | int):
             raise TypeError("Exponent must be a float or an integer.")
         x = np.copy(self.x)
         y = np.copy(self.y) ** exponent
         return Distribution(x, y)
-    
+
     def __neg__(self):
         x = np.copy(self.x)
         y = -np.copy(self.y)
