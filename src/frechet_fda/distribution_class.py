@@ -190,6 +190,13 @@ class Distribution:
         y = val / np.copy(self.y)
         return Distribution(x, y)
     
+    def __pow__(self, exponent: float | int):
+        if not isinstance(exponent, float | int):
+            raise TypeError("Exponent must be a float or an integer.")
+        x = np.copy(self.x)
+        y = np.copy(self.y) ** exponent
+        return Distribution(x, y)
+    
     def __neg__(self):
         x = np.copy(self.x)
         y = -np.copy(self.y)

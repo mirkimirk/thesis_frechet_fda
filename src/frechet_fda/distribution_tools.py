@@ -26,7 +26,7 @@ def qdf_to_pdf(qdf: Distribution) -> Distribution:
     return 1 / qdf.compose(cdf)
 
 
-def get_optimal_range(funcs: list[Distribution], delta: float = 1e-3):
+def get_optimal_range(funcs: list[Distribution], delta: float = 1e-3) -> np.ndarray:
     """Get narrower support if density values are too small (smaller than delta)."""
     new_ranges = np.zeros((len(funcs), 2))
     for i, func in enumerate(funcs):
@@ -42,3 +42,67 @@ def mean_func(funcs: list[Distribution]) -> Distribution:
     for i in range(1, num_funcs):
         agg_func += funcs[i] / num_funcs
     return agg_func
+
+
+def log_qd_transform(densities_sample : list[Distribution]) -> list[Distribution]:
+    """Perfrom log quantile density transformation on a density sample."""
+    qdfs = [pdf_to_qdf(density) for density in densities_sample]
+    return [qdf.log() for qdf in qdfs]
+
+
+def inverse_log_qd_transform(
+        transformed_funcs : list[Distribution]
+    ) -> list[Distribution]:
+    natural_qfs = [func.exp().integrate().vcenter() for func in transformed_funcs]
+    cdfs = [qf.invert() for qf in natural_qfs]
+    exponents = [-func.compose(cdf) for func, cdf in zip(transformed_funcs, cdfs)]
+    return [exponent.exp() for exponent in exponents]
+
+
+def inverse_log_qd_transform_corrected(
+        transformed_funcs : list[Distribution]
+    ) -> list[Distribution]:
+    """Invert the log quantile density transform to get back into density space."""
+    # First compute quantile function via natural inverse
+    natural_qfs = [func.exp().integrate().vcenter() for func in transformed_funcs]
+    # Compute correction factors to normalize quantiles
+    thetas = [qf.y[-1] for qf in natural_qfs]
+    corrected_qfs = [
+        qf / theta for qf, theta in zip(natural_qfs, thetas)
+    ]
+    cdfs = [qf.invert() for qf in corrected_qfs]
+    exponents = [func.compose(cdf) for func, cdf in zip(transformed_funcs, cdfs)]
+    inverses = [theta / exponent.exp() for theta, exponent in zip(thetas, exponents)]
+
+    return inverses
+
+
+def frechet_mean(density_sample : list[Distribution]) -> Distribution:
+    """Compute Fréchet mean of a given sample of densities."""
+    qdfs = [pdf_to_qdf(density) for density in density_sample]
+    mean_qdf = mean_func(qdfs)
+    return qdf_to_pdf(mean_qdf)
+
+
+def quantile_distance(pdf1 : Distribution, pdf2 : Distribution) -> float:
+    """Compute Wasserstein / Quantile distance."""
+    diff_squared = (pdf1 - pdf2) ** 2
+    return diff_squared.integrate().y[-1]
+
+
+def total_frechet_variance(
+        fmean : Distribution, densities_sample : list[Distribution]
+    ) -> float:
+    """Computes total frechet variance."""
+    distances = []
+    for density in densities_sample:
+        distances.append(quantile_distance(density, fmean) ** 2)
+    return np.mean(distances)
+
+
+def k_frechet_variance(total_var, densities_sample, truncated_reps):
+    distances = []
+    for density, trunc in zip(densities_sample, truncated_reps):
+        distances.append(quantile_distance(density, trunc) ** 2)
+    mean_dist = np.mean(distances)
+    return total_var - mean_dist

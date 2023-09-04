@@ -86,6 +86,33 @@ def compute_fpc_scores(
     return riemann_sum_cumulative(x_vals=x_vals, y_vals=products)[1][..., -1]
 
 
-def mode_of_variation(mean, eigval, eigfunc, alpha):
+def gen_qdtransformation_pcs(log_qdfs : list[Distribution]):
+    """Perform FPCA on transformed densities."""
+    mean, centered_data = compute_centered_data(log_qdfs)
+    covariance_function = compute_cov_function(centered_data)
+    eigenvalues, eigenfunctions = compute_principal_components(
+        centered_data[0].x, covariance_function,
+    )
+    fpc_scores = compute_fpc_scores(centered_data[0].x, centered_data, eigenfunctions)
+    return mean, eigenvalues, eigenfunctions, fpc_scores
+
+
+def mode_of_variation(mean : Distribution, eigval, eigfunc, alpha):
     """Compute kth mode of variation."""
     return mean + alpha * np.sqrt(eigval) * eigfunc
+
+
+def karhunen_loeve(
+        mean_function : Distribution,
+        eigenfunctions : list[Distribution],
+        fpc_scores : np.ndarray,
+        K : int = 3
+    ) -> list[Distribution]:
+    """Get truncated Karhunen-Loève representation."""
+    truncated_reps = []
+    for i in range(len(fpc_scores)):
+        aggr = mean_function
+        for k in range(K):
+            aggr += eigenfunctions[k] * fpc_scores[i][k]
+        truncated_reps.append(aggr)
+    return truncated_reps
