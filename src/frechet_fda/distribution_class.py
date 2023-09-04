@@ -17,7 +17,7 @@ class Distribution:
         self.y = y
         self.grid_size = len(x)
 
-    def integrate(self, method: str = "left"):
+    def integrate(self, only_full_integral : bool = False, method: str = "left"):
         """Integrate function using Riemann sums.
 
         Either `left`, `right`, or `midpoint` rule is used.
@@ -27,6 +27,8 @@ class Distribution:
         y = np.copy(self.y)
 
         int_x, int_y = riemann_sum_cumulative(x_vals=x, y_vals=y, method=method)
+        if only_full_integral:
+            return int_y[..., -1]
         return Distribution(int_x, int_y)
 
     def integrate_sequential(self):
@@ -162,6 +164,16 @@ class Distribution:
             comb_x = np.linspace(left, right, new_grid_size)
             comb_y = np.interp(comb_x, x, y) + np.interp(comb_x, val.x, val.y)
             return Distribution(comb_x, comb_y)
+
+    def __mul__(self, val: float | int):
+        x = np.copy(self.x)
+        y = np.copy(self.y) * val
+        return Distribution(x, y)
+
+    def __rmul__(self, val: float | int):
+        x = np.copy(self.x)
+        y = val * np.copy(self.y)
+        return Distribution(x, y)
 
     def __truediv__(self, val: float | int):
         x = np.copy(self.x)

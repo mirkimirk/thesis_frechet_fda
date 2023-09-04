@@ -76,7 +76,7 @@ def compute_fpc_scores(x_vals, centered_sample, eigenfunctions_trunc):
     # Convert the list of y-values to a 2D NumPy array
     y_values_densities_arr = np.array(y_values_densities)
     y_values_eigfuncs_arr = np.array(y_values_eigfuncs)
-    products = np.einsum("ij,jk->ijk", y_values_densities_arr, y_values_eigfuncs_arr)
+    products = np.einsum("ij,kj->ikj", y_values_densities_arr, y_values_eigfuncs_arr)
     return riemann_sum_cumulative(x_vals=x_vals, y_vals=products)[1][..., -1]
 
 
