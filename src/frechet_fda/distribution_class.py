@@ -17,7 +17,14 @@ class Distribution:
         self.y = y
         self.grid_size = len(x)
 
-    def integrate(self, only_full_integral : bool = False, method: str = "left"):
+    def standardize_shape(self, grid_size : int = 10000):
+        x = np.copy(self.x)
+        y = np.copy(self.y)
+        new_x = np.linspace(x.min(), x.max(), grid_size)
+        new_y = np.interp(new_x, x, y)
+        return Distribution(new_x, new_y)
+
+    def integrate(self, method: str = "left"):
         """Integrate function using Riemann sums.
 
         Either `left`, `right`, or `midpoint` rule is used.
@@ -27,8 +34,6 @@ class Distribution:
         y = np.copy(self.y)
 
         int_x, int_y = riemann_sum_cumulative(x_vals=x, y_vals=y, method=method)
-        if only_full_integral:
-            return int_y[..., -1]
         return Distribution(int_x, int_y)
 
     def integrate_sequential(self):
@@ -131,23 +136,6 @@ class Distribution:
         y = np.copy(self.y)
         return np.sqrt(riemann_sum_cumulative(x_vals=x, y_vals=y**2)[1][..., -1])
 
-    def __sub__(self, val: float | int):
-        x = np.copy(self.x)
-        y = np.copy(self.y)
-        if isinstance(val, float | int):
-            return Distribution(x, y - val)
-        elif isinstance(val, Distribution):
-            left = min(x[0], val.x[0])
-            right = max(x[-1], val.x[-1])
-            new_int = right - left
-            min_int = min(x[-1] - x[0], val.x[-1] - val.x[0])
-            grid_size = x.shape[0]
-            dens_factor = new_int / min_int
-            new_grid_size = round(grid_size * dens_factor)
-            comb_x = np.linspace(left, right, new_grid_size)
-            comb_y = np.interp(comb_x, x, y) - np.interp(comb_x, val.x, val.y)
-            return Distribution(comb_x, comb_y)
-
     def __add__(self, val: float | int):
         x = np.copy(self.x)
         y = np.copy(self.y)
@@ -163,6 +151,23 @@ class Distribution:
             new_grid_size = round(grid_size * dens_factor)
             comb_x = np.linspace(left, right, new_grid_size)
             comb_y = np.interp(comb_x, x, y) + np.interp(comb_x, val.x, val.y)
+            return Distribution(comb_x, comb_y)
+
+    def __sub__(self, val: float | int):
+        x = np.copy(self.x)
+        y = np.copy(self.y)
+        if isinstance(val, float | int):
+            return Distribution(x, y - val)
+        elif isinstance(val, Distribution):
+            left = min(x[0], val.x[0])
+            right = max(x[-1], val.x[-1])
+            new_int = right - left
+            min_int = min(x[-1] - x[0], val.x[-1] - val.x[0])
+            grid_size = x.shape[0]
+            dens_factor = new_int / min_int
+            new_grid_size = round(grid_size * dens_factor)
+            comb_x = np.linspace(left, right, new_grid_size)
+            comb_y = np.interp(comb_x, x, y) - np.interp(comb_x, val.x, val.y)
             return Distribution(comb_x, comb_y)
 
     def __mul__(self, val: float | int):
@@ -183,4 +188,9 @@ class Distribution:
     def __rtruediv__(self, val: float | int):
         x = np.copy(self.x)
         y = val / np.copy(self.y)
+        return Distribution(x, y)
+    
+    def __neg__(self):
+        x = np.copy(self.x)
+        y = -np.copy(self.y)
         return Distribution(x, y)

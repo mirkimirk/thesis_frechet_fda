@@ -22,21 +22,13 @@ def gen_params_scenario_one(
     return mus, sigmas
 
 
-def make_smart_pdf(sigma: float, tol: float = 1e-5) -> tuple:
-    span = 0.2
-    for pdf in make_truncnorm_pdf(-span, span, 0, sigma)[1]:
-        while pdf[0] >= tol:
-            span *= 1.05
-    return make_truncnorm_pdf(-span, span, 0, sigma)
-
-
 # Truncated normal pdf
 def make_truncnorm_pdf(
     a: np.ndarray = 0,
     b: np.ndarray = 1,
     mu: np.ndarray = 0,
     sigma: np.ndarray = 1,
-    grid_size: int = 1000,
+    grid_size: int = 10000,
 ) -> tuple:
     """Define truncated normal density function.
 
