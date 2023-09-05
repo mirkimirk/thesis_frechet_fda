@@ -1,6 +1,5 @@
 """This module contains functions for performing kernel density estimation."""
 
-from functools import partial
 
 import numpy as np
 
@@ -16,11 +15,24 @@ kernels = {
 }
 
 
-def density_estimator(x, sample, h, kernel_type="epanechnikov"):
+def density_estimator(
+    x: np.ndarray,
+    sample_of_points: np.ndarray,
+    h,
+    kernel_type="epanechnikov",
+):
     """Kernel density estimator function."""
     # Select kernel function
     k = kernels[kernel_type]
-    # To make possibly scalar-valued x compatible with vectorized operations
+    n_densities, n_samples = sample_of_points.shape
+    # To make possibly scalar x compatible with array operations
     x = np.atleast_1d(x)
-    u = (x[:, np.newaxis] - sample) / h
-    return 1 / (len(sample) * h) * np.sum(k(u), axis=1)
+
+    # Pre-allocate the result array for more speed
+    result = np.zeros((n_densities, x.shape[0]))
+
+    for i in range(n_densities):  # Looping over densities
+        for j in range(n_samples):  # Looping over samples for each density
+            u = (x - sample_of_points[i, j]) / h
+            result[i, :] += k(u)
+    return result / (n_samples * h)

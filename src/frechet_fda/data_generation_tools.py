@@ -13,10 +13,7 @@ from frechet_fda.kernel_methods import density_estimator
 from frechet_fda.numerics_tools import riemann_sum_cumulative
 
 
-def gen_params_scenario_one(
-    num_of_distr: int,
-    seed = 28071995
-) -> tuple:
+def gen_params_scenario_one(num_of_distr: int, seed=28071995) -> tuple:
     """Generate parameters for the density samples and define appropriate grids."""
     # Draw different sigmas
     log_sigmas = np.random.default_rng(seed=seed).uniform(-1.5, 1.5, num_of_distr)
@@ -31,10 +28,14 @@ def gen_truncnorm_pdf_points(
     b: float,
     mu: float,
     sigma: float,
-    sample_points_num : int = 100,
-    ) -> tuple:
-    """Generate sample points of truncated normal distributions characterized by the
-    the mus and sigmas. This function is for """
+    sample_points_num: int = 100,
+) -> tuple:
+    """Generate sample points of truncated normal distributions characterized by the the
+    mus and sigmas.
+
+    This function is for
+
+    """
     # For vectorized generation of sample points
     a = np.ones(len(mu)) * a
     b = np.ones(len(mu)) * b
@@ -42,34 +43,31 @@ def gen_truncnorm_pdf_points(
     b = b[:, np.newaxis]
     mu = mu[:, np.newaxis]
     sigma = sigma[:, np.newaxis]
-    
+
     a_std = (a - mu) / sigma
     b_std = (b - mu) / sigma
-    
+
     return truncnorm.rvs(
-        a = a_std,
-        b = b_std,
-        loc = mu,
-        scale = sigma,
-        size = (len(a), sample_points_num)
+        a=a_std,
+        b=b_std,
+        loc=mu,
+        scale=sigma,
+        size=(len(a), sample_points_num),
     )
 
 
 def make_estimated_truncnorm_pdf(
-    sample_points : np.ndarray,
-    a : float = 0,
-    b : float = 1,
-    kern : str = "epanechnikov",
-    grid_size: int = 10000
-    ):
+    sample_points: np.ndarray,
+    a: float = 0,
+    b: float = 1,
+    kern: str = "epanechnikov",
+    grid_size: int = 10000,
+):
     pdf_x = np.linspace(a, b, grid_size)
-    densities = []
-    # This loop is suuuuuper slow!
-    for density in sample_points:
-        densities.append(
-            (pdf_x, density_estimator(pdf_x, density, h = 0.2, kernel_type = kern))
-        )
-    return make_distribution_objects(densities)
+
+    densities = density_estimator(pdf_x, sample_points, h=0.2, kernel_type=kern)
+    list_of_densities = [(pdf_x, pdf_y) for pdf_y in densities]
+    return make_distribution_objects(list_of_densities)
 
 
 # Truncated normal pdf

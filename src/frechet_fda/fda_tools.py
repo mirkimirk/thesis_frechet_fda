@@ -5,9 +5,9 @@ from scipy.sparse.linalg import eigsh
 
 from frechet_fda.distribution_class import Distribution
 from frechet_fda.distribution_tools import (
+    inverse_log_qd_transform,
     mean_func,
     quantile_distance,
-    inverse_log_qd_transform
 )
 from frechet_fda.numerics_tools import riemann_sum_cumulative
 
@@ -69,10 +69,10 @@ def compute_principal_components(
 
 
 def compute_fpc_scores(
-        x_vals : np.ndarray,
-        centered_sample : list[Distribution],
-        eigenfunctions_trunc : list[Distribution]
-    ):
+    x_vals: np.ndarray,
+    centered_sample: list[Distribution],
+    eigenfunctions_trunc: list[Distribution],
+):
     """Computes factor loadings / FPC scores."""
     # Collect function values from Distribution objects
     y_values_densities = []
@@ -90,28 +90,30 @@ def compute_fpc_scores(
     return riemann_sum_cumulative(x_vals=x_vals, y_vals=products)[1][..., -1]
 
 
-def gen_qdtransformation_pcs(log_qdfs : list[Distribution]):
+def gen_qdtransformation_pcs(log_qdfs: list[Distribution], k: int = 5):
     """Perform FPCA on transformed densities."""
     mean, centered_data = compute_centered_data(log_qdfs)
     covariance_function = compute_cov_function(centered_data)
     eigenvalues, eigenfunctions = compute_principal_components(
-        centered_data[0].x, covariance_function,
+        centered_data[0].x,
+        covariance_function,
+        k=k,
     )
     fpc_scores = compute_fpc_scores(centered_data[0].x, centered_data, eigenfunctions)
     return mean, eigenvalues, eigenfunctions, fpc_scores
 
 
-def mode_of_variation(mean : Distribution, eigval, eigfunc, alpha):
+def mode_of_variation(mean: Distribution, eigval, eigfunc, alpha):
     """Compute kth mode of variation."""
     return mean + alpha * np.sqrt(eigval) * eigfunc
 
 
 def karhunen_loeve(
-        mean_function : Distribution,
-        eigenfunctions : list[Distribution],
-        fpc_scores : np.ndarray,
-        K : int = 3
-    ) -> list[Distribution]:
+    mean_function: Distribution,
+    eigenfunctions: list[Distribution],
+    fpc_scores: np.ndarray,
+    K: int = 3,
+) -> list[Distribution]:
     """Get truncated Karhunen-Loève representation."""
     truncated_reps = []
     for fpcs in fpc_scores:
@@ -123,8 +125,9 @@ def karhunen_loeve(
 
 
 def total_frechet_variance(
-        fmean : Distribution, densities_sample : list[Distribution]
-    ) -> float:
+    fmean: Distribution,
+    densities_sample: list[Distribution],
+) -> float:
     """Computes total frechet variance."""
     distances = []
     for density in densities_sample:
@@ -133,10 +136,10 @@ def total_frechet_variance(
 
 
 def k_frechet_variance(
-        total_var : float,
-        densities_sample : list[Distribution],
-        truncated_reps : list[Distribution]
-    ) -> float:
+    total_var: float,
+    densities_sample: list[Distribution],
+    truncated_reps: list[Distribution],
+) -> float:
     """Compute variance explained by truncated representation."""
     distances = []
     for density, trunc in zip(densities_sample, truncated_reps):
@@ -146,23 +149,27 @@ def k_frechet_variance(
 
 
 def fve(
-    total_var : Distribution,
-    densities_sample : list[Distribution],
-    truncated_representations : list[Distribution]
+    total_var: Distribution,
+    densities_sample: list[Distribution],
+    truncated_representations: list[Distribution],
 ):
     """Compute Fréchet fraction of variance explained."""
-    var_explained = k_frechet_variance(total_var, densities_sample, truncated_representations)
+    var_explained = k_frechet_variance(
+        total_var,
+        densities_sample,
+        truncated_representations,
+    )
     return var_explained / total_var, total_var, var_explained
 
 
 def k_optimal(
-        p : float,
-        total_variance : float,
-        densities_sample : list[Distribution],
-        mean_function : Distribution,
-        eigenfunctions : list[Distribution],
-        fpc_scores : np.ndarray,
-    ) -> int:
+    p: float,
+    total_variance: float,
+    densities_sample: list[Distribution],
+    mean_function: Distribution,
+    eigenfunctions: list[Distribution],
+    fpc_scores: np.ndarray,
+) -> int:
     """Compute minimum number of components to include to reach ratio p of variance
     explained.
     """
@@ -171,7 +178,10 @@ def k_optimal(
     while fv < p:
         k_opt += 1
         trunc_reps_transforms = karhunen_loeve(
-            mean_function, eigenfunctions, fpc_scores, K=k_opt
+            mean_function,
+            eigenfunctions,
+            fpc_scores,
+            K=k_opt,
         )
         trunc_reps = inverse_log_qd_transform(trunc_reps_transforms)
         fv = fve(total_variance, densities_sample, trunc_reps)[0]
