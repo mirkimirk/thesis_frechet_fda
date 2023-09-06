@@ -3,8 +3,8 @@
 import numpy as np
 from scipy.sparse.linalg import eigsh
 
-from frechet_fda.distribution_class import Distribution
-from frechet_fda.distribution_tools import (
+from frechet_fda.function_class import Function
+from frechet_fda.function_tools import (
     inverse_log_qd_transform,
     mean_func,
     quantile_distance,
@@ -12,7 +12,7 @@ from frechet_fda.distribution_tools import (
 from frechet_fda.numerics_tools import riemann_sum_cumulative
 
 
-def compute_centered_data(function_sample: list[Distribution]) -> list[Distribution]:
+def compute_centered_data(function_sample: list[Function]) -> list[Function]:
     """Compute mean function, centered data, and covariance matrix."""
     # Compute the mean function
     mean_function = mean_func(function_sample)
@@ -24,12 +24,12 @@ def compute_centered_data(function_sample: list[Distribution]) -> list[Distribut
     return mean_function, centered_data_same_support
 
 
-def compute_cov_function(centered_sample: list[Distribution]) -> np.ndarray:
+def compute_cov_function(centered_sample: list[Function]) -> np.ndarray:
     """Compute discretized covariance function."""
-    # Create an empty list to store the y-values of each Distribution instance
+    # Create an empty list to store the y-values of each Function instance
     y_values_list = []
 
-    # Loop through each Distribution instance and append its y-values to y_values_list
+    # Loop through each Function instance and append its y-values to y_values_list
     for dist in centered_sample:
         y_values_list.append(dist.y)
 
@@ -57,7 +57,7 @@ def compute_principal_components(
     eigenfunctions_sorted = eigenfunctions[np.argsort(-eigenvalues)]
 
     eigenfunctions = [
-        Distribution(x_vals, eigenfunc) for eigenfunc in eigenfunctions_sorted
+        Function(x_vals, eigenfunc) for eigenfunc in eigenfunctions_sorted
     ]
 
     # Scale each column of the eigenfunctions matrix by its respective L^2 norm
@@ -70,14 +70,14 @@ def compute_principal_components(
 
 def compute_fpc_scores(
     x_vals: np.ndarray,
-    centered_sample: list[Distribution],
-    eigenfunctions_trunc: list[Distribution],
+    centered_sample: list[Function],
+    eigenfunctions_trunc: list[Function],
 ):
     """Computes factor loadings / FPC scores."""
-    # Collect function values from Distribution objects
+    # Collect function values from Function objects
     y_values_densities = []
     y_values_eigfuncs = []
-    # Loop through each Distribution instance and append its y-values to a list
+    # Loop through each Function instance and append its y-values to a list
     for centered_func in centered_sample:
         y_values_densities.append(centered_func.y)
     for eigfunc in eigenfunctions_trunc:
@@ -90,7 +90,7 @@ def compute_fpc_scores(
     return riemann_sum_cumulative(x_vals=x_vals, y_vals=products)[1][..., -1]
 
 
-def gen_qdtransformation_pcs(log_qdfs: list[Distribution], k: int = 5):
+def gen_qdtransformation_pcs(log_qdfs: list[Function], k: int = 5):
     """Perform FPCA on transformed densities."""
     mean, centered_data = compute_centered_data(log_qdfs)
     covariance_function = compute_cov_function(centered_data)
@@ -103,17 +103,17 @@ def gen_qdtransformation_pcs(log_qdfs: list[Distribution], k: int = 5):
     return mean, eigenvalues, eigenfunctions, fpc_scores
 
 
-def mode_of_variation(mean: Distribution, eigval, eigfunc, alpha):
+def mode_of_variation(mean: Function, eigval, eigfunc, alpha):
     """Compute kth mode of variation."""
     return mean + alpha * np.sqrt(eigval) * eigfunc
 
 
 def karhunen_loeve(
-    mean_function: Distribution,
-    eigenfunctions: list[Distribution],
+    mean_function: Function,
+    eigenfunctions: list[Function],
     fpc_scores: np.ndarray,
     K: int = 3,
-) -> list[Distribution]:
+) -> list[Function]:
     """Get truncated Karhunen-Loève representation."""
     truncated_reps = []
     for fpcs in fpc_scores:
@@ -125,8 +125,8 @@ def karhunen_loeve(
 
 
 def total_frechet_variance(
-    fmean: Distribution,
-    densities_sample: list[Distribution],
+    fmean: Function,
+    densities_sample: list[Function],
 ) -> float:
     """Computes total frechet variance."""
     distances = []
@@ -137,21 +137,21 @@ def total_frechet_variance(
 
 def k_frechet_variance(
     total_var: float,
-    densities_sample: list[Distribution],
-    truncated_reps: list[Distribution],
+    densities_sample: list[Function],
+    truncated_reps: list[Function],
 ) -> float:
     """Compute variance explained by truncated representation."""
     distances = []
-    for density, trunc in zip(densities_sample, truncated_reps):
+    for density, trunc in zip(densities_sample, truncated_reps, strict=True):
         distances.append(quantile_distance(density, trunc))
     mean_dist = np.mean(distances)
     return total_var - mean_dist
 
 
 def fve(
-    total_var: Distribution,
-    densities_sample: list[Distribution],
-    truncated_representations: list[Distribution],
+    total_var: Function,
+    densities_sample: list[Function],
+    truncated_representations: list[Function],
 ):
     """Compute Fréchet fraction of variance explained."""
     var_explained = k_frechet_variance(
@@ -165,9 +165,9 @@ def fve(
 def k_optimal(
     p: float,
     total_variance: float,
-    densities_sample: list[Distribution],
-    mean_function: Distribution,
-    eigenfunctions: list[Distribution],
+    densities_sample: list[Function],
+    mean_function: Function,
+    eigenfunctions: list[Function],
     fpc_scores: np.ndarray,
 ) -> int:
     """Compute minimum number of components to include to reach ratio p of variance

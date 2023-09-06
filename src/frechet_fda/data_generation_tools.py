@@ -8,12 +8,12 @@ import warnings
 import numpy as np
 from scipy.stats import truncnorm
 
-from frechet_fda.distribution_tools import make_distribution_objects
+from frechet_fda.function_class import Function
 from frechet_fda.kernel_methods import density_estimator
 from frechet_fda.numerics_tools import riemann_sum_cumulative
 
 
-def gen_params_scenario_one(num_of_distr: int, seed : int = 28071995) -> tuple:
+def gen_params_scenario_one(num_of_distr: int, seed: int = 28071995) -> tuple:
     """Generate parameters for the density samples and define appropriate grids."""
     # Draw different sigmas
     log_sigmas = np.random.default_rng(seed=seed).uniform(-1.5, 1.5, num_of_distr)
@@ -62,19 +62,18 @@ def make_estimated_truncnorm_pdf(
     b: np.ndarray,
     kern: str = "epanechnikov",
     grid_size: int = 10000,
-    bandwidth : float = 0.2
-):
-    """Turn sample_points array into Distribution class objects with their corresponding
-    grid. Needs a and b to be vectors of the same length as the number of rows of
-    sample_points. The number of rows corresponds to the number of densities."""
+    bandwidth: float = 0.2,
+) -> list[Function]:
+    """Turn sample_points array into Function class objects with their corresponding
+    grid.
+
+    Needs a and b to be vectors of the same length as the number of rows of
+    sample_points. The number of rows corresponds to the number of densities.
+
+    """
     pdfs_x = np.linspace(a, b, grid_size).transpose()
-    pdfs_y = density_estimator(pdfs_x, sample_points, h=bandwidth, kernel_type=kern)
     # Check if we're only dealing with one single density
-    if isinstance(a, float | int):
-        list_of_densities = [(pdfs_x, pdfs_y)]
-    else:
-        list_of_densities = [(pdf_x, pdf_y) for pdf_x, pdf_y in zip(pdfs_x, pdfs_y)]
-    return make_distribution_objects(list_of_densities)
+    return density_estimator(pdfs_x, sample_points, h=bandwidth, kernel_type=kern)
 
 
 # Truncated normal pdf
@@ -84,7 +83,7 @@ def make_truncnorm_pdf(
     mu: np.ndarray = 0,
     sigma: np.ndarray = 1,
     grid_size: int = 10000,
-    warn_irregular_densities : bool = True
+    warn_irregular_densities: bool = True,
 ) -> tuple:
     """Define truncated normal density function.
 
@@ -112,10 +111,7 @@ def make_truncnorm_pdf(
 
     # Check whether each density integrates to 1
     pdfs_y = _check_and_normalize_density(
-        x_vals = pdf_x,
-        y_vals = pdfs_y,
-        eps = 1e-5,
-        warn = warn_irregular_densities
+        x_vals=pdf_x, y_vals=pdfs_y, eps=1e-5, warn=warn_irregular_densities,
     )
     return [(pdf_x, pdf_y) for pdf_y in pdfs_y]
 
@@ -158,14 +154,15 @@ def _norm_cdf(
 
 
 def _check_and_normalize_density(
-        x_vals : np.ndarray,
-        y_vals : np.ndarray,
-        eps : float = 1e-5,
-        warn : bool = True
-    ) -> np.ndarray:
+    x_vals: np.ndarray, y_vals: np.ndarray, eps: float = 1e-5, warn: bool = True,
+) -> np.ndarray:
     """Checks whether y_vals is an array of valid densities, i.e., whether they
-    integrate to one. Normalizes them to integrate to one. Positivity is not checked."""
-    integrals = riemann_sum_cumulative(x_vals, y_vals, axis=-1)[1][...,-1]
+    integrate to one.
+
+    Normalizes them to integrate to one. Positivity is not checked.
+
+    """
+    integrals = riemann_sum_cumulative(x_vals, y_vals, axis=-1)[1][..., -1]
     deviations_from_1 = abs(integrals - 1)
     if np.any(deviations_from_1 > eps):
         if warn:
