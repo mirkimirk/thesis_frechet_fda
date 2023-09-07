@@ -4,6 +4,31 @@ integrals, as well as the difference quotient to approximate a derivative."""
 import numpy as np
 
 
+def riemann_sum(
+    x_vals: np.ndarray, y_vals: np.ndarray, method: str = "left", axis: int = -1,
+) -> tuple:
+    """Computes integral.
+
+    Can take arrays for x_vals and y_vals, assumes last axis to hold the grid points
+    which are to integrate.
+
+    """
+    # Get distances between points
+    point_distance = np.diff(x_vals)
+    # Initialize integral array
+    if method == "left":
+        integral = np.sum(y_vals[..., :-1] * point_distance, axis = axis)
+    elif method == "right":
+        integral = np.sum(y_vals[..., 1:] * point_distance, axis = axis)
+    elif method == "midpoint":
+        y_midpoints = (y_vals[:-1] + y_vals[1:]) / 2
+        integral = np.sum(y_midpoints * point_distance, axis = axis)
+    else:
+        msg = "Method must specify either left, right, or midpoint Riemann sum!"
+        raise ValueError(msg)
+    return integral
+
+
 def riemann_sum_cumulative(
     x_vals: np.ndarray, y_vals: np.ndarray, method: str = "left", axis: int = -1,
 ) -> tuple:

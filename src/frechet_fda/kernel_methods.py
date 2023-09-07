@@ -52,7 +52,7 @@ def density_estimator(
             for point in density:  # Looping over samples for each density
                 u = (pdfs_x[i] - point) / h
                 result[i, :] += k(u)
-        pdfs_y = result / (len(density) * h)
+        pdfs_y = result / (sample_of_points.shape[1] * h)
         list_of_densities = [
             (pdf_x, pdf_y) for pdf_x, pdf_y in zip(pdfs_x, pdfs_y, strict=True)
         ]
@@ -65,26 +65,3 @@ def density_estimator(
             (pdf_x, pdf_y) for pdf_x, pdf_y in zip(pdfs_x, pdfs_y, strict=True)
         ]
     return make_function_objects(list_of_densities)
-
-
-def weight_function(x, h, kernel="epanechnikov"):
-    """Calculate the weight function w(x, h) for this distribution."""
-    # Initialize weight array, same size as x
-    weight = np.zeros_like(x)
-    k = kernels[kernel]
-
-    # Compute weight function based on x and bandwidth h
-    # Case for x in [lower_bound, lower_bound + h)
-    lower_bound = x[0]
-    mask1 = (x >= lower_bound) & (x < lower_bound + h)
-    weight[mask1] = riemann_sum_cumulative()
-    weight[mask1] = quad(lambda u: k(-u / h), -np.inf, 0)[0] ** (-1)
-
-    # Case for x in (upper_bound - h, upper_bound]
-    upper_bound = x[-1]
-    mask2 = (x > upper_bound - h) & (x <= upper_bound)
-    weight[mask2] = quad(lambda u: k(u / (upper_bound - h)), 0, np.inf)[0] ** (-1)
-
-    # Case for x in [lower_bound + h, upper_bound - h]
-    mask3 = (x >= lower_bound + h) & (x <= upper_bound - h)
-    weight[mask3] = 1
