@@ -5,6 +5,7 @@ import numpy as np
 
 from frechet_fda.function_class import Function
 from frechet_fda.function_tools import make_function_objects
+from frechet_fda.numerics_tools import riemann_sum, riemann_sum_cumulative
 
 kernels = {
     "epanechnikov": lambda u: 3
@@ -18,6 +19,7 @@ kernels = {
 }
 
 
+# This function is not used after all...
 def make_kernel_functions(x_vals: np.ndarray, kernel: str = "epanechnikov"):
     """Return kernel function as Function class object."""
     k = kernels[kernel]
@@ -65,3 +67,70 @@ def density_estimator(
             (pdf_x, pdf_y) for pdf_x, pdf_y in zip(pdfs_x, pdfs_y, strict=True)
         ]
     return make_function_objects(list_of_densities)
+
+
+def density_estimator_better(
+    x: np.ndarray,
+    sample_of_points: np.ndarray,
+    h: float,
+    kernel_type: str = "epanechnikov",
+):
+    """Calculate boundary corrected density estimator from Petersen & Müller 2016."""
+    def standardize(r):
+        numerator = r - x[:, 0][:, np.newaxis]
+        denominator = (x[:, -1][:, np.newaxis] - x[:, 0][:, np.newaxis])
+        return numerator / denominator
+    x_std = standardize(x)
+    sample_std = standardize(sample_of_points)
+    h_std = h / (x[:, -1] - x[:, 0])
+    k = kernels[kernel_type]
+
+    numerator = np.zeros_like(x_std)
+    w_xh = np.zeros_like(x_std)
+
+    if sample_std.ndim > 1:
+        for i, density in enumerate(sample_std):  # Looping over densities
+            w_xh[i] = _weight_function(x=x_std[i], h=h_std[i], kernel=kernel_type)
+            for point in density:  # Looping over samples for each density
+                u = (x_std[i] - point) / h_std[i]
+                numerator[i] += k(u)
+            numerator[i] *= w_xh[i]
+        denominator = riemann_sum(x_std, numerator)
+    else:
+        # Add axes to make use of broadcasting rules and vectorization
+        u = (x_std[:, np.newaxis] - sample_std[np.newaxis, :]) / h
+        numerator += np.sum(k(u), axis=1)
+        denominator = riemann_sum(x_std, numerator)
+    kernel_y = numerator / denominator[:, np.newaxis] / (x[:, -1][:, np.newaxis] - x[:, 0][:, np.newaxis])
+    return make_function_objects([(x, y) for x, y in zip(x, kernel_y, strict=True)])
+
+
+def _weight_function(x: np.ndarray, h: float, kernel : str = "epanechnikov"):
+    """Weight function for use in Petersen & Müller's 2016 estimator. Makes use
+    of the symmetry of the kernel function when calculating integrals."""
+    k = kernels[kernel]
+    weight = np.zeros_like(x)
+    
+    # Case for x in [0, h)
+    mask1 = (x >= 0) & (x < h)
+    x1 = x[mask1]
+    integral1 = (
+        riemann_sum(x1 / h, k(x1 / h))
+        + riemann_sum_cumulative(x1 / h, k(x1 / h))[1]
+    )
+    weight[mask1] = np.reciprocal(integral1)
+    
+    # Case for x in (1-h, 1]
+    mask2 = (x > 1 - h) & (x <= 1)
+    x2 = x[mask2]
+    integral2 = (
+        2 * riemann_sum((x2 - 1) / h, k((x2 - 1) / h))
+        - riemann_sum_cumulative((x2 - 1) / h, k((x2 - 1) / h))[1]
+    )
+    weight[mask2] = np.reciprocal(integral2)
+    
+    # Case for x in [h, 1-h]
+    mask3 = (x >= h) & (x <= 1 - h)
+    weight[mask3] = 1
+    
+    return weight
