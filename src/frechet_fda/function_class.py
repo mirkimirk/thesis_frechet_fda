@@ -17,7 +17,7 @@ class Function:
         self.y = y
         self.grid_size = len(x)
 
-    def standardize_shape(self, grid_size: int = 10000):
+    def standardize_shape(self, grid_size: int = 1000):
         """Set the number of discretization points."""
         x = np.copy(self.x)
         y = np.copy(self.y)
@@ -25,7 +25,7 @@ class Function:
         new_y = np.interp(new_x, x, y)
         return Function(new_x, new_y)
 
-    def warp_range(self, left: float, right: float, grid_size: int = 10000):
+    def warp_range(self, left: float, right: float, grid_size: int = 1000):
         """Use interpolation to define function on different range."""
         x = np.copy(self.x)
         y = np.copy(self.y)
@@ -149,7 +149,7 @@ class Function:
         y = np.copy(self.y)
         return np.sqrt(riemann_sum_cumulative(x_vals=x, y_vals=y**2)[1][..., -1])
 
-    def __add__(self, val: float | int, grid_size: int = 10000):
+    def __add__(self, val: float | int):
         x = np.copy(self.x)
         y = np.copy(self.y)
         if isinstance(val, float | int):
@@ -157,11 +157,15 @@ class Function:
         elif isinstance(val, Function):
             left = min(x[0], val.x[0])
             right = max(x[-1], val.x[-1])
+            # Define grid_size, take the finer number of the functions that are to add
+            gridnum_self = len(x)
+            gridnum_other = len(val.x)
+            grid_size = max(gridnum_self, gridnum_other)
             comb_x = np.linspace(left, right, grid_size)
             comb_y = np.interp(comb_x, x, y) + np.interp(comb_x, val.x, val.y)
             return Function(comb_x, comb_y)
 
-    def __sub__(self, val: float | int, grid_size: int = 10000):
+    def __sub__(self, val: float | int):
         x = np.copy(self.x)
         y = np.copy(self.y)
         if isinstance(val, float | int):
@@ -169,6 +173,10 @@ class Function:
         elif isinstance(val, Function):
             left = min(x[0], val.x[0])
             right = max(x[-1], val.x[-1])
+            # Define grid_size, take the finer number of the functions that are to add
+            gridnum_self = len(x)
+            gridnum_other = len(val.x)
+            grid_size = max(gridnum_self, gridnum_other)
             comb_x = np.linspace(left, right, grid_size)
             comb_y = np.interp(comb_x, x, y) - np.interp(comb_x, val.x, val.y)
             return Function(comb_x, comb_y)

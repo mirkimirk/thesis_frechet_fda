@@ -29,6 +29,12 @@ def get_optimal_range(funcs: list[Function], delta: float = 1e-3) -> np.ndarray:
 
     This is used so the qdfs dont get astronomically large at the boundaries and destroy
     numerical methods.
+    
+    Note: The method here assumes that the functions do have a compact
+    support (even if it is narrower than the initial support). So if there is a point x1
+    where func.y > delta is true, another point x2 > x1 where it is not, and then
+    another x3 > x2 where it is true again, then x2 is included in the new range
+    although it does not fullfill the condition.
 
     """
     new_ranges = np.zeros((len(funcs), 2))

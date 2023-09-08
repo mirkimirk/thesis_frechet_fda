@@ -69,20 +69,20 @@ def density_estimator(
     return make_function_objects(list_of_densities)
 
 
-def density_estimator_better(
-    x: np.ndarray,
+def boundary_corrected_density_estimator(
+    x_vals: np.ndarray,
     sample_of_points: np.ndarray,
     h: float,
     kernel_type: str = "epanechnikov",
 ):
     """Calculate boundary corrected density estimator from Petersen & Müller 2016."""
     def standardize(r):
-        numerator = r - x[:, 0][:, np.newaxis]
-        denominator = (x[:, -1][:, np.newaxis] - x[:, 0][:, np.newaxis])
+        numerator = r - x_vals[:, 0][:, np.newaxis]
+        denominator = (x_vals[:, -1][:, np.newaxis] - x_vals[:, 0][:, np.newaxis])
         return numerator / denominator
-    x_std = standardize(x)
+    x_std = standardize(x_vals)
     sample_std = standardize(sample_of_points)
-    h_std = h / (x[:, -1] - x[:, 0])
+    h_std = h / (x_vals[:, -1] - x_vals[:, 0])
     k = kernels[kernel_type]
 
     numerator = np.zeros_like(x_std)
@@ -90,47 +90,49 @@ def density_estimator_better(
 
     if sample_std.ndim > 1:
         for i, density in enumerate(sample_std):  # Looping over densities
-            w_xh[i] = _weight_function(x=x_std[i], h=h_std[i], kernel=kernel_type)
+            w_xh[i] = _weight_function(x_vals=x_std[i], h=h_std[i], kernel=kernel_type)
             for point in density:  # Looping over samples for each density
                 u = (x_std[i] - point) / h_std[i]
                 numerator[i] += k(u)
             numerator[i] *= w_xh[i]
         denominator = riemann_sum(x_std, numerator)
     else:
-        # Add axes to make use of broadcasting rules and vectorization
-        u = (x_std[:, np.newaxis] - sample_std[np.newaxis, :]) / h
-        numerator += np.sum(k(u), axis=1)
-        denominator = riemann_sum(x_std, numerator)
-    kernel_y = numerator / denominator[:, np.newaxis] / (x[:, -1][:, np.newaxis] - x[:, 0][:, np.newaxis])
-    return make_function_objects([(x, y) for x, y in zip(x, kernel_y, strict=True)])
+        raise ValueError ("Not implemented for single densities yet!")
+    kernel_y = (
+        numerator / denominator[:, np.newaxis]
+        / (x_vals[:, -1][:, np.newaxis] - x_vals[:, 0][:, np.newaxis])
+    )
+    return make_function_objects([(x, y) for x, y in zip(x_vals, kernel_y, strict=True)])
 
 
-def _weight_function(x: np.ndarray, h: float, kernel : str = "epanechnikov"):
+def _weight_function(x_vals: np.ndarray, h: float, kernel : str = "epanechnikov"):
     """Weight function for use in Petersen & Müller's 2016 estimator. Makes use
     of the symmetry of the kernel function when calculating integrals."""
     k = kernels[kernel]
-    weight = np.zeros_like(x)
+    weight = np.zeros_like(x_vals)
     
-    # Case for x in [0, h)
-    mask1 = (x >= 0) & (x < h)
-    x1 = x[mask1]
+    # Case for x_vals in [0, h)
+    mask1 = (x_vals >= 0) & (x_vals < h)
+    x1 = x_vals[mask1]
     integral1 = (
         riemann_sum(x1 / h, k(x1 / h))
         + riemann_sum_cumulative(x1 / h, k(x1 / h))[1]
     )
     weight[mask1] = np.reciprocal(integral1)
     
-    # Case for x in (1-h, 1]
-    mask2 = (x > 1 - h) & (x <= 1)
-    x2 = x[mask2]
+    # Case for x_vals in (1-h, 1]
+    mask2 = (x_vals > 1 - h) & (x_vals <= 1)
+    x2 = x_vals[mask2]
     integral2 = (
         2 * riemann_sum((x2 - 1) / h, k((x2 - 1) / h))
         - riemann_sum_cumulative((x2 - 1) / h, k((x2 - 1) / h))[1]
     )
     weight[mask2] = np.reciprocal(integral2)
     
-    # Case for x in [h, 1-h]
-    mask3 = (x >= h) & (x <= 1 - h)
-    weight[mask3] = 1
+    # Case for x_vals in [h, 1-h]
+    mask3 = (x_vals >= h) & (x_vals <= 1 - h)
+    # Dirty fix! Paper says to set it equal to one, i made it continuous at the interval
+    # limits so the resulting estimator is also continuous.
+    weight[mask3] = weight[mask1][-1]
     
     return weight

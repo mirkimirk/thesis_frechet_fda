@@ -9,7 +9,7 @@ import numpy as np
 from scipy.stats import truncnorm
 
 from frechet_fda.function_class import Function
-from frechet_fda.kernel_methods import density_estimator
+from frechet_fda.kernel_methods import boundary_corrected_density_estimator
 from frechet_fda.numerics_tools import riemann_sum_cumulative
 
 
@@ -73,7 +73,12 @@ def make_estimated_truncnorm_pdf(
     """
     pdfs_x = np.linspace(a, b, grid_size).transpose()
     # Check if we're only dealing with one single density
-    return density_estimator(pdfs_x, sample_points, h=bandwidth, kernel_type=kern)
+    return boundary_corrected_density_estimator(
+        x_vals = pdfs_x,
+        sample_of_points = sample_points,
+        h=bandwidth,
+        kernel_type=kern
+    )
 
 
 # Truncated normal pdf
