@@ -131,8 +131,6 @@ def _weight_function(x_vals: np.ndarray, h: float, kernel : str = "epanechnikov"
     
     # Case for x_vals in [h, 1-h]
     mask3 = (x_vals >= h) & (x_vals <= 1 - h)
-    # Dirty fix! Paper says to set it equal to one, i made it continuous at the interval
-    # limits so the resulting estimator is also continuous.
-    weight[mask3] = weight[mask1][-1]
+    weight[mask3] = 1
     
     return weight
