@@ -4,8 +4,8 @@
 import numpy as np
 
 from frechet_fda.function_class import Function
-from frechet_fda.function_tools import make_function_objects
-from frechet_fda.numerics_tools import riemann_sum, riemann_sum_cumulative
+from frechet_fda.tools.function_tools import make_function_objects
+from frechet_fda.tools.numerics_tools import riemann_sum, riemann_sum_cumulative
 
 kernels = {
     "epanechnikov": lambda u: 3

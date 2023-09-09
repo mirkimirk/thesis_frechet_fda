@@ -4,22 +4,22 @@ import numpy as np
 from scipy.sparse.linalg import eigsh
 
 from frechet_fda.function_class import Function
-from frechet_fda.function_tools import (
+from frechet_fda.tools.function_tools import (
     inverse_log_qd_transform,
     mean_func,
     quantile_distance,
 )
-from frechet_fda.numerics_tools import riemann_sum_cumulative
+from frechet_fda.tools.numerics_tools import riemann_sum_cumulative
 
 
-def compute_centered_data(function_sample: list[Function]) -> list[Function]:
+def compute_mean_and_centered_data(function_sample: list[Function]) -> list[Function]:
     """Compute mean function, centered data, and covariance matrix."""
     # Compute the mean function
     mean_function = mean_func(function_sample)
 
     # Center the data
     centered_data = [function - mean_function for function in function_sample]
-    centered_data_same_support = [func.standardize_shape() for func in centered_data]
+    centered_data_same_support = [func.standardize_grid() for func in centered_data]
 
     return mean_function, centered_data_same_support
 
@@ -37,7 +37,8 @@ def compute_cov_function(centered_sample: list[Function]) -> np.ndarray:
     y_values_matrix = np.array(y_values_list)
 
     # Compute the covariance matrix
-    cov_matrix = np.cov(y_values_matrix, rowvar=False)
+    cov_matrix = y_values_matrix.transpose() @ y_values_matrix
+    cov_matrix /= len(centered_sample)
 
     return cov_matrix
 
@@ -56,16 +57,20 @@ def compute_principal_components(
     eigenvalues_sorted = eigenvalues[np.argsort(-eigenvalues)]
     eigenfunctions_sorted = eigenfunctions[np.argsort(-eigenvalues)]
 
+    # Create Function objects, have them evaluated at the same points as the
+    # centered_sample
     eigenfunctions = [
-        Function(x_vals, eigenfunc) for eigenfunc in eigenfunctions_sorted
+        Function(x_vals, eigenfunc).standardize_grid(grid_size=len(x_vals))
+        for eigenfunc in eigenfunctions_sorted
     ]
 
-    # Scale each column of the eigenfunctions matrix by its respective L^2 norm
+    # Scale each eigenfunction by its respective L^2 norm
     eigenfunctions_scaled = [
         eigenfunction / eigenfunction.l2norm() for eigenfunction in eigenfunctions
     ]
+    eigenvalues_scaled = eigenvalues_sorted / len(cov_matrix)
 
-    return eigenvalues_sorted, eigenfunctions_scaled
+    return eigenvalues_scaled, eigenfunctions_scaled
 
 
 def compute_fpc_scores(
@@ -92,7 +97,7 @@ def compute_fpc_scores(
 
 def gen_qdtransformation_pcs(log_qdfs: list[Function], k: int = 5):
     """Perform FPCA on transformed densities."""
-    mean, centered_data = compute_centered_data(log_qdfs)
+    mean, centered_data = compute_mean_and_centered_data(log_qdfs)
     covariance_function = compute_cov_function(centered_data)
     eigenvalues, eigenfunctions = compute_principal_components(
         centered_data[0].x,

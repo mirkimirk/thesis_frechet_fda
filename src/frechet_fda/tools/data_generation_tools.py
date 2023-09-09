@@ -9,8 +9,8 @@ import numpy as np
 from scipy.stats import truncnorm
 
 from frechet_fda.function_class import Function
-from frechet_fda.kernel_methods import boundary_corrected_density_estimator
-from frechet_fda.numerics_tools import riemann_sum_cumulative
+from frechet_fda.tools.kernel_methods import boundary_corrected_density_estimator
+from frechet_fda.tools.numerics_tools import riemann_sum_cumulative
 
 
 def gen_params_scenario_one(num_of_distr: int, seed: int = 28071995) -> tuple:

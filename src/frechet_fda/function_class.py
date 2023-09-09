@@ -4,7 +4,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from frechet_fda.numerics_tools import difference_quotient, riemann_sum_cumulative
+from frechet_fda.tools.numerics_tools import difference_quotient, riemann_sum_cumulative
 
 
 class Function:
@@ -17,13 +17,17 @@ class Function:
         self.y = y
         self.grid_size = len(x)
 
-    def standardize_shape(self, grid_size: int = 1000):
+    def standardize_grid(self, grid_size: int = 1000):
         """Set the number of discretization points."""
         x = np.copy(self.x)
         y = np.copy(self.y)
-        new_x = np.linspace(x.min(), x.max(), grid_size)
-        new_y = np.interp(new_x, x, y)
-        return Function(new_x, new_y)
+        old_grid_size = np.copy(self.grid_size)
+        if grid_size == old_grid_size:
+            return self
+        else:
+            new_x = np.linspace(x.min(), x.max(), grid_size)
+            new_y = np.interp(new_x, x, y)
+            return Function(new_x, new_y)
 
     def warp_range(self, left: float, right: float, grid_size: int = 1000):
         """Use interpolation to define function on different range."""
@@ -183,13 +187,35 @@ class Function:
 
     def __mul__(self, val: float | int):
         x = np.copy(self.x)
-        y = np.copy(self.y) * val
-        return Function(x, y)
+        y = np.copy(self.y)
+        if isinstance(val, float | int):
+            return Function(x, y * val)
+        elif isinstance(val, Function):
+            left = min(x[0], val.x[0])
+            right = max(x[-1], val.x[-1])
+            # Define grid_size, take the finer number of the functions that are to add
+            gridnum_self = len(x)
+            gridnum_other = len(val.x)
+            grid_size = max(gridnum_self, gridnum_other)
+            comb_x = np.linspace(left, right, grid_size)
+            comb_y = np.interp(comb_x, x, y) * np.interp(comb_x, val.x, val.y)
+            return Function(comb_x, comb_y)
 
     def __rmul__(self, val: float | int):
         x = np.copy(self.x)
-        y = val * np.copy(self.y)
-        return Function(x, y)
+        y = np.copy(self.y)
+        if isinstance(val, float | int):
+            return Function(x, val * y)
+        elif isinstance(val, Function):
+            left = min(x[0], val.x[0])
+            right = max(x[-1], val.x[-1])
+            # Define grid_size, take the finer number of the functions that are to add
+            gridnum_self = len(x)
+            gridnum_other = len(val.x)
+            grid_size = max(gridnum_self, gridnum_other)
+            comb_x = np.linspace(left, right, grid_size)
+            comb_y = np.interp(comb_x, val.x, val.y) * np.interp(comb_x, x, y)
+            return Function(comb_x, comb_y)
 
     def __truediv__(self, val: float | int):
         x = np.copy(self.x)
