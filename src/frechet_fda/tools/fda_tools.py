@@ -173,9 +173,7 @@ def k_optimal(
     densities_sample: list[Function],
     mean_function: Function,
     eigenfunctions: list[Function],
-    fpc_scores: np.ndarray,
-    left : float,
-    right : float
+    fpc_scores: np.ndarray
 ) -> int:
     """Compute minimum number of components to include to reach ratio p of variance
     explained.
@@ -190,6 +188,6 @@ def k_optimal(
             fpc_scores,
             K=k_opt,
         )
-        trunc_reps = inverse_log_qd_transform(trunc_reps_transforms, left, right)
+        trunc_reps = inverse_log_qd_transform(trunc_reps_transforms)
         fv = fve(total_variance, densities_sample, trunc_reps)[0]
     return k_opt, fv, trunc_reps

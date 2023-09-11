@@ -238,3 +238,6 @@ class Function:
         x = np.copy(self.x)
         y = -np.copy(self.y)
         return Function(x, y)
+    
+    def __getitem__(self, val) -> float:
+        return np.interp(val, self.x, self.y)
