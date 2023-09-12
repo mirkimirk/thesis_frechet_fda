@@ -102,7 +102,7 @@ def make_truncnorm_pdf(
     x_std = (x - mu) / sigma
     a_std = (a - mu) / sigma
     b_std = (b - mu) / sigma
-    numerator = _norm_pdf(x_std, 0, 1)
+    numerator = norm_pdf(x_std, 0, 1)
     denominator = _norm_cdf(b_std, 0, 1) - _norm_cdf(a_std, 0, 1)
 
     pdfs_y = numerator / denominator / sigma
@@ -122,7 +122,7 @@ def make_truncnorm_pdf(
 
 
 # Normal pdf
-def _norm_pdf(x: np.ndarray, mu: np.ndarray, sigma: np.ndarray) -> np.ndarray:
+def norm_pdf(x: np.ndarray, mu: np.ndarray, sigma: np.ndarray) -> np.ndarray:
     """Define normal density function.
 
     To test: columns of x must align with mu and sigma.
@@ -154,7 +154,7 @@ def _norm_cdf(
     # Integrate the normal density function from a to b
     return riemann_sum_cumulative(
         grid_to_integrate,
-        _norm_pdf(grid_to_integrate, mu, sigma),
+        norm_pdf(grid_to_integrate, mu, sigma),
     )[1][..., -1]
 
 
