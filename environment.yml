@@ -25,4 +25,4 @@ dependencies:
   - setuptools_scm
   - statsmodels
   - toml
-  - pip: [-e ., kaleido]
+  - pip: [-e ., kaleido, cvxopt]
