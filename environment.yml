@@ -20,9 +20,9 @@ dependencies:
   - pytest-cov
   - pytest-xdist
   - python-graphviz
-  - python=3.11
+  - python=3.10
   - pyyaml
   - setuptools_scm
   - statsmodels
   - toml
-  - pip: [-e ., kaleido, cvxopt]
+  - pip: [-e ., kaleido, cvxopt, quadprog]
