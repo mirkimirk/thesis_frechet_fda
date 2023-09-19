@@ -55,7 +55,7 @@ def mean_func(funcs: list[Function]) -> Function:
 
 def log_qd_transform(densities_sample: list[Function]) -> list[Function]:
     """Perfrom log quantile density transformation on a density sample."""
-    qdfs = [pdf_to_qdf(density) for density in densities_sample]
+    qdfs = [pdf_to_qdf(density.drop_inf()) for density in densities_sample]
     return [qdf.log() for qdf in qdfs]
 
 

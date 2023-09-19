@@ -36,6 +36,15 @@ class Function:
         new_x = np.linspace(left, right, grid_size)
         new_y = np.interp(new_x, x, y)
         return Function(new_x, new_y)
+    
+    def drop_inf(self):
+        """Drop support points where x and y values are +/- infinity or NaN."""
+        finite_indices_x = np.isfinite(self.x)
+        finite_indices_y = np.isfinite(self.y)
+        finite_indices = finite_indices_x & finite_indices_y
+        new_x = self.x[finite_indices]
+        new_y = self.y[finite_indices]
+        return Function(new_x, new_y)
 
     def integrate(self, limits: tuple = None, method: str = "left"):
         """Integrate function using Riemann sums.
@@ -51,6 +60,10 @@ class Function:
             y = np.copy(self.y)[(self.x >= limits[0]) & (self.x <= limits[1])]
 
         int_x, int_y = riemann_sum_cumulative(x_vals=x, y_vals=y, method=method)
+
+        # Check for the initial_value attribute and adjust if it exists
+        if hasattr(self, 'initial_value'):
+            int_y += self.initial_value
         return Function(int_x, int_y)
 
     def integrate_sequential(self):
@@ -71,13 +84,20 @@ class Function:
         y = np.copy(self.y)
 
         d_x, d_y = difference_quotient(x_vals=x, y_vals=y)
-        return Function(d_x, d_y)
+        new_function = Function(d_x, d_y)
+        new_function.initial_value = y[0]  # Store the initial y-value as an attribute
+        return new_function
 
     def invert(self):
         """Compute inverse."""
         inv_x = np.copy(self.y)
         inv_y = np.copy(self.x)
-        return Function(inv_x, inv_y)
+        inverted_function = Function(inv_x, inv_y)
+
+        # Remove the initial_value attribute if it exists
+        if hasattr(self, 'initial_value'):
+            delattr(inverted_function, 'initial_value')
+        return inverted_function
 
     def log(self):
         """Log transform the function."""
