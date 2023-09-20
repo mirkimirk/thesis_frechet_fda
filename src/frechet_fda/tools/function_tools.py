@@ -20,7 +20,7 @@ def pdf_to_qdf(pdf: Function) -> Function:
 
 def qdf_to_pdf(qdf: Function) -> Function:
     """Directly convert a qdf to a pdf using inverse function rule on cdf."""
-    cdf = qdf.integrate().vcenter().invert()
+    cdf = qdf.integrate().invert()
     return 1 / qdf.compose(cdf)
 
 
@@ -63,7 +63,7 @@ def inverse_log_qd_transform(
     transformed_funcs : list[Function],
 ) -> list[Function]:
     """Transform back into density space."""
-    natural_qfs = [func.exp().integrate().vcenter() for func in transformed_funcs]
+    natural_qfs = [func.exp().integrate() for func in transformed_funcs]
     cdfs = [qf.invert() for qf in natural_qfs]
     exponents = [
         -func.compose(cdf) for func, cdf in zip(transformed_funcs, cdfs, strict=True)

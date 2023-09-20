@@ -17,7 +17,7 @@ class Function:
         self.y = y
         self.grid_size = len(x)
 
-    def standardize_grid(self, grid_size: int = 1000):
+    def set_grid_size(self, grid_size: int = 1000):
         """Set the number of discretization points."""
         x = np.copy(self.x)
         y = np.copy(self.y)
@@ -37,6 +37,34 @@ class Function:
         new_y = np.interp(new_x, x, y)
         return Function(new_x, new_y)
     
+    def standardize_support(self):
+        """Intended for normalizing densities to support on [0, 1]."""
+        x = np.copy(self.x)
+        y = np.copy(self.y)
+        a, b = x[0], x[-1]
+        new_x = (x - a) / (b - a) # support on [0, 1]
+        new_y = (b - a) * np.interp(a + (b - a) * new_x, x, y)
+        new_func = Function(new_x, new_y)
+        new_func.a = a
+        new_func.b = b
+        return new_func
+    
+    def rescale_back(self, a : float = 0, b : float = 1):
+        """Rescale the function back to the original support [a, b]."""
+        x = np.copy(self.x)
+        y = np.copy(self.y)
+        if hasattr(self, 'a') & hasattr(self, 'b'):
+            new_a, new_b = self.a, self.b
+        else:
+            new_a, new_b = a, b
+        x = np.copy(self.x)
+        y = np.copy(self.y)
+        # Rescale x values to [a, b]
+        new_x = new_a + (new_b - new_a) * x
+        # Apply the inverse transformation formula to y
+        new_y = np.interp((new_x - new_a) / (new_b - new_a), x, y) / (new_b - new_a)
+        return Function(new_x, new_y)
+
     def drop_inf(self):
         """Drop support points where x and y values are +/- infinity or NaN."""
         finite_indices_x = np.isfinite(self.x)

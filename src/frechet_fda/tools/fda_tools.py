@@ -19,7 +19,7 @@ def compute_mean_and_centered_data(function_sample: list[Function]) -> list[Func
 
     # Center the data
     centered_data = [function - mean_function for function in function_sample]
-    centered_data_same_support = [func.standardize_grid() for func in centered_data]
+    centered_data_same_support = [func.set_grid_size() for func in centered_data]
 
     return mean_function, centered_data_same_support
 
@@ -60,7 +60,7 @@ def compute_principal_components(
     # Create Function objects, have them evaluated at the same points as the
     # centered_sample
     eigenfunctions = [
-        Function(x_vals, eigenfunc).standardize_grid(grid_size=len(x_vals))
+        Function(x_vals, eigenfunc).set_grid_size(grid_size=len(x_vals))
         for eigenfunc in eigenfunctions_sorted
     ]
 
