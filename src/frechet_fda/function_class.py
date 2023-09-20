@@ -15,6 +15,8 @@ class Function:
     def __init__(self, x: np.ndarray, y: np.ndarray):
         self.x = x
         self.y = y
+        # Set initial_value attribute 
+        self.initial_value = None
         self.grid_size = len(x)
 
     def set_grid_size(self, grid_size: int = 1000):
@@ -90,7 +92,7 @@ class Function:
         int_x, int_y = riemann_sum_cumulative(x_vals=x, y_vals=y, method=method)
 
         # Check for the initial_value attribute and adjust if it exists
-        if hasattr(self, 'initial_value'):
+        if self.initial_value is not None:
             int_y += self.initial_value
         return Function(int_x, int_y)
 
