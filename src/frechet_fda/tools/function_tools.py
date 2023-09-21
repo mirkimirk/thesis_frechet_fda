@@ -12,9 +12,11 @@ def make_function_objects(xy_tuples: list[tuple]) -> list[Function]:
     return [Function(*xy_tuple) for xy_tuple in xy_tuples]
 
 
-def pdf_to_qdf(pdf: Function) -> Function:
+def pdf_to_qdf(pdf: Function, save_support_start : bool = False) -> Function:
     """Directly convert a pdf to a qdf using inverse function rule on qf."""
     quantile_func = pdf.integrate().invert()
+    if save_support_start:
+        return (1 / pdf.compose(quantile_func), quantile_func.y[0])
     return 1 / pdf.compose(quantile_func)
 
 
@@ -53,17 +55,31 @@ def mean_func(funcs: list[Function]) -> Function:
     return agg_func
 
 
-def log_qd_transform(densities_sample: list[Function]) -> list[Function]:
+def log_qd_transform(
+        densities_sample: list[Function],
+        different_supports : bool = False
+    ) -> list[Function]:
     """Perfrom log quantile density transformation on a density sample."""
-    qdfs = [pdf_to_qdf(density.drop_inf()) for density in densities_sample]
-    return [qdf.log() for qdf in qdfs]
+    qdfs = [
+        pdf_to_qdf(density.drop_inf(), different_supports)
+        for density in densities_sample
+    ]
+    if different_supports:
+        qdfs = np.array(qdfs)
+        lqdfs = [qdf.log() for qdf in qdfs[:, 0]]
+        return np.array((lqdfs, qdfs[:, 1])).transpose()
+    else:
+        return [qdf.log() for qdf in qdfs]
 
 
 def inverse_log_qd_transform(
     transformed_funcs : list[Function],
+    start_of_support : list[float] = None
 ) -> list[Function]:
     """Transform back into density space."""
     natural_qfs = [func.exp().integrate() for func in transformed_funcs]
+    if start_of_support is not None:
+        natural_qfs += start_of_support
     cdfs = [qf.invert() for qf in natural_qfs]
     exponents = [
         -func.compose(cdf) for func, cdf in zip(transformed_funcs, cdfs, strict=True)
