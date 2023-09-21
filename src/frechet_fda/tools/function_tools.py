@@ -113,5 +113,7 @@ def frechet_mean(density_sample: list[Function]) -> Function:
 
 def quantile_distance(pdf1: Function, pdf2: Function) -> float:
     """Compute Wasserstein / Quantile distance."""
-    diff_squared = (pdf1 - pdf2) ** 2
+    qf1 = pdf1.integrate().invert()
+    qf2 = pdf2.integrate().invert()
+    diff_squared = (qf1 - qf2) ** 2
     return diff_squared.integrate().y[-1]
