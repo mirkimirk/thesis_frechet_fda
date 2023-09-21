@@ -80,7 +80,9 @@ def inverse_log_qd_transform(
     natural_qfs = [func.exp().integrate() for func in transformed_funcs]
     if start_of_support is not None:
         natural_qfs += start_of_support
-    cdfs = [qf.invert() for qf in natural_qfs]
+        cdfs = [qf.invert() for qf in natural_qfs]
+    else:
+        cdfs = [qf.vcenter().invert() for qf in natural_qfs]
     exponents = [
         -func.compose(cdf) for func, cdf in zip(transformed_funcs, cdfs, strict=True)
     ]
@@ -127,9 +129,14 @@ def frechet_mean(density_sample: list[Function]) -> Function:
     return qdf_to_pdf(mean_qdf)
 
 
-def quantile_distance(pdf1: Function, pdf2: Function) -> float:
-    """Compute Wasserstein / Quantile distance."""
-    qf1 = pdf1.integrate().invert()
-    qf2 = pdf2.integrate().invert()
+def quantile_distance(
+        distr1: Function, distr2: Function, already_qf : bool = False
+    ) -> float:
+    """Compute Wasserstein / Quantile distance for two given pdfs or qfs."""
+    if already_qf:
+        qf1, qf2 = distr1, distr2
+    else:
+        qf1 = distr1.integrate().invert()
+        qf2 = distr2.integrate().invert()
     diff_squared = (qf1 - qf2) ** 2
     return diff_squared.integrate().y[-1]
