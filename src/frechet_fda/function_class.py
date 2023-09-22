@@ -183,7 +183,7 @@ class Function:
         plt.show()
 
     def vcenter(self):
-        """Shift the range of values after integration of the qdf, to reflect correct
+        """Center the range of values after integration of the qdf, to reflect correct
         support.
         """
         x = np.copy(self.x)

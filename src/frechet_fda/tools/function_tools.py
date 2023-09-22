@@ -17,12 +17,18 @@ def pdf_to_qdf(pdf: Function, save_support_start : bool = False) -> Function:
     quantile_func = pdf.integrate().invert()
     if save_support_start:
         return (1 / pdf.compose(quantile_func), quantile_func.y[0])
-    return 1 / pdf.compose(quantile_func)
+    else:
+        return 1 / pdf.compose(quantile_func)
 
 
-def qdf_to_pdf(qdf: Function) -> Function:
+def qdf_to_pdf(
+        qdf: Function, start_val : float = 0, center_on_zero : bool = False
+    ) -> Function:
     """Directly convert a qdf to a pdf using inverse function rule on cdf."""
-    cdf = qdf.integrate().invert()
+    if center_on_zero:
+        cdf = qdf.integrate().vcenter().invert()
+    else:
+        cdf = (qdf.integrate() + start_val).invert()
     return 1 / qdf.compose(cdf)
 
 
@@ -95,7 +101,10 @@ def inverse_log_qd_transform_corrected(
     right_bound : float,
     eps : float = 1e-3
 ) -> list[Function]:
-    """Invert the log quantile density transform to get back into density space."""
+    """Invert the log quantile density transform to get back into density space.
+    
+    Not used, I must understand something wrong about the implementation with a
+    different support."""
     # First compute quantile function via natural inverse
     natural_qfs = [func.exp().integrate() for func in transformed_funcs]
     # Compute correction factors to normalize quantiles
@@ -122,11 +131,23 @@ def inverse_log_qd_transform_corrected(
     return inverses
 
 
-def frechet_mean(density_sample: list[Function]) -> Function:
-    """Compute Fréchet mean of a given sample of densities."""
-    qdfs = [pdf_to_qdf(density) for density in density_sample]
+def frechet_mean(
+        density_sample: list[Function], centered_on_zero : bool = False
+    ) -> Function:
+    """Compute Fréchet mean of a given sample of densities.
+    
+    By default, estimates new support by taking the mean of the left bounds of the
+    sample of densities. If centered_on_zero specified, then resulting mean density is
+    transformed to be centered around zero.
+    """
+    qdfs_and_start_vals = np.array(
+        [pdf_to_qdf(density, True) for density in density_sample]
+    )
+    qdfs = qdfs_and_start_vals[:, 0]
+    start_vals = qdfs_and_start_vals[:, 1]
     mean_qdf = mean_func(qdfs)
-    return qdf_to_pdf(mean_qdf)
+    mean_start_val = np.mean(start_vals) # estimated start of the support of mean pdf
+    return qdf_to_pdf(mean_qdf, mean_start_val, centered_on_zero)
 
 
 def quantile_distance(
