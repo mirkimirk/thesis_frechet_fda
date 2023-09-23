@@ -6,15 +6,59 @@ Petersen and Mueller (2016)'s simulation study.
 import warnings
 
 import numpy as np
-from scipy.stats import truncnorm
+from scipy.stats import norm, truncnorm
 
 from frechet_fda.function_class import Function
 from frechet_fda.tools.kernel_methods import boundary_corrected_density_estimator
 from frechet_fda.tools.numerics_tools import riemann_sum_cumulative
 
 
+def gen_params_regression(
+        mu_params : dict,
+        sigma_params : dict,
+        size : int = 100,
+        pred_bounds : tuple = (-1,1),
+        seed : int = None):
+    """Generates mus and sigmas for conditional distributions in regression context.
+    
+    This reflects the first simulation scenario of Petersen & Müller (2019). Need to
+    pass mu_params and sigma params, which have to contain specific entries.
+    """
+    predictor = np.random.default_rng(seed).uniform(
+        pred_bounds[0], pred_bounds[1], size
+    )
+    predictor.sort()
+    # Generate mus that linearly depend on x
+    mus = np.random.default_rng(seed).normal(
+        loc=mu_params["mu0"] + mu_params["beta"] * predictor, scale=mu_params["v1"]
+    )
+    # Generate sigmas that linearly depend on x
+    sh = (
+        (sigma_params["sigma0"] + sigma_params["gamma"] * predictor) ** 2
+        / sigma_params["v2"]
+    )
+    sc = (
+        sigma_params["v2"]
+        / (sigma_params["sigma0"] + sigma_params["gamma"] * predictor)
+    )
+    sigmas = np.random.default_rng(seed).gamma(shape=sh, scale=sc)
+
+    return predictor, mus, sigmas
+
+
+def gen_y_qf(mu : np.ndarray, sigma : np.ndarray, eval_grid : np.ndarray):
+    """Generate quantile function of Y_i given X_i."""
+    ys = (
+        mu[..., np.newaxis]
+        + sigma[..., np.newaxis] * norm.ppf(eval_grid)[np.newaxis, ...]
+    )
+    return [Function(eval_grid, y) for y in ys]
+
+
 def gen_params_scenario_one(num_of_distr: int, seed: int = 28071995) -> tuple:
-    """Generate parameters for the density samples and define appropriate grids."""
+    """Generate parameters for the density samples and define appropriate grids.
+    
+    This is the first simulation scenario of Petersen & Müller (2016)."""
     # Draw different sigmas
     log_sigmas = np.random.default_rng(seed=seed).uniform(-1.5, 1.5, num_of_distr)
     mus = np.zeros(num_of_distr)
