@@ -1,10 +1,11 @@
 """Contains methods for Fréchet regression in the context of distribution responses."""
 
 import numpy as np
+import quadprog
 
 from frechet_fda.function_class import Function
 from frechet_fda.tools.function_tools import (
-    mean_func
+    mean_func, quantile_distance
 )
 
 def _empirical_weight_function(
@@ -64,3 +65,17 @@ def solve_frechet_qp(
             solution = quadprog.solve_qp(qp_g, qp_a, qp_c, qp_b)[0]
             estimates.append(Function(estimated_qf.x, solution))
     return estimates
+
+
+def ise_wasserstein(
+        m_hat : list[Function],
+        true_m : list[Function],
+        x_to_predict : np.ndarray,
+        already_qf : bool = False
+    ) -> float:
+    """Compute integrated squared error."""
+    distances = [
+        quantile_distance(hat, true, already_qf=already_qf)
+        for hat, true in zip(m_hat, true_m, strict=True)
+    ]
+    return Function(x_to_predict, distances).integrate().y[-1]

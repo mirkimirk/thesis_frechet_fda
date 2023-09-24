@@ -9,7 +9,9 @@ import numpy as np
 from scipy.stats import norm, truncnorm
 
 from frechet_fda.function_class import Function
-from frechet_fda.tools.kernel_methods import boundary_corrected_density_estimator
+from frechet_fda.tools.kernel_methods import (
+    density_estimator, boundary_corrected_density_estimator
+)
 from frechet_fda.tools.numerics_tools import riemann_sum_cumulative
 
 
@@ -53,6 +55,20 @@ def gen_y_qf(mu : np.ndarray, sigma : np.ndarray, eval_grid : np.ndarray):
         + sigma[..., np.newaxis] * norm.ppf(eval_grid)[np.newaxis, ...]
     )
     return [Function(eval_grid, y) for y in ys]
+
+
+def gen_sample_points_from_qfs(
+        quantile_functions : list[Function],
+        size : int = 100,
+        seed : int = None
+    ):
+    """Generate a sample of observation points for given distributions.
+    
+    Need to supply quantile functions."""
+    which_quantiles = np.random.default_rng(seed).uniform(
+        0, 1, size
+    )
+    return np.array([qf[which_quantiles] for qf in quantile_functions])
 
 
 def gen_params_scenario_one(num_of_distr: int, seed: int = 28071995) -> tuple:
@@ -100,13 +116,14 @@ def gen_truncnorm_pdf_points(
     )
 
 
-def make_estimated_truncnorm_pdf(
+def make_estimated_pdf(
     sample_points: np.ndarray,
     a: np.ndarray,
     b: np.ndarray,
     kern: str = "epanechnikov",
     grid_size: int = 10000,
-    bandwidth: float = 0.2,
+    bandwidth: np.ndarray = 0.2,
+    bias_corrected : bool = True
 ) -> list[Function]:
     """Turn sample_points array into Function class objects with their corresponding
     grid.
@@ -117,12 +134,21 @@ def make_estimated_truncnorm_pdf(
     """
     pdfs_x = np.linspace(a, b, grid_size).transpose()
     # Check if we're only dealing with one single density
-    return boundary_corrected_density_estimator(
-        x_vals = pdfs_x,
-        sample_of_points = sample_points,
-        h=bandwidth,
-        kernel_type=kern
-    )
+    if bias_corrected:
+        return boundary_corrected_density_estimator(
+            x_vals = pdfs_x,
+            sample_of_points = sample_points,
+            h=bandwidth,
+            kernel_type=kern
+        )
+    else:
+        return density_estimator(
+            x_vals = pdfs_x,
+            sample_of_points = sample_points,
+            h=bandwidth,
+            kernel_type=kern
+        )
+
 
 
 # Truncated normal pdf

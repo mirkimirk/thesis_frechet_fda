@@ -32,7 +32,7 @@ def make_kernel_functions(x_vals: np.ndarray, kernel: str = "epanechnikov"):
 def density_estimator(
     x_vals: np.ndarray,
     sample_of_points: np.ndarray,
-    h,
+    h : np.ndarray,
     kernel_type="epanechnikov",
 ) -> list[Function]:
     """Kernel density estimator function.
@@ -51,10 +51,10 @@ def density_estimator(
 
     if sample_of_points.ndim > 1:
         for i, density in enumerate(sample_of_points):  # Looping over densities
-            for point in density:  # Looping over samples for each density
-                u = (pdfs_x[i] - point) / h
+            for j, point in enumerate(density):  # Looping over samples for each density
+                u = (pdfs_x[i] - point) / h[j]
                 result[i, :] += k(u)
-        pdfs_y = result / (sample_of_points.shape[1] * h)
+        pdfs_y = result / (sample_of_points.shape[1] * h[j])
         list_of_densities = [
             (pdf_x, pdf_y) for pdf_x, pdf_y in zip(pdfs_x, pdfs_y, strict=True)
         ]

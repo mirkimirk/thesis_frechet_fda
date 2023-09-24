@@ -54,6 +54,11 @@ def get_optimal_range(funcs: list[Function], delta: float = 1e-3) -> np.ndarray:
 
 def mean_func(funcs: list[Function]) -> Function:
     """Compute the mean of a list of functions (instances of Function class)."""
+    return np.sum(funcs) / len(funcs)
+
+
+def mean_func_legacy(funcs: list[Function]) -> Function:
+    """Compute the mean of a list of functions (instances of Function class)."""
     num_funcs = len(funcs)
     agg_func = funcs[0] / num_funcs
     for i in range(1, num_funcs):
@@ -73,7 +78,7 @@ def log_qd_transform(
     if different_supports:
         qdfs = np.array(qdfs)
         lqdfs = [qdf.log() for qdf in qdfs[:, 0]]
-        return np.array((lqdfs, qdfs[:, 1])).transpose()
+        return np.array((lqdfs, qdfs[:, 1]))
     else:
         return [qdf.log() for qdf in qdfs]
 

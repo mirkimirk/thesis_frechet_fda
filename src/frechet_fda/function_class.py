@@ -15,9 +15,11 @@ class Function:
     def __init__(self, x: np.ndarray, y: np.ndarray):
         self.x = x
         self.y = y
+        self.grid_size = len(x)
         # Set initial_value attribute 
         self.initial_value = None
-        self.grid_size = len(x)
+        self.a = None
+        self.b = None
 
     def set_grid_size(self, grid_size: int = 1000):
         """Set the number of discretization points."""
@@ -45,7 +47,7 @@ class Function:
         y = np.copy(self.y)
         a, b = x[0], x[-1]
         new_x = (x - a) / (b - a) # support on [0, 1]
-        new_y = (b - a) * np.interp(a + (b - a) * new_x, x, y)
+        new_y = (b - a) * y
         new_func = Function(new_x, new_y)
         new_func.a = a
         new_func.b = b
@@ -92,8 +94,9 @@ class Function:
         int_x, int_y = riemann_sum_cumulative(x_vals=x, y_vals=y, method=method)
 
         # Check for the initial_value attribute and adjust if it exists
-        if self.initial_value is not None:
-            int_y += self.initial_value
+        if hasattr(self, "initial_value"):
+            if self.initial_value is not None:
+                int_y += self.initial_value
         return Function(int_x, int_y)
 
     def integrate_sequential(self):
