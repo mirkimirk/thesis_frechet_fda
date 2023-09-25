@@ -44,10 +44,10 @@ def compute_cov_function(centered_sample: list[Function]) -> np.ndarray:
 
 
 def compute_principal_components(
-    x_vals: np.ndarray,
-    cov_matrix: np.ndarray,
-    k: int = 5,
-) -> tuple:
+        x_vals: np.ndarray,
+        cov_matrix: np.ndarray,
+        k: int = 5,
+    ) -> tuple:
     """Compute functional principal components of a covariance function."""
     # Compute the eigenfunctions (principal components) of the covariance matrix
     eigenvalues, eigenfunctions = eigsh(cov_matrix, k=k, which="LM")
@@ -74,10 +74,10 @@ def compute_principal_components(
 
 
 def compute_fpc_scores(
-    x_vals: np.ndarray,
-    centered_sample: list[Function],
-    eigenfunctions_trunc: list[Function],
-):
+        x_vals: np.ndarray,
+        centered_sample: list[Function],
+        eigenfunctions_trunc: list[Function],
+    ):
     """Computes factor loadings / FPC scores."""
     # Collect function values from Function objects
     y_values_densities = []
@@ -114,11 +114,11 @@ def mode_of_variation(mean: Function, eigval, eigfunc, alpha):
 
 
 def karhunen_loeve(
-    mean_function: Function,
-    eigenfunctions: list[Function],
-    fpc_scores: np.ndarray,
-    K: int = 3,
-) -> list[Function]:
+        mean_function: Function,
+        eigenfunctions: list[Function],
+        fpc_scores: np.ndarray,
+        K: int = 3,
+    ) -> list[Function]:
     """Get truncated Karhunen-Loève representation."""
     truncated_reps = []
     for fpcs in fpc_scores:
@@ -130,9 +130,9 @@ def karhunen_loeve(
 
 
 def total_frechet_variance(
-    fmean: Function,
-    densities_sample: list[Function],
-) -> float:
+        fmean: Function,
+        densities_sample: list[Function],
+    ) -> float:
     """Computes total frechet variance."""
     distances = []
     for density in densities_sample:
@@ -141,10 +141,10 @@ def total_frechet_variance(
 
 
 def k_frechet_variance(
-    total_var: float,
-    densities_sample: list[Function],
-    truncated_reps: list[Function],
-) -> float:
+        total_var: float,
+        densities_sample: list[Function],
+        truncated_reps: list[Function],
+    ) -> float:
     """Compute variance explained by truncated representation."""
     distances = []
     for density, trunc in zip(densities_sample, truncated_reps, strict=True):
@@ -154,10 +154,10 @@ def k_frechet_variance(
 
 
 def fve(
-    total_var: Function,
-    densities_sample: list[Function],
-    truncated_representations: list[Function],
-):
+        total_var: Function,
+        densities_sample: list[Function],
+        truncated_representations: list[Function],
+    ):
     """Compute Fréchet fraction of variance explained."""
     var_explained = k_frechet_variance(
         total_var,
@@ -168,13 +168,13 @@ def fve(
 
 
 def k_optimal(
-    p: float,
-    total_variance: float,
-    densities_sample: list[Function],
-    mean_function: Function,
-    eigenfunctions: list[Function],
-    fpc_scores: np.ndarray
-) -> int:
+        p: float,
+        total_variance: float,
+        densities_sample: list[Function],
+        mean_function: Function,
+        eigenfunctions: list[Function],
+        fpc_scores: np.ndarray
+    ) -> int:
     """Compute minimum number of components to include to reach ratio p of variance
     explained.
     """

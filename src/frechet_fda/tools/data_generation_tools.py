@@ -83,6 +83,17 @@ def gen_params_scenario_one(num_of_distr: int, seed: int = 28071995) -> tuple:
     return mus, sigmas
 
 
+def gen_params_scenario_two(num_of_distr: int, seed: int = 28071995) -> tuple:
+    """Generate parameters for the density samples and define appropriate grids.
+    
+    This is the second simulation scenario of Petersen & Müller (2016)."""
+    # Draw different mus
+    mus = np.random.default_rng(seed=seed).uniform(-3, 3, num_of_distr)
+    sigmas = np.ones(num_of_distr)
+
+    return mus, sigmas
+
+
 def gen_truncnorm_pdf_points(
     a: float,
     b: float,

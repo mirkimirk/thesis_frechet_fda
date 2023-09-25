@@ -57,7 +57,7 @@ class Function:
         """Rescale the function back to the original support [a, b]."""
         x = np.copy(self.x)
         y = np.copy(self.y)
-        if hasattr(self, 'a') & hasattr(self, 'b'):
+        if (self.a is not None) & (self.b is not None):
             new_a, new_b = self.a, self.b
         else:
             new_a, new_b = a, b
