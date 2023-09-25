@@ -102,9 +102,6 @@ def inverse_log_qd_transform(
 
 def inverse_log_qd_transform_corrected(
     transformed_funcs : list[Function],
-    left_bound : float,
-    right_bound : float,
-    eps : float = 1e-3
 ) -> list[Function]:
     """Invert the log quantile density transform to get back into density space.
     
@@ -113,17 +110,8 @@ def inverse_log_qd_transform_corrected(
     # First compute quantile function via natural inverse
     natural_qfs = [func.exp().integrate() for func in transformed_funcs]
     # Compute correction factors to normalize quantiles
-    thetas = []
-    corrected_qfs = []
-    for qf in natural_qfs:
-        if qf.y[-1] > (right_bound - left_bound) + eps:
-            theta = qf.y[-1] / (right_bound - left_bound)
-            thetas.append(theta)
-            corrected_qfs.append((qf / theta) + left_bound)
-        else:
-            theta = qf.y[-1] / (qf.y[-1] - qf.y[0])
-            thetas.append(theta)
-            corrected_qfs.append((qf / theta).vcenter())
+    thetas = [qf.y[-1] for qf in natural_qfs]
+    corrected_qfs = [qf / theta for qf, theta in zip(natural_qfs, thetas, strict=True)]
     cdfs = [qf.invert() for qf in corrected_qfs]
     exponents = [
         func.compose(cdf) for func, cdf in zip(transformed_funcs, cdfs, strict=True)
