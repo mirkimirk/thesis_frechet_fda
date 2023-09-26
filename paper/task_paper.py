@@ -21,7 +21,7 @@ for document in documents:
         {
             "Chapter 1": PAPER_DIR / "1_Introduction.tex",
             "Chapter 2": PAPER_DIR / "2_FDA.tex",
-            "Chapter 3": PAPER_DIR / "3_Density_Regression.tex",
+            "Chapter 3": PAPER_DIR / "3_Densities.tex",
             "Chapter 4": PAPER_DIR / "4_Fréchet.tex",
             "Chapter 5": PAPER_DIR / "5_Simulation.tex",
             "Appendix A": PAPER_DIR / "A_NPRegression.tex",
