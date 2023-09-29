@@ -1,1 +1,9 @@
-Blablabla
+Notably during the computation of the Wasserstein-Fréchet mean of a sample of density
+functions, we encountered numerical problems. Since the computation of the mean involves
+obtaining the quantile densities from the densities, the densities from the small
+variance distributions are very close to zero for much of their support, leading to the
+qfs to have a very steep slope (i.e. high valued) qdfs near the boundaries. These
+astronomical values (even "infs") lead to problems when computing the mean qdf and then
+transforming this to a corresponding pdf. The infs are lost values, which lead to skewness.
+The following graph shows an extreme and less extreme qdf, as well as our solution with
+smaller support:
