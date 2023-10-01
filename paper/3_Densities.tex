@@ -1,16 +1,16 @@
-Distributions can be characterized by f, F, Q, and q, among others. Of these, the least 
-constraints are on q (sometimes called "sparsity", see TUKER 1962). These vanish if we
-take the logarithm (SEE KOKOSZKA ET AL 2019). Since our DGP generates densities on
-different supports, we use KOKOSZKA ET AL (2019)s modification on the log quantile-density
+Distributions can be characterized by f, F, Q, and q, among others. Of these, the least
+constraints are on q (sometimes called "sparsity", see \textcite{Tukey1965}). These vanish if we
+take the logarithm \parencite[cf.][]{KokoszkaEtAl2019}. Since our DGP generates densities on
+different supports, we use \textcite{KokoszkaEtAl2019}s modification on the log quantile-density
 transformation, i.e., our transformation yields a tuple ($psi(f), Q(s_0)$), with
-$psi(f)$ being the transformation of f as defined by {PetersenMüller2016}, and
+$psi(f)$ being the transformation of f as defined by \textcite{PetersenMüller2016}, and
 $Q(s_0)$ being the start of the density support ($s_0 > 0$ is fulfilled, since the support
 of $Q$ is chosen away from zero for numerical reasons anyway). For the predicted $f_i$ hats,
 in the inverse transformation the $s_0i$ from the corresponding observation $f_i$ was
 assigned as estimate $s_0i$hat.
 
 (Transformation approach regression: underestimating mu and sigma for lower x,
-overestimating for higher x?) \citet{PetersenLiuDivani2021}
+overestimating for higher x?) \textcite{PetersenLiuDivani2021}
 
 For densities with smaller sigmas, we get very low density values for big parts of the
 support, leading to numerical artifacts when calculating the quantile densities (infs
@@ -18,9 +18,22 @@ to the right, astronomical values to the left) which breaks further calculations
 makes it impossible to get the original densities from those broken qds again. We chose
 to calculate the "effective" support of the densities, if they have very small sigmas,
 defined by the density values being larger than some epsilon on this support. This
-makes the transformation method from \citet{PetersenMüller2016} inadequate, hence we 
-used the modified transformation from \citet{KokoszkaEtAl2019}. In their FDADENSITY
-package, the authors have "RegularizeByAlpha" function, which tries to raise the minimal
-value of a density to a given level alpha (and normalizes afterward, so we still have a 
-valid density). This also gets rid of the numerical artifacts and doesnt change the 
+makes the transformation method from \textcite{PetersenMüller2016} inadequate, hence we
+used the modified transformation from \textcite{KokoszkaEtAl2019}. In their own R
+package (\citetitle{fdadensity}), the authors have "RegularizeByAlpha" function, which tries to raise the minimal
+value of a density to a given level alpha (and normalizes afterward, so we still have a
+valid density). This also gets rid of the numerical artifacts and doesnt change the
 support of the function, which makes the methods from their paper still adequate.
+
+
+For the prediction of the start values, we linearly interpolated between the given start
+values from the predictor observations. The ISE increases with sample size, which must
+be explained by the uncertainty introduced through having to estimate the values in the
+inverse transformation.
+
+Moreover, the quality of the density estimates deteriorates with sample size, suggesting
+to vary the bandwidth choice with sample size, as \textcite{PetersenMüller2019} did in
+their comparison of the Fréchet estimator with the Nadaraya-Watson estimator. Due to
+time constraints and the computational requirements, we did not conduct such
+hyperparameter tuning but choose a rule-of-thumb bandwidth
+\parencites[Chapter~3.4.1]{Silverman1986}[Chapter~2.2.1]{LiRacine2007}

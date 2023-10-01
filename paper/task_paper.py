@@ -5,7 +5,7 @@ import pytask
 from frechet_fda.config import BLD, PAPER_DIR
 from pytask_latex import compilation_steps as cs
 
-documents = ["frechet_fda", "frechet_fda_pres"]
+documents = ["frechet_fda"]
 
 for document in documents:
 
@@ -24,6 +24,7 @@ for document in documents:
             "Chapter 3": PAPER_DIR / "3_Densities.tex",
             "Chapter 4": PAPER_DIR / "4_Fréchet.tex",
             "Chapter 5": PAPER_DIR / "5_Simulation.tex",
+            "Chapter 6": PAPER_DIR / "6_Conclusion.tex",
             "Appendix A": PAPER_DIR / "A_NPRegression.tex",
             "Appendix B": PAPER_DIR / "B_Numerics.tex",
         },

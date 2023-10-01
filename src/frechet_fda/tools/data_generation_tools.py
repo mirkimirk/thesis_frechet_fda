@@ -6,49 +6,51 @@ Petersen and Mueller (2016)'s simulation study.
 import warnings
 
 import numpy as np
-from scipy.stats import norm, truncnorm
-
 from frechet_fda.function_class import Function
 from frechet_fda.tools.kernel_methods import (
-    density_estimator, boundary_corrected_density_estimator
+    boundary_corrected_density_estimator,
+    density_estimator,
 )
 from frechet_fda.tools.numerics_tools import riemann_sum_cumulative
+from scipy.stats import norm, truncnorm
+
+
+def gen_predictor_values_regression(
+    size: int = 100, pred_bounds: tuple = (-1, 1), seed: int = None,
+):
+    """Generates scalar predictor for Fréchet regression."""
+    predictor = np.random.default_rng(seed).uniform(
+        pred_bounds[0], pred_bounds[1], size,
+    )
+    return np.sort(predictor)
 
 
 def gen_params_regression(
-        mu_params : dict,
-        sigma_params : dict,
-        size : int = 100,
-        pred_bounds : tuple = (-1,1),
-        seed : int = None):
+    mu_params: dict, sigma_params: dict, predictor: np.ndarray, seed: int = None,
+):
     """Generates mus and sigmas for conditional distributions in regression context.
-    
+
     This reflects the first simulation scenario of Petersen & Müller (2019). Need to
     pass mu_params and sigma params, which have to contain specific entries.
+
     """
-    predictor = np.random.default_rng(seed).uniform(
-        pred_bounds[0], pred_bounds[1], size
-    )
-    predictor.sort()
     # Generate mus that linearly depend on x
     mus = np.random.default_rng(seed).normal(
-        loc=mu_params["mu0"] + mu_params["beta"] * predictor, scale=mu_params["v1"]
+        loc=mu_params["mu0"] + mu_params["beta"] * predictor, scale=mu_params["v1"],
     )
     # Generate sigmas that linearly depend on x
     sh = (
-        (sigma_params["sigma0"] + sigma_params["gamma"] * predictor) ** 2
-        / sigma_params["v2"]
-    )
-    sc = (
-        sigma_params["v2"]
-        / (sigma_params["sigma0"] + sigma_params["gamma"] * predictor)
+        sigma_params["sigma0"] + sigma_params["gamma"] * predictor
+    ) ** 2 / sigma_params["v2"]
+    sc = sigma_params["v2"] / (
+        sigma_params["sigma0"] + sigma_params["gamma"] * predictor
     )
     sigmas = np.random.default_rng(seed).gamma(shape=sh, scale=sc)
 
-    return predictor, mus, sigmas
+    return mus, sigmas
 
 
-def gen_y_qf(mu : np.ndarray, sigma : np.ndarray, eval_grid : np.ndarray):
+def gen_y_qf(mu: np.ndarray, sigma: np.ndarray, eval_grid: np.ndarray):
     """Generate quantile function of Y_i given X_i."""
     ys = (
         mu[..., np.newaxis]
@@ -58,23 +60,23 @@ def gen_y_qf(mu : np.ndarray, sigma : np.ndarray, eval_grid : np.ndarray):
 
 
 def gen_sample_points_from_qfs(
-        quantile_functions : list[Function],
-        size : int = 100,
-        seed : int = None
-    ):
+    quantile_functions: list[Function], size: int = 100, seed: int = None,
+):
     """Generate a sample of observation points for given distributions.
-    
-    Need to supply quantile functions."""
-    which_quantiles = np.random.default_rng(seed).uniform(
-        0, 1, size
-    )
+
+    Need to supply quantile functions.
+
+    """
+    which_quantiles = np.random.default_rng(seed).uniform(0, 1, size)
     return np.array([qf[which_quantiles] for qf in quantile_functions])
 
 
 def gen_params_scenario_one(num_of_distr: int, seed: int = 28071995) -> tuple:
     """Generate parameters for the density samples and define appropriate grids.
-    
-    This is the first simulation scenario of Petersen & Müller (2016)."""
+
+    This is the first simulation scenario of Petersen & Müller (2016).
+
+    """
     # Draw different sigmas
     log_sigmas = np.random.default_rng(seed=seed).uniform(-1.5, 1.5, num_of_distr)
     mus = np.zeros(num_of_distr)
@@ -85,8 +87,10 @@ def gen_params_scenario_one(num_of_distr: int, seed: int = 28071995) -> tuple:
 
 def gen_params_scenario_two(num_of_distr: int, seed: int = 28071995) -> tuple:
     """Generate parameters for the density samples and define appropriate grids.
-    
-    This is the second simulation scenario of Petersen & Müller (2016)."""
+
+    This is the second simulation scenario of Petersen & Müller (2016).
+
+    """
     # Draw different mus
     mus = np.random.default_rng(seed=seed).uniform(-3, 3, num_of_distr)
     sigmas = np.ones(num_of_distr)
@@ -134,7 +138,7 @@ def make_estimated_pdf(
     kern: str = "epanechnikov",
     grid_size: int = 10000,
     bandwidth: np.ndarray = 0.2,
-    bias_corrected : bool = True
+    bias_corrected: bool = True,
 ) -> list[Function]:
     """Turn sample_points array into Function class objects with their corresponding
     grid.
@@ -147,19 +151,12 @@ def make_estimated_pdf(
     # Check if we're only dealing with one single density
     if bias_corrected:
         return boundary_corrected_density_estimator(
-            x_vals = pdfs_x,
-            sample_of_points = sample_points,
-            h=bandwidth,
-            kernel_type=kern
+            x_vals=pdfs_x, sample_of_points=sample_points, h=bandwidth, kernel_type=kern,
         )
     else:
         return density_estimator(
-            x_vals = pdfs_x,
-            sample_of_points = sample_points,
-            h=bandwidth,
-            kernel_type=kern
+            x_vals=pdfs_x, sample_of_points=sample_points, h=bandwidth, kernel_type=kern,
         )
-
 
 
 # Truncated normal pdf
@@ -197,7 +194,10 @@ def make_truncnorm_pdf(
 
     # Check whether each density integrates to 1
     pdfs_y = _check_and_normalize_density(
-        x_vals=pdf_x, y_vals=pdfs_y, eps=1e-5, warn=warn_irregular_densities,
+        x_vals=pdf_x,
+        y_vals=pdfs_y,
+        eps=1e-5,
+        warn=warn_irregular_densities,
     )
     return [(pdf_x, pdf_y) for pdf_y in pdfs_y]
 
@@ -240,7 +240,10 @@ def _norm_cdf(
 
 
 def _check_and_normalize_density(
-    x_vals: np.ndarray, y_vals: np.ndarray, eps: float = 1e-5, warn: bool = True,
+    x_vals: np.ndarray,
+    y_vals: np.ndarray,
+    eps: float = 1e-5,
+    warn: bool = True,
 ) -> np.ndarray:
     """Checks whether y_vals is an array of valid densities, i.e., whether they
     integrate to one.

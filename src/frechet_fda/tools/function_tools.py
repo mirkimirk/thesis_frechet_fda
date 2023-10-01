@@ -1,7 +1,6 @@
 """This module contains tools to use with the distribution class."""
 
 import numpy as np
-
 from frechet_fda.function_class import Function
 
 
@@ -12,7 +11,7 @@ def make_function_objects(xy_tuples: list[tuple]) -> list[Function]:
     return [Function(*xy_tuple) for xy_tuple in xy_tuples]
 
 
-def pdf_to_qdf(pdf: Function, save_support_start : bool = False) -> Function:
+def pdf_to_qdf(pdf: Function, save_support_start: bool = False) -> Function:
     """Directly convert a pdf to a qdf using inverse function rule on qf."""
     quantile_func = pdf.integrate().invert()
     if save_support_start:
@@ -22,8 +21,8 @@ def pdf_to_qdf(pdf: Function, save_support_start : bool = False) -> Function:
 
 
 def qdf_to_pdf(
-        qdf: Function, start_val : float = 0, center_on_zero : bool = False
-    ) -> Function:
+    qdf: Function, start_val: float = 0, center_on_zero: bool = False,
+) -> Function:
     """Directly convert a qdf to a pdf using inverse function rule on cdf."""
     if center_on_zero:
         cdf = qdf.integrate().vcenter().invert()
@@ -37,7 +36,7 @@ def get_optimal_range(funcs: list[Function], delta: float = 1e-3) -> np.ndarray:
 
     This is used so the qdfs dont get astronomically large at the boundaries and destroy
     numerical methods.
-    
+
     Note: The method here assumes that the functions do have a compact
     support (even if it is narrower than the initial support). So if there is a point x1
     where func.y > delta is true, another point x2 > x1 where it is not, and then
@@ -67,9 +66,8 @@ def mean_func_legacy(funcs: list[Function]) -> Function:
 
 
 def log_qd_transform(
-        densities_sample: list[Function],
-        different_supports : bool = False
-    ) -> list[Function]:
+    densities_sample: list[Function], different_supports: bool = False,
+) -> list[Function]:
     """Perfrom log quantile density transformation on a density sample."""
     qdfs = [
         pdf_to_qdf(density.drop_inf(), different_supports)
@@ -78,14 +76,13 @@ def log_qd_transform(
     if different_supports:
         qdfs = np.array(qdfs)
         lqdfs = [qdf.log() for qdf in qdfs[:, 0]]
-        return np.array((lqdfs, qdfs[:, 1]))
+        return lqdfs, qdfs[:, 1]
     else:
         return [qdf.log() for qdf in qdfs]
 
 
 def inverse_log_qd_transform(
-    transformed_funcs : list[Function],
-    start_of_support : list[float] = None
+    transformed_funcs: list[Function], start_of_support: list[float] = None,
 ) -> list[Function]:
     """Transform back into density space."""
     natural_qfs = [func.exp().integrate() for func in transformed_funcs]
@@ -101,12 +98,14 @@ def inverse_log_qd_transform(
 
 
 def inverse_log_qd_transform_corrected(
-    transformed_funcs : list[Function],
+    transformed_funcs: list[Function],
 ) -> list[Function]:
     """Invert the log quantile density transform to get back into density space.
-    
+
     Not used, I must understand something wrong about the implementation with a
-    different support."""
+    different support.
+
+    """
     # First compute quantile function via natural inverse
     natural_qfs = [func.exp().integrate() for func in transformed_funcs]
     # Compute correction factors to normalize quantiles
@@ -125,27 +124,28 @@ def inverse_log_qd_transform_corrected(
 
 
 def frechet_mean(
-        density_sample: list[Function], centered_on_zero : bool = False
-    ) -> Function:
+    density_sample: list[Function], centered_on_zero: bool = False,
+) -> Function:
     """Compute Fréchet mean of a given sample of densities.
-    
+
     By default, estimates new support by taking the mean of the left bounds of the
     sample of densities. If centered_on_zero specified, then resulting mean density is
     transformed to be centered around zero.
+
     """
     qdfs_and_start_vals = np.array(
-        [pdf_to_qdf(density, True) for density in density_sample]
+        [pdf_to_qdf(density, True) for density in density_sample],
     )
     qdfs = qdfs_and_start_vals[:, 0]
     start_vals = qdfs_and_start_vals[:, 1]
     mean_qdf = mean_func(qdfs)
-    mean_start_val = np.mean(start_vals) # estimated start of the support of mean pdf
+    mean_start_val = np.mean(start_vals)  # estimated start of the support of mean pdf
     return qdf_to_pdf(mean_qdf, mean_start_val, centered_on_zero)
 
 
 def quantile_distance(
-        distr1: Function, distr2: Function, already_qf : bool = False
-    ) -> float:
+    distr1: Function, distr2: Function, already_qf: bool = False,
+) -> float:
     """Compute Wasserstein / Quantile distance for two given pdfs or qfs."""
     if already_qf:
         qf1, qf2 = distr1, distr2
