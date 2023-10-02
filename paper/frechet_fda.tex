@@ -43,6 +43,7 @@
     citestyle = authoryear-comp,
     date=year,
     maxcitenames = 3,
+    mincitenames = 1,
     maxbibnames = 10,
     useprefix = false,
     sortcites = true,
@@ -70,8 +71,8 @@
 \DeclareFieldFormat
   [article,inbook,incollection,inproceedings,patent,thesis,unpublished]
   {titlecase:title}{\MakeSentenceCase*{#1}}
-\AtBeginDocument{\toggletrue{blx@useprefix}}
-% \AtBeginBibliography{\togglefalse{blx@useprefix}} % das is unnötig denke ich
+% \AtBeginDocument{\toggletrue{blx@useprefix}}
+\AtBeginBibliography{\togglefalse{blx@useprefix}} % das is unnötig denke ich
 \renewbibmacro*{begentry}{\midsentence} % damit Hans-Martins Präfix richtig funktioniert
 % \setlength{\bibitemsep}{1.5ex}
 \addbibresource{refs.bib}
@@ -201,7 +202,7 @@ it looks like.
 
 \newpage
 
-\nocite{von_gaudecker_templates_2019}
+\nocite{Gaudecker2019}
 \printbibliography
 
 \end{document}

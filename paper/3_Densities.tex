@@ -1,11 +1,20 @@
+(FIND PAPER WHERE I GOT THIS INTERPRETATION FROM!)
 In this chapter we are going to examine the case of density regression, i.e., a
-a regression model with densities as responses. Since 
+regression model with densities as responses. Since $\mathcal{D} \subseteq L^2(\mathbb{R})$,
+one can choose to interpret the densities as elements of
+the Hilbert space $\mathcal{L}^2$ and directly apply fda methods on the densities
+\parencite[see e.g.][]{KneipUtikal2001}. However,
+as $\mathcal{D}$ is not a linear subspace of $\mathcal{L}^2$, it is not guaranteed that
+we yield results within $\mathcal{D}$ --- it only means we will yield results within $\mathcal{L}^2$.
+Alternative characterizations of the space $\mathcal{D}$ have been explored,
+
+
 
 This might at first glance seem like a
 special case of functional regression since the space of densities on [a,b] is a subset
 of L2([a,b]), so that fda methods are applicable to this problem. However, since the
 space of densities is itself not a \textit{linear subspace} of L2, the results of the
-fda methods 
+fda methods
 
 Distributions can be characterized by f, F, Q, and q, among others. Of these, the least
 constraints are on q (sometimes called "sparsity", see \textcite{Tukey1965}). These vanish if we
@@ -28,11 +37,11 @@ makes it impossible to get the original densities from those broken qds again. W
 to calculate the "effective" support of the densities, if they have very small sigmas,
 defined by the density values being larger than some epsilon on this support. This
 makes the transformation method from \textcite{PetersenMüller2016} inadequate, hence we
-used the modified transformation from \textcite{KokoszkaEtAl2019}. In their own R
+used the modified transformation from \textcite{KokoszkaEtAl2019}.\footnote{In their own R
 package (\citetitle{fdadensity}), the authors have "RegularizeByAlpha" function, which tries to raise the minimal
 value of a density to a given level alpha (and normalizes afterward, so we still have a
 valid density). This also gets rid of the numerical artifacts and doesnt change the
-support of the function, which makes the methods from their paper still adequate.
+support of the function, which makes the methods from their paper still adequate.}
 
 
 For the prediction of the start values, we linearly interpolated between the given start

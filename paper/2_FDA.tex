@@ -4,7 +4,26 @@ case of densities as responses is discussed.
 
 \subsection{Basic Concepts and Notation}
 \label{sec:basics}
-Throughout this text, the following notation and concepts will be used.
+Here, we will fix some notation. $\Omega$ generally denotes the space of random objects
+we are interested in. $\mathcal{G}$ will generally denote the "set of distributions", i.e., the set containing
+any class of functions that can represent a distribution. For example, the set of pdfs,
+the set of cumulative distribution functions (cdfs), the set of quantile functions(qfs),
+or the set of quantile-density functions (qdfs). (We will define these functions later.)
+
+Following \textcite{PetersenZhangKokoszka2022}, we denote with
+\begin{equation*}
+    \mathcal{D} \subseteq \left\{ f : f(x) \geq 0, \int_{\mathbb{R}} f(x) \, dx = 1 \right\}
+\end{equation*}
+the set of probability density functions (pdfs) that are of interest to us.\footnote{Note that
+this especially means that $\mathcal{D}$ can contain densities with different supports.
+This will be significant later on when we perform transformations on these densities.}
+$\Omega$ will be of use when generally explaining fda methods and theory, as well as
+the concept of Fréchet regression. In the applications, we will be focussed on either
+$\Omega = \mathcal{G}$ or $\Omega = \mathcal{D}$
+
+We use x, z as arguments in this space, u, v as arguments in the other.
+
+
 
 \begin{definition}[$L^2$]
     The space \( L^2(\Omega) \) consists of all functions \( f: \Omega \to \mathbb{R} \) such that
