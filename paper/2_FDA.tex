@@ -1,21 +1,78 @@
 This section gives a brief introduction to some foundations of FDA as well as basic
 methods in the context of functional responses. The relation and applicability to the
-case of densities as responses is discussed.
+case of densities as responses is discussed. First, we will discuss basic definitions
+and notation.
 
-\subsection{Basic Concepts and Notation}
+\subsection{Basic Definitions and Notation}
 \label{sec:basics}
-Here, we will fix some notation. $\Omega$ generally denotes the space of random objects
-we are interested in. $\mathcal{G}$ will generally denote the "set of distributions", i.e., the set containing
-any class of functions that can represent a distribution. For example, the set of pdfs,
-the set of cumulative distribution functions (cdfs), the set of quantile functions(qfs),
-or the set of quantile-density functions (qdfs). (We will define these functions later.)
+A very basic operation we will use in this text is switching between different functions
+that characterize a distribution. We will deal with the following four important classes
+of functions that characterize a distribution:
+
+\begin{definition}[pdfs, cdfs, qfs, and qdfs]
+    Let \(\mathbb{R}^+\) be the set of nonnegative reals.
+    \begin{enumerate}
+        \item The \textbf{probability density function (pdf)} is a function
+        \( f: \mathbb{R} \to \mathbb{R}^+ \), where \(\mathbb{R}^+\) denotes the set of
+        nonnegative reals, such that \( \int_{\mathbb{R}} f(x) \, dx = 1 \)
+        and \( f(x) \geq 0 \) for all \( x \in \mathbb{R} \).
+
+        \item The \textbf{cumulative cistribution function (cdf)} is given by
+        \( F(x) \coloneqq \int_{-\infty}^{x} f(t) \, dt \), where \( f \) is the pdf.
+        Note that \( F\) is non-decreasing and right-continuous,
+        with \( \lim_{{x \to -\infty}} F(x) = 0 \) and \( \lim_{{x \to \infty}} F(x) = 1 \).
+
+        \item The inverse of \(F\) is called the \textbf{quantile function (qf)},
+        and denoted by \(Q\). It is given by \( Q(u) \coloneqq F^{-1}(u) =
+        \inf \{ x \in \mathbb{R} \mid F(x) \geq u \} \) for \( u \in [0, 1] \).
+
+        \item The derivative of \(Q(u)\) w.r.t. \(u\) is called the \textbf{quantile
+        density function (qdf)}, and denoted by \(q\). It is given by
+        \(q(u) \coloneqq \frac{d}{du} Q(u)\) for \( u \in [0, 1] \).
+    \end{enumerate}
+\end{definition}
+
+For clarity, we will use the arguments $x$ and $z$ for pdfs and cdfs, and the arguments
+$u$ and $v$ for qfs and qdfs.
+The following relations will be useful later when we look at transformations of the
+density functions \parencite[cf.][]{JONES1992}:
+
+\begin{lemma}
+\label{lemma:f eq inverse qdf}
+    Let \(f\) be a pdf, \(F\) the corresponding cdf, \(Q\) the corresponding qf, and
+    \(q\) the corresponding qdf. Then it holds that
+    \begin{equation}
+    \label{eq:qdfinversef}
+        {q}(u) = \frac{1}{{f}({Q}(u))},
+    \end{equation}
+    and
+    \begin{equation}
+    \label{eq:finverseqdf}
+        {f}(x) = \frac{1}{{q}({F}(x))},
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    We will show that \eqref{eq:qdfinversef} holds, \eqref{eq:finverseqdf} follows
+    analogously. Note that \( q = (F^{-1})' \), so we can use the inverse function
+    rule to characterize \(q \) with the inverse ($Q$) and derivative ($f$) of \( F \):
+    \begin{equation}
+    \label{eq:proof_qdfinversef}
+        (F^{-1})'(u) = \frac{1}{{F'}({F^{-1}}(u))} = \frac{1}{{f}({Q}(u))}
+    \end{equation}
+\end{proof}
+
+Because of \eqref{eq:qdfinversef}, the qdf is sometimes called the "sparsity"
+\parencite[cf.][]{Tukey1965}.
+($\Omega$ denotes the space of random objects
+we are interested in. $\mathcal{G}$ will denote the "set of distributions", i.e., the set containing
+any class of functions that can represent a distribution.)
 
 Following \textcite{PetersenZhangKokoszka2022}, we denote with
 \begin{equation*}
     \mathcal{D} \subseteq \left\{ f : f(x) \geq 0, \int_{\mathbb{R}} f(x) \, dx = 1 \right\}
 \end{equation*}
 the set of probability density functions (pdfs) that are of interest to us.\footnote{Note that
-this especially means that $\mathcal{D}$ can contain densities with different supports.
+this in particular means that $\mathcal{D}$ can contain densities with different supports.
 This will be significant later on when we perform transformations on these densities.}
 $\Omega$ will be of use when generally explaining fda methods and theory, as well as
 the concept of Fréchet regression. In the applications, we will be focussed on either
@@ -80,4 +137,4 @@ Karhunen-Loève decomposition (described in the \ref{sec:mercer and kh}) to reco
 that describe the main modes of variation, in descending order.
 
 We computed the discretized grid as described in \citet[Chapter~8.4.1]{RamsaySilverman2005}. Another analogous way
-is described in KNEIP AND UTIKAL.
+is described in KNEIP AND UTIKAL. (DELICADO 2011 SUMMARIZES THIS.)

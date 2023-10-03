@@ -27,6 +27,7 @@
 \usepackage{fancyvrb, moreverb, relsize}
 \usepackage{eurosym, calc}
 \usepackage{amsmath, amssymb, amsfonts, amsthm, bm}
+\usepackage{mathtools}
 \usepackage{caption}
 \usepackage{subcaption}
 % \captionsetup[subfigure]{labelformat=empty}
@@ -42,8 +43,7 @@
     bibstyle = ext-authoryear-ibid, % "ext" adds some finer configuration options
     citestyle = authoryear-comp,
     date=year,
-    maxcitenames = 3,
-    mincitenames = 1,
+    maxcitenames = 2,
     maxbibnames = 10,
     useprefix = false,
     sortcites = true,
@@ -84,9 +84,9 @@
 % Theorems etc.
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{corollary}{Corollary}[theorem]
-\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{theorem}{Theorem}[definition]
+\newtheorem{corollary}{Corollary}[definition]
+\newtheorem{lemma}[definition]{Lemma}
 \renewcommand\qedsymbol{$\blacksquare$}
 
 
