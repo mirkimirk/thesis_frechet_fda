@@ -12,30 +12,31 @@ of functions that characterize a distribution:
 \begin{definition}[pdfs, cdfs, qfs, and qdfs]
     Let \(\mathbb{R}^+\) be the set of nonnegative reals.
     \begin{enumerate}
-        \item The \textbf{probability density function (pdf)} is a function
-        \( f: \mathbb{R} \to \mathbb{R}^+ \), where \(\mathbb{R}^+\) denotes the set of
-        nonnegative reals, such that \( \int_{\mathbb{R}} f(x) \, dx = 1 \)
+        \item The \textit{probability density function (pdf)} is a function
+        \( f: \mathbb{R} \to \mathbb{R}^+ \) such that \( \int_{\mathbb{R}} f(x) \, dx = 1 \)
         and \( f(x) \geq 0 \) for all \( x \in \mathbb{R} \).
 
-        \item The \textbf{cumulative cistribution function (cdf)} is given by
+        \item The \textit{cumulative cistribution function (cdf)} is given by
         \( F(x) \coloneqq \int_{-\infty}^{x} f(t) \, dt \), where \( f \) is the pdf.
         Note that \( F\) is non-decreasing and right-continuous,
         with \( \lim_{{x \to -\infty}} F(x) = 0 \) and \( \lim_{{x \to \infty}} F(x) = 1 \).
 
-        \item The inverse of \(F\) is called the \textbf{quantile function (qf)},
+        \item The inverse of \(F\) is called the \textit{quantile function (qf)},
         and denoted by \(Q\). It is given by \( Q(u) \coloneqq F^{-1}(u) =
         \inf \{ x \in \mathbb{R} \mid F(x) \geq u \} \) for \( u \in [0, 1] \).
 
-        \item The derivative of \(Q(u)\) w.r.t. \(u\) is called the \textbf{quantile
+        \item The derivative of \(Q(u)\) w.r.t. \(u\) is called the \textit{quantile
         density function (qdf)}, and denoted by \(q\). It is given by
         \(q(u) \coloneqq \frac{d}{du} Q(u)\) for \( u \in [0, 1] \).
     \end{enumerate}
 \end{definition}
 
 For clarity, we will use the arguments $x$ and $z$ for pdfs and cdfs, and the arguments
-$u$ and $v$ for qfs and qdfs.
-The following relations will be useful later when we look at transformations of the
-density functions \parencite[cf.][]{JONES1992}:
+$u$ and $v$ for qfs and qdfs. Since we will later only look at densities from continuous
+distributions on their support (i.e., where $f > 0$), we will in the following assume
+that $F$ is strictly increasing and thus its inverse $Q$ to be well-defined.
+The following relation between the pdf and qdf will be useful later when computing
+transformations of the density functions \parencite[cf.][]{JONES1992}:
 
 \begin{lemma}
 \label{lemma:f eq inverse qdf}
@@ -68,9 +69,10 @@ we are interested in. $\mathcal{G}$ will denote the "set of distributions", i.e.
 any class of functions that can represent a distribution.)
 
 Following \textcite{PetersenZhangKokoszka2022}, we denote with
-\begin{equation*}
+\begin{equation}
+\label{eq:density_set}
     \mathcal{D} \subseteq \left\{ f : f(x) \geq 0, \int_{\mathbb{R}} f(x) \, dx = 1 \right\}
-\end{equation*}
+\end{equation}
 the set of probability density functions (pdfs) that are of interest to us.\footnote{Note that
 this in particular means that $\mathcal{D}$ can contain densities with different supports.
 This will be significant later on when we perform transformations on these densities.}
@@ -78,22 +80,34 @@ $\Omega$ will be of use when generally explaining fda methods and theory, as wel
 the concept of Fréchet regression. In the applications, we will be focussed on either
 $\Omega = \mathcal{G}$ or $\Omega = \mathcal{D}$
 
-We use x, z as arguments in this space, u, v as arguments in the other.
-
-
-
-\begin{definition}[$L^2$]
-    The space \( L^2(\Omega) \) consists of all functions \( f: \Omega \to \mathbb{R} \) such that
-    \[
-    \int_{\Omega} |f(x)|^2 \, dx < \infty
-    \]
-\end{definition}
-
 \subsection{Hilbert Space Theory and Linear Operators}
 \label{sec:hilbert spaces}
 This section will introduce basic mathematical concepts needed for functional data
-analysis before they will be explained in their relation to specific methods in the
-following sections.
+analysis. In later sections, these will be used for derivations and proofs.
+
+In fda, it is generally assumed that the functions we are dealing with live in a
+\textit{Hilbert space}:
+\begin{definition}[Hilbert space]
+    A (real) vector space $\mathcal{H}$, endowed with an inner product $\inpr{\cdot}{\cdot}_\mathcal{H}$,
+    a norm $\norm{\cdot}_\mathcal{H}$ that is induced by this inner product, and that satisfies
+    completeness with respect to this norm, is called a (real) \textit{Hilbert space}.
+\end{definition}
+This concept helps generalizing many useful notions from the finite-dimensional 
+Euclidean space in multivariate analysis to infinite-dimensional function spaces. The norm
+$\norm{\cdot}_\mathcal{H}$ measures the size of an element in $\mathcal{H}$ and makes it
+comparable with others. It also induces a metric via
+$d_\mathcal{H}(a, b) = \norm{a - b}_\mathcal{H}$ to measure
+the distance between two elements in $\mathcal{H}$. The concept of inner product makes it
+possible to evaluate the angle between two vectors in $\mathcal{H}$, which is useful for
+finding orthogonal elements.
+
+\begin{definition}[$\mathcal{L}^2$]
+    Let $\mathcal{A} \subseteq \mathbb{R}$ be compact. The space \( \mathcal{L}^2(\mathcal{A}) \)
+    consists of all functions \( f: \mathcal{A} \to \mathbb{R} \) such that
+    \[
+    \int_{\mathcal{A}} |f(x)|^2 \, dx < \infty
+    \]
+\end{definition}
 
 A Hilbert Space is this and that....
 
