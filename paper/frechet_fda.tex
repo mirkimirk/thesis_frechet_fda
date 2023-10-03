@@ -81,9 +81,13 @@
 \newcommand{\inpr}[2]{\left \langle #1, #2 \right \rangle}
 \newcommand{\norm}[1]{\|#1\|}
 
-
 % Theorems etc.
-\theoremstyle{definition}
+\newtheoremstyle{break}
+  {\topsep}{\topsep}%
+  {\normalfont}{}%
+  {\bfseries}{}%
+  {\newline}{}%
+\theoremstyle{break}
 \newtheorem{definition}{Definition}[section]
 \newtheorem{theorem}{Theorem}[definition]
 \newtheorem{corollary}{Corollary}[definition]
@@ -187,16 +191,12 @@ it looks like.
 \appendix
 \pagenumbering{Roman}
 
-\section{Nonparametric Regression}
-\label{sec:npregression}
-\input{A_NPRegression.tex}
-
 \section{Numerics}
 \label{sec:Numerics}
-\input{B_Numerics.tex}
+\input{A_Numerics.tex}
 
-\section{Proofs}
-\label{sec:proofs}
+\section{Code}
+\label{sec:code}
 
 %%%%%%%%%% BIBLIOGRAPY %%%%%%%%%%
 

@@ -1,7 +1,5 @@
-This section gives a brief introduction to some foundations of FDA as well as basic
-methods in the context of functional responses. The relation and applicability to the
-case of densities as responses is discussed. First, we will discuss basic definitions
-and notation.
+This section provides mathematical background for fda, and establishes basic concepts
+and notation that will be used throughout this text.
 
 \subsection{Basic Definitions and Notation}
 \label{sec:basics}
@@ -22,11 +20,11 @@ of functions that characterize a distribution:
         with \( \lim_{{x \to -\infty}} F(x) = 0 \) and \( \lim_{{x \to \infty}} F(x) = 1 \).
 
         \item The inverse of \(F\) is called the \textit{quantile function (qf)},
-        and denoted by \(Q\). It is given by \( Q(u) \coloneqq F^{-1}(u) =
+        and is denoted by \(Q\). It is given by \( Q(u) \coloneqq F^{-1}(u) =
         \inf \{ x \in \mathbb{R} \mid F(x) \geq u \} \) for \( u \in [0, 1] \).
 
         \item The derivative of \(Q(u)\) w.r.t. \(u\) is called the \textit{quantile
-        density function (qdf)}, and denoted by \(q\). It is given by
+        density function (qdf)}, and is denoted by \(q\). It is given by
         \(q(u) \coloneqq \frac{d}{du} Q(u)\) for \( u \in [0, 1] \).
     \end{enumerate}
 \end{definition}
@@ -36,7 +34,7 @@ $u$ and $v$ for qfs and qdfs. Since we will later only look at densities from co
 distributions on their support (i.e., where $f > 0$), we will in the following assume
 that $F$ is strictly increasing and thus its inverse $Q$ to be well-defined.
 The following relation between the pdf and qdf will be useful later when computing
-transformations of the density functions \parencite[cf.][]{JONES1992}:
+transformations of the density functions \parencite[cf.][]{Jones1992}:
 
 \begin{lemma}
 \label{lemma:f eq inverse qdf}
@@ -55,14 +53,15 @@ transformations of the density functions \parencite[cf.][]{JONES1992}:
 \begin{proof}
     We will show that \eqref{eq:qdfinversef} holds, \eqref{eq:finverseqdf} follows
     analogously. Note that \( q = (F^{-1})' \), so we can use the inverse function
-    rule to characterize \(q \) with the inverse ($Q$) and derivative ($f$) of \( F \):
+    rule to characterize \(q \) with the inverse $Q = F^{-1}$ and derivative $f = F'$
+    of \( F \):
     \begin{equation}
     \label{eq:proof_qdfinversef}
         (F^{-1})'(u) = \frac{1}{{F'}({F^{-1}}(u))} = \frac{1}{{f}({Q}(u))}
     \end{equation}
 \end{proof}
 
-Because of \eqref{eq:qdfinversef}, the qdf is sometimes called the "sparsity"
+Because of \eqref{eq:qdfinversef}, the qdf is sometimes called the "sparsity function"
 \parencite[cf.][]{Tukey1965}.
 ($\Omega$ denotes the space of random objects
 we are interested in. $\mathcal{G}$ will denote the "set of distributions", i.e., the set containing
@@ -85,21 +84,43 @@ $\Omega = \mathcal{G}$ or $\Omega = \mathcal{D}$
 This section will introduce basic mathematical concepts needed for functional data
 analysis. In later sections, these will be used for derivations and proofs.
 
-In fda, it is generally assumed that the functions we are dealing with live in a
-\textit{Hilbert space}:
-\begin{definition}[Hilbert space]
-    A (real) vector space $\mathcal{H}$, endowed with an inner product $\inpr{\cdot}{\cdot}_\mathcal{H}$,
-    a norm $\norm{\cdot}_\mathcal{H}$ that is induced by this inner product, and that satisfies
-    completeness with respect to this norm, is called a (real) \textit{Hilbert space}.
+For many methods in fda to work and be theoretically justified, additional structure on
+the set of functions under consideration is assumed. This structure is most often the
+$\mathcal{L}^2$ space of square integrable functions. This space is a separable Hilbert
+space. To define $\mathcal{L}^2$ and the separable Hilbert space, we first need the
+following definitions:
+
+\begin{definition}[Inner Product and Inner Product Space]
+    Let \( V \) be a real vector space. A function $\inpr{\cdot}{\cdot}_V$ that maps any
+    two vectors \( s, t \in V \) to a real number \( \inpr{s}{t}_V \) is called an
+    \textit{inner product} if it satisfies the following properties:
+    \begin{enumerate}
+        \item \textbf{Symmetry}: \( \inpr{s}{t}_V  = \inpr{t}{s}_V \) for all \( s, t \in V \).
+        \item \textbf{Linearity in First Argument}: \( \inpr{as + bt}{w}_V = a \inpr{s}{w}_V + b \inpr{t}{w}_V \) for all \( s, t, w \in V \) and \( a, b \in \mathbb{R} \).
+        \item \textbf{Positive Definiteness}: \( \inpr{s}{t}_V \geq 0 \) and \( \inpr{t}{t}_V = 0 \) if and only if \( t = 0 \) for all \( s, t \in V \).
+    \end{enumerate}
+    A real vector space \( V \) equipped with such an inner product is called an
+    \textit{inner product space}.
 \end{definition}
-This concept helps generalizing many useful notions from the finite-dimensional 
+
+For fda, we need the following special case of an inner product space:
+\begin{definition}[Hilbert Space]
+    Let $\mathcal{H}$ be an inner product space, and denote by $\inpr{\cdot}{\cdot}_\mathcal{H}$
+    the inner product of this space. Then $\norm{x}_\mathcal{H} = \sqrt{\inpr{x}{x}_\mathcal{H}}$
+    is the norm induced by the inner product, and $d_\mathcal{H}(a, b) = \norm{a - b}_\mathcal{H}$
+    is the distance induced by the norm. If $\mathcal{H}$ is complete with respect
+    to this metric, i.e., if every Cauchy sequence of elements in $\mathcal{H}$ converges
+    in $\mathcal{H}$, then $\mathcal{H}$ is called a \textit{Hilbert space}.
+\end{definition}
+This concept helps generalizing many useful notions from the finite-dimensional
 Euclidean space in multivariate analysis to infinite-dimensional function spaces. The norm
 $\norm{\cdot}_\mathcal{H}$ measures the size of an element in $\mathcal{H}$ and makes it
 comparable with others. It also induces a metric via
-$d_\mathcal{H}(a, b) = \norm{a - b}_\mathcal{H}$ to measure
-the distance between two elements in $\mathcal{H}$. The concept of inner product makes it
-possible to evaluate the angle between two vectors in $\mathcal{H}$, which is useful for
-finding orthogonal elements.
+$d_\mathcal{H}(a, b) = \norm{a - b}_\mathcal{H}$ to measure the distance between two
+elements in $\mathcal{H}$. The concept of inner product makes it possible to evaluate
+the angle between two vectors in $\mathcal{H}$, which is useful for defining projections
+and for orthogonal decompositions of this space. Especially the latter will be very
+important for dimensionality reduction.
 
 \begin{definition}[$\mathcal{L}^2$]
     Let $\mathcal{A} \subseteq \mathbb{R}$ be compact. The space \( \mathcal{L}^2(\mathcal{A}) \)
