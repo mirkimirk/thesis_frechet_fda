@@ -8,8 +8,6 @@ as $\mathcal{D}$ is not a linear subspace of $\mathcal{L}^2$, it is not guarante
 we yield results within $\mathcal{D}$ --- it only means we will yield results within $\mathcal{L}^2$.
 Alternative characterizations of the space $\mathcal{D}$ have been explored,
 
-
-
 This might at first glance seem like a
 special case of functional regression since the space of densities on [a,b] is a subset
 of L2([a,b]), so that fda methods are applicable to this problem. However, since the
@@ -25,10 +23,12 @@ $psi(f)$ being the transformation of f as defined by \textcite{PetersenMüller20
 $Q(s_0)$ being the start of the density support ($s_0 > 0$ is fulfilled, since the support
 of $Q$ is chosen away from zero for numerical reasons anyway). For the predicted $f_i$ hats,
 in the inverse transformation the $s_0i$ from the corresponding observation $f_i$ was
-assigned as estimate $s_0i$hat.
+assigned as estimate $s_0i$ hat.
 
 For the descriptive Fréchet mean of the sample of densities, we had to estimate the
-starting_value for our modified inverse transformation method. 
+starting value for our modified inverse transformation method. Since it was a mean qdf,
+we deemed it appropriate to take a mean starting value. This estimation step indroduces
+uncertainty and thus our mean is not centered around zero, but close.
 
 (Transformation approach regression: underestimating mu and sigma for lower x,
 overestimating for higher x?) \textcite{PetersenLiuDivani2021}
@@ -45,7 +45,6 @@ package (\citetitle{fdadensity}), the authors have "RegularizeByAlpha" function,
 value of a density to a given level alpha (and normalizes afterward, so we still have a
 valid density). This also gets rid of the numerical artifacts and doesnt change the
 support of the function, which makes the methods from their paper still adequate.}
-
 
 For the prediction of the start values, we linearly interpolated between the given start
 values from the predictor observations. The ISE increases with sample size, which must
