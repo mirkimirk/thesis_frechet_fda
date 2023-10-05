@@ -34,16 +34,49 @@ def gen_params_regression(
     pass mu_params and sigma params, which have to contain specific entries.
 
     """
-    # Generate mus that linearly depend on x
+    # Generate mus that depend linearly on x
     mus = np.random.default_rng(seed).normal(
         loc=mu_params["mu0"] + mu_params["beta"] * predictor, scale=mu_params["v1"],
     )
-    # Generate sigmas that linearly depend on x
+    # Generate sigmas that depend linearly on x
     sh = (
         sigma_params["sigma0"] + sigma_params["gamma"] * predictor
     ) ** 2 / sigma_params["v2"]
     sc = sigma_params["v2"] / (
         sigma_params["sigma0"] + sigma_params["gamma"] * predictor
+    )
+    sigmas = np.random.default_rng(seed).gamma(shape=sh, scale=sc)
+
+    return mus, sigmas
+
+
+def gen_params_regression_squared(
+    mu_params: dict, sigma_params: dict, predictor: np.ndarray, seed: int = None,
+):
+    """Generates mus and sigmas for conditional distributions in regression context.
+
+    This is a slightly modified version of the first simulation scenario of
+    Petersen & Müller (2019). Need to pass mu_params and sigma params, which have to
+    contain specific entries.
+
+    """
+    # Generate mus that depend quadratically on x
+    mus = np.random.default_rng(seed).normal(
+        loc=mu_params["mu0"]
+        + mu_params["beta1"] * predictor
+        + mu_params["beta2"] * predictor ** 2,
+        scale=mu_params["v1"],
+    )
+    # Generate sigmas that depend quadratically on x
+    sh = (
+        sigma_params["sigma0"]
+        + sigma_params["gamma1"] * predictor
+        + sigma_params["gamma2"] * predictor ** 2
+    ) ** 2 / sigma_params["v2"]
+    sc = sigma_params["v2"] / (
+        sigma_params["sigma0"]
+        + sigma_params["gamma1"] * predictor
+        + sigma_params["gamma2"] * predictor ** 2
     )
     sigmas = np.random.default_rng(seed).gamma(shape=sh, scale=sc)
 
