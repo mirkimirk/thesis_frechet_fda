@@ -78,7 +78,7 @@ class Function:
         new_y = self.y[finite_indices]
         return Function(new_x, new_y)
 
-    def integrate(self, limits: tuple = None, method: str = "left"):
+    def integrate(self, limits: tuple = None, method: str = "midpoint"):
         """Integrate function using Riemann sums.
 
         Either `left`, `right`, or `midpoint` rule is used.
