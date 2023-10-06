@@ -35,34 +35,88 @@ overestimating for higher x?) \textcite{PetersenLiuDivani2021}
 
 \begin{figure}[h]
     \centering
+    \input{../bld/figures/broken_qdf.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{A numerically broken qdf from a low-variance distribution. The values
+    near the right boundary became too large to store for the computer.}
+    \label{fig:broken_qdf}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/fixed_qdf.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Fixed qdf by truncating the pdf support to where the pdf is greater than
+    $\varepsilon = \nobreak 10^{-3}$.}
+    \label{fig:fixed_qdf}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/naive_trunc_rep_vs_orig.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Naive truncated Karhunen-Loève representation of a sample density.}
+    \label{fig:naive_trunc_rep}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/trunc_rep_vs_orig.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Truncated Karhunen-Loève representation of a sample density.}
+    \label{fig:trunc_rep}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/1st_modes.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Comparison of first mode of variation of naive approach and of LQD approach.}
+    \label{fig:1st_modes}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/2nd_modes.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Comparison of second mode of variation of naive approach and of LQD approach.}
+    \label{fig:2nd_modes}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
     \input{../bld/figures/frechet_means.pgf}
     % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
-    \caption{Your Caption Here}
-    \label{fig:your_label}
+    \caption{Simulation results for calculating Fréchet mean densities with different
+    sample sizes.}
+    \label{fig:sim_f_mean}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \input{../bld/figures/f_mean_vs_denstimation.pgf}
     % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
-    \caption{Your Caption Here}
-    \label{fig:your_label}
+    \caption{Simulation results of Fréchet mean of observed densities vs.
+    Fréchet mean of estimated densities.}
+    \label{fig:sim_f_denstimation}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \input{../bld/figures/cs_mean_vs_denstimation.pgf}
     % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
-    \caption{Your Caption Here}
-    \label{fig:your_label}
+    \caption{Simulation results of cross-sectional mean of observed densities vs.
+    cross-sectional mean of estimated densities.}
+    \label{fig:sim_cs_denstimation}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \input{../bld/figures/comparison_f_cs.pgf}
     % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
-    \caption{Your Caption Here}
-    \label{fig:your_label}
+    \caption{Simulation results of Fréchet mean plotted against "naive" cross-sectional mean for
+    $n = 200$.}
+    \label{fig:sim_f_vs_cs}
 \end{figure}
 
 Optimal K for directly observed densities always 1, so graphic omitted.
@@ -71,24 +125,27 @@ Optimal K for directly observed densities always 1, so graphic omitted.
     \centering
     \input{../bld/figures/k_opt_denstimation_histogram.pgf}
     % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
-    \caption{Your Caption Here}
-    \label{fig:your_label}
+    \caption{Simulation results for optimal choice of $K$ in context of density estimation,
+    given that $\text{fve} \geq 90 \%$}
+    \label{fig:sim_k_opt_denstimation}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \input{../bld/figures/fve.pgf}
     % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
-    \caption{Your Caption Here}
-    \label{fig:your_label}
+    \caption{Boxplot of Fréchet fraction of variance explained with directly observed
+    densities, when $K = 1$.}
+    \label{fig:sim_fve}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \input{../bld/figures/fve_denstimation.pgf}
     % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
-    \caption{Your Caption Here}
-    \label{fig:your_label}
+    \caption{Boxplot of Fréchet fraction of variance explained with previously estimated
+    densities, when $K = 1$.}
+    \label{fig:sim_fve_denstimation}
 \end{figure}
 
 For densities with smaller sigmas, we get very low density values for big parts of the
