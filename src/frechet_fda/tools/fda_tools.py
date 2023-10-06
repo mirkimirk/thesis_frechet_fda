@@ -173,10 +173,16 @@ def k_optimal(
         densities_sample: list[Function],
         mean_function: Function,
         eigenfunctions: list[Function],
-        fpc_scores: np.ndarray
+        fpc_scores: np.ndarray,
+        save_specific_fve : int = None
     ) -> int:
     """Compute minimum number of components to include to reach ratio p of variance
     explained.
+
+    ToDo: Simplify this function.
+
+    save_specific_fve: Whether you want to save the fraction of variance explained for
+    a particular truncation value k. If so, specify how many pcs to incorporate.
     """
     fv = 0
     k_opt = 0
@@ -190,4 +196,9 @@ def k_optimal(
         )
         trunc_reps = inverse_log_qd_transform(trunc_reps_transforms)
         fv = fve(total_variance, densities_sample, trunc_reps)[0]
-    return k_opt, fv, trunc_reps
+        if (save_specific_fve is not None) & (k_opt == save_specific_fve):
+            fv_of_interest = fv
+    if (save_specific_fve is None):
+        return k_opt, fv, trunc_reps
+    else:
+        return k_opt, fv, trunc_reps, fv_of_interest

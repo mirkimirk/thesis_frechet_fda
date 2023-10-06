@@ -33,6 +33,64 @@ uncertainty and thus our mean is not centered around zero, but close.
 (Transformation approach regression: underestimating mu and sigma for lower x,
 overestimating for higher x?) \textcite{PetersenLiuDivani2021}
 
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/frechet_means.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Your Caption Here}
+    \label{fig:your_label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/f_mean_vs_denstimation.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Your Caption Here}
+    \label{fig:your_label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/cs_mean_vs_denstimation.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Your Caption Here}
+    \label{fig:your_label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/comparison_f_cs.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Your Caption Here}
+    \label{fig:your_label}
+\end{figure}
+
+Optimal K for directly observed densities always 1, so graphic omitted.
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/k_opt_denstimation_histogram.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Your Caption Here}
+    \label{fig:your_label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/fve.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Your Caption Here}
+    \label{fig:your_label}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/fve_denstimation.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/frechet_means.pgf}}
+    \caption{Your Caption Here}
+    \label{fig:your_label}
+\end{figure}
+
 For densities with smaller sigmas, we get very low density values for big parts of the
 support, leading to numerical artifacts when calculating the quantile densities (infs
 to the right, astronomical values to the left) which breaks further calculations and
