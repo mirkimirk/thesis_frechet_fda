@@ -74,9 +74,10 @@ def log_qd_transform(
         for density in densities_sample
     ]
     if different_supports:
-        qdfs = np.array(qdfs)
-        lqdfs = [qdf.log() for qdf in qdfs[:, 0]]
-        return lqdfs, qdfs[:, 1]
+        qdfs_and_start_vals = np.array(qdfs)
+        lqdfs = [qdf.log() for qdf in qdfs_and_start_vals[:, 0]]
+        start_vals = np.array(qdfs_and_start_vals[:, 1], dtype=np.float64)
+        return lqdfs, start_vals
     else:
         return [qdf.log() for qdf in qdfs]
 
@@ -150,6 +151,7 @@ def quantile_distance(
     if already_qf:
         qf1, qf2 = distr1, distr2
     else:
+        # Convert pdfs to qfs
         qf1 = distr1.integrate().invert()
         qf2 = distr2.integrate().invert()
     diff_squared = (qf1 - qf2) ** 2
