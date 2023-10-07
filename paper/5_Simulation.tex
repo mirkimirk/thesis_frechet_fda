@@ -6,3 +6,24 @@ the range with the individual quantile of the observation, and otherwise there i
 possibility to keep the mean, the linear dependence of the mean is lost. One can though
 see that the variance rises with x. This information is not lost in the log qdfs.
 
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lccc}
+        \hline
+        Method & Value 1 & Value 2 & Value 3 \\
+        \hline
+        Mean\_ISE\_Frechet & 0.18 & 0.08 & 0.04 \\
+        Mean\_ISE\_Func\_Reg & 34.49 & 31.19 & 31.88 \\
+        Mean\_ISE\_Frechet\_Denstimation & 32.31 & 27.98 & 27.38 \\
+        Mean\_ISE\_Func\_Reg\_Denstimation & 47.08 & 43.39 & 43.43 \\
+        \hline
+    \end{tabular}
+    \caption{Mean ISE Values}
+\end{table}
+
+
+The curve for the Fréchet mean with observed densities is farther off than the Fréchet
+mean with a previous density estimation step. We think this must be because the densities
+yielded by the density estimation have a smaller variance in the left bounds of their
+support, so that the uncertainty introduced by the estimation of the new left bound for
+the average is smaller.

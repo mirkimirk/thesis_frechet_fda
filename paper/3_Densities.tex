@@ -36,7 +36,7 @@ overestimating for higher x?) \textcite{PetersenLiuDivani2021}
 \begin{figure}[h]
     \centering
     \input{../bld/figures/fda/broken_qdf.pgf}
-    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/frechet_means.pgf}}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/broken_qdf.pgf}}
     \caption{A numerically broken qdf from a low-variance distribution. The values
     near the right boundary became too large to store for the computer.}
     \label{fig:broken_qdf}
@@ -45,7 +45,7 @@ overestimating for higher x?) \textcite{PetersenLiuDivani2021}
 \begin{figure}[h]
     \centering
     \input{../bld/figures/fda/fixed_qdf.pgf}
-    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/frechet_means.pgf}}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/fixed_qdf.pgf}}
     \caption{Fixed qdf by truncating the pdf support to where the pdf is greater than
     $\varepsilon = \nobreak 10^{-3}$.}
     \label{fig:fixed_qdf}
@@ -54,15 +54,16 @@ overestimating for higher x?) \textcite{PetersenLiuDivani2021}
 \begin{figure}[h]
     \centering
     \input{../bld/figures/fda/naive_trunc_rep_vs_orig.pgf}
-    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/frechet_means.pgf}}
-    \caption{Naive truncated Karhunen-Loève representation of a sample density.}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/naive_trunc_rep_vs_orig.pgf}}
+    \caption{Naive truncated Karhunen-Loève representation of a sample density. Added
+    small perturbation to differentiate the curves for $K=1$ and $K=2$.}
     \label{fig:naive_trunc_rep}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \input{../bld/figures/fda/trunc_rep_vs_orig.pgf}
-    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/frechet_means.pgf}}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/trunc_rep_vs_orig.pgf}}
     \caption{Truncated Karhunen-Loève representation of a sample density.}
     \label{fig:trunc_rep}
 \end{figure}
@@ -70,7 +71,7 @@ overestimating for higher x?) \textcite{PetersenLiuDivani2021}
 \begin{figure}[h]
     \centering
     \input{../bld/figures/fda/1st_modes.pgf}
-    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/frechet_means.pgf}}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/1st_modes.pgf}}
     \caption{Comparison of first mode of variation of naive approach and of LQD approach.}
     \label{fig:1st_modes}
 \end{figure}
@@ -78,7 +79,7 @@ overestimating for higher x?) \textcite{PetersenLiuDivani2021}
 \begin{figure}[h]
     \centering
     \input{../bld/figures/fda/2nd_modes.pgf}
-    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/frechet_means.pgf}}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/2nd_modes.pgf}}
     \caption{Comparison of second mode of variation of naive approach and of LQD approach.}
     \label{fig:2nd_modes}
 \end{figure}
