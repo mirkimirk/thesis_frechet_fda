@@ -1,4 +1,4 @@
-\documentclass[12pt, a4paper, bibtotoc, liststotoc]{scrartcl}
+\documentclass[12pt, a4paper, bibtotoc]{scrartcl}
 
 % Margins
 \usepackage[paper = a4paper, left = 30mm, right = 20mm, top = 20mm, bottom = 20mm]{geometry}
@@ -194,11 +194,15 @@ it looks like.
 \pagenumbering{Roman}
 
 \section{Numerics}
-\label{sec:Numerics}
-\input{A_Numerics.tex}
+\label{sec:numerics}
+\input{Numerics.tex}
 
 \section{Code}
 \label{sec:code}
+
+\section{Additional Figures}
+\label{sec:figures}
+\input{Figures.tex}
 
 %%%%%%%%%% BIBLIOGRAPY %%%%%%%%%%
 
@@ -207,5 +211,29 @@ it looks like.
 
 \nocite{Gaudecker2019}
 \printbibliography
+
+%%%%%% Statement of authorship
+\newpage
+\thispagestyle{empty}  % No page number
+\null\vfill            % Center the text vertically
+\begin{center}
+I hereby confirm that the work presented has been performed and interpreted solely by
+myself except for where I explicitly identified the contrary. I assure that this work has
+not been presented in any other form for the fulfillment of any other degree or
+qualification. Ideas taken from other works in letter and in spirit are identified
+in every single case.
+\end{center}
+
+\vspace{2cm} % Create some space between the declaration and the date/signature lines
+
+\begin{flushright}
+\begin{tabular}{p{8cm}}
+Date: \underline{\hspace{3cm}} \\ [1.0ex]
+Signature: \underline{\hspace{3cm}}
+\end{tabular}
+\end{flushright}
+
+\vfill\null
+\newpage
 
 \end{document}
