@@ -4,6 +4,111 @@ and some background.
 \subsection{Fréchet Mean and Variance}
 \label{sec:fr mean and variance}
 
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/1stlastqf.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/1stlastqf.pgf}}
+    \caption[Two sample qfs]{Plot of two sample qfs, one with predictor value $p = -1$, and the other
+    for $p = 1$.}
+    \label{fig:1stlastqf}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/some_densities.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/some_densities.pgf}}
+    \caption[Several sampled densities]{Plot of several sample densities.}
+    \label{fig:some_densities}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/frechet_estimates.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/frechet_estimates.pgf}}
+    \caption[Estimated pdfs from Fréchet method]{Plot of estimated densities via Fréchet regression method.}
+    \label{fig:frechet_estimates}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/frechet_estimates_3d.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/frechet_estimates_3d.pgf}}
+    \caption[Estimated qfs from Fréchet method]{Plot of estimated qfs via Fréchet regression method.}
+    \label{fig:frechet_estimates_3d}
+\end{figure}
+
+% \begin{figure}[h]
+%     \centering
+%     % \input{../bld/figures/frechet/all_observations_3d.pgf}
+%     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/all_observations_3d.pgf}}
+%     \caption{Plot of sampled qfs and their predictor values.}
+%     \label{fig:all_observations_3d}
+% \end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/betas.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/betas.pgf}}
+    \caption[Estimated betas in LQD functional regression]{Plot of estimated betas from
+    functional regression with LQD method.}
+    \label{fig:betas}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/beta0vsmean.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/beta0vsmean.pgf}}
+    \caption[Equality of mean LQD function and $\beta_0$]{Plot that shows the equality
+    of the mean LQD function and $\beta_0$.}
+    \label{fig:beta0vsmean}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/func_est_vs_true.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/func_est_vs_true.pgf}}
+    \caption[Comparison: estimated vs. true densities --- LQD]{Estimated
+    densities from functional regression with LQD method plotted against the true densities for some selected predictor values.}
+    \label{fig:func_est_vs_true}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/frechet_est_vs_true.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/frechet_est_vs_true.pgf}}
+    \caption[Comparison: estimated vs. true densities --- Fréchet]{Estimated
+    densities from Fréchet regression plotted against the true densities for some selected
+    predictor values.}
+    \label{fig:frechet_est_vs_true}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/ise_frechet.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/ise_frechet.pgf}}
+    \caption[Simulation results: boxplot ISE Fréchet]{Boxplot showing distribution of
+    ISE from Fréchet estimates in scenario with directly observed densities.}
+    \label{fig:ise_frechet}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/ise_frechet_denstimation.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/ise_frechet_denstimation.pgf}}
+    \caption[Simulation results: boxplot ISE Fréchet with density estimation]{Boxplot
+    showing distribution of ISE from Fréchet estimates in scenario with additional
+    density estimation step to obtain densities.}
+    \label{fig:ise_frechet_denstimation}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/ise_func_reg_both.pgf}
+    \resizebox{\textwidth}{!}{\input{../bld/figures/frechet/ise_func_reg_both.pgf}}
+    \caption[Simulation results: boxplot ISE functional regression]{Boxplot showing
+    distribution of ISE from functional regression with LQD method in both scenarios.}
+    \label{fig:ise_func_reg_both}
+\end{figure}
 
 
 It can be shown that $d_Q(f,g)$ = $d_W(f,g)$, for any two densities $f$ and $g$ in the

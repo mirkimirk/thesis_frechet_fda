@@ -4,6 +4,24 @@ obtaining the quantile densities from the densities, the densities from the smal
 variance distributions are very close to zero for much of their support, leading to the
 qfs to have a very steep slope (i.e. high valued qdfs) near the boundaries. These
 astronomical values (even "infs") lead to problems when computing the mean qdf and then
-transforming this to a corresponding pdf. The infs are lost values, which lead to skewness.
-The following graph shows an extreme and less extreme qdf, as well as our solution with
-smaller support:
+transforming this to a corresponding pdf. 
+Figure \ref{fig:broken_qdf} shows one of the broken qdfs, and Figure \ref{fig:fixed_qdf}
+shows the fixed version of it by truncating the support of the pdf:
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/broken_qdf.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/broken_qdf.pgf}}
+    \caption[Example of broken qdf]{A numerically broken qdf from a low-variance distribution.
+    The values near the right boundary became too large to store for the computer.}
+    \label{fig:broken_qdf}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/fixed_qdf.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/fixed_qdf.pgf}}
+    \caption[Example of fixed qdf]{Fixed qdf by truncating the pdf support to where
+    the pdf is greater than $\varepsilon = \nobreak 10^{-3}$.}
+    \label{fig:fixed_qdf}
+\end{figure}
