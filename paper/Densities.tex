@@ -159,18 +159,36 @@ LQD method.
 The transformation approach employed by \textcite{TalskaEtAl2018} can be considered a
 special case of the general transformation approach explained by \textcite{PetersenMüller2016}
 \parencite[cf.][]{PetersenZhangKokoszka2022}. So we follow their modelling of a functional
-response model for our LQD transformation method. Our original regression model of
-interest is
+response model for our LQD transformation method.
+
+In the following, $n$ denotes the sample size and $r$ denotes the number of scalar
+predictors $p$. Our original regression model of interest is
 \begin{equation}
-    f_i(t) = \beta_0(t) + \sum_{j=1}^{r} p_{ij} \beta_j(t) + \epsilon_i(t), \quad i = 1, \ldots, N,
+    \label{eq:dens_reg_model}
+    f_i(t) = \beta_0(t) + \sum_{j=1}^{r} p_{ij} \beta_j(t) + \varepsilon_i(t), \quad i = 1, \ldots, n,
 \end{equation}
 where $f_i$ is the $i$-th observed density, $p_{ij}$ the $i$-th observed value of the
 $j$-th predictor, $\epsilon_i$ being an i.i.d. functional random error in $\mathcal{L}^2([0,1])$
-with mean zero, and lastly $\beta_j$ being the $j$-th functional coefficient of the $j$-th
+with mean zero, and lastly $\beta_j$ being the $j$-th functional regression coefficient of the $j$-th
 predictor $p_j$. This can be written simpler in matrix notation as
 \begin{equation}
-    f(t) = P \beta + \epsilon(t).
+    \label{eq:dens_reg_model_matrix}
+    \mathbf{f}(t) = \mathbf{P} \boldsymbol{\beta}(t) + \boldsymbol{\varepsilon}(t).
 \end{equation}
+where $\mathbf{f}$ is the $n$-dimensional vector of observed pdfs, $\mathbf{P}$ is an $n \times (r+1)$
+matrix containing the scalar predictor values $p_{ij}$ (and the first column containing only
+ones), $\boldsymbol{\beta}$ is the $n$-dimensional vector of functional regression coefficients,
+and $\boldsymbol{\varepsilon}$ is the $n$-dimensional vector of functional random errors.
+
+Applying the LQD transformation \eqref{eq:lqd_definition} to \eqref{eq:dens_reg_model}
+yields
+\begin{equation}
+    \label{eq:lqd_reg_model}
+    \psi(f_i)(t) = \psi(\beta_0)(t) + \sum_{j=1}^{r} p_{ij} \psi(\beta_j)(t) + \psi(\varepsilon_i)(t), \quad i = 1, \ldots, n.
+\end{equation}
+Defining $\tilde{\beta}_j \coloneqq \psi(\beta_j)$, we estimate $\tilde{\beta}_j$ by
+minimizing the sum of squared errors:
+
 
 (Transformation approach regression: underestimating mu and sigma for lower x,
 overestimating for higher x?) \textcite{PetersenLiuDivani2021}

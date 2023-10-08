@@ -1,3 +1,19 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 We see a more continous estimate in the Fréchet regression. Clearly the mean shifts
 steadily to the right, as x increases, as well as more variance.
 
@@ -83,14 +99,14 @@ scenario.
 \end{figure}
 
 Finally, Figure \ref{fig:ise_func_reg_both} shows the distribution of ISE values for
-the functional regression method, in both scenarios and for different sample sizes. One 
+the functional regression method, in both scenarios and for different sample sizes. One
 can see that the added uncertainty by the density estimation step lowers the convergence
 rate, and that in both scenarios the ISE gets stuck on a high level as increasing the
 sample size from 100 to 200 makes negligible difference. This is probably
 because of additional tuning that has to be done in the density estimation step (since
 this scenario makes the Fréchet method also signifiantly worse), such as a better method
 of bandwidth choice. The big difference between the ISE boxplots for the Fréchet method and
-the transformation method even in the case of directly observed densities must be explained 
+the transformation method even in the case of directly observed densities must be explained
 by the beforementioned (see Section~\ref{sec:transformation_interpretation}) need to
 estimate the location of the support in the transformation method since this information
 is lost when transforming the pdf to the qdf. Maybe one can improve upon the linear
