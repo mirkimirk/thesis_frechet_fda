@@ -1,9 +1,128 @@
-This chapter contain additional figures.
+This chapter contains additional figures.
 
-\subsection{Simulation: Fréchet mean vs. cross-sectional mean}
-\label{sec:sim_figures}
+\subsection{Illustration: Naive approach vs LQD approach}
+\label{sec:illustration_lqd}
+
+\subsubsection{Data}
+\label{sec:dgp_descriptives}
+We generated data as in the first simulation scenario in \textcite{PetersenMüller2016}:
+We sample 200 densities from truncated normal distributions, with $\mu = 0$ in the
+interval $[-3,3]$. The sigmas are sampled as follows: we sample $\log(\sigma) \sim U(-1,1)$
+200 times, and then obtain $\sigma$ by calculating $\exp(\log(\sigma))$. Thus we have a sample
+$f_1, \nobreak \dots, \nobreak f_{200}$ of densities, with $f_i$ being some truncated
+normal distribution with varying variances, centered on zero. The true center of this DGP
+is a truncated standard normal distribution, so thats what we would expect to see as
+estimated mean.
+
+\subsubsection{Simulation results}
+\label{sec:illustration_simulation}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/1st_modes.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/1st_modes.pgf}}
+    \caption[Comparison: first mode of variation]{Comparison of first mode of variation
+    of naive approach and of LQD approach.}
+    \label{fig:1st_modes}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/2nd_modes.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/2nd_modes.pgf}}
+    \caption[Comparison: second mode of variation]{Comparison of second mode of variation
+    of naive approach and of LQD approach.}
+    \label{fig:2nd_modes}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/fda/f_mean_vs_denstimation.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/f_mean_vs_denstimation.pgf}}
+    \caption[Simulation results: observed vs estimated densities --- Fréchet mean]{Simulation
+    results of Fréchet mean of observed densities vs. Fréchet mean of estimated densities,
+    $n=200$.}
+    \label{fig:sim_f_denstimation}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/cs_mean_vs_denstimation.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/cs_mean_vs_denstimation.pgf}}
+    \caption[Simulation results: observed vs estimated densities --- cross-sectional mean]{Simulation
+    results of cross-sectional mean of observed densities vs. cross-sectional mean of
+    estimated densities, $n=200$.}
+    \label{fig:sim_cs_denstimation}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/comparison_f_cs.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/comparison_f_cs.pgf}}
+    \caption[Simulation results: Fréchet mean vs cross-sectional mean]{Simulation
+    results of Fréchet mean plotted against "naive" cross-sectional mean for $n = 200$.}
+    \label{fig:sim_f_vs_cs}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/frechet_means.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/frechet_means.pgf}}
+    \caption[Simulation results: average Fréchet means]{Simulation results for calculating
+    Fréchet mean densities with different sample sizes.}
+    \label{fig:sim_f_mean}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/k_opt_denstimation_histogram.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/k_opt_denstimation_histogram.pgf}}
+    \caption[Simulation results: optimal $K$]{Simulation results for optimal choice of
+    $K$ in context of density estimation, given that $\text{fve} \geq 90 \%$}
+    \label{fig:sim_k_opt_denstimation}
+\end{figure}
+
+(Optimal K for directly observed densities always 1, so graphic omitted.)
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/fve.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/fve.pgf}}
+    \caption[Simulation results: boxplots fve --- observed densities]{Boxplot of
+    Fréchet fraction of variance explained with directly observed
+    densities, when $K = 1$.}
+    \label{fig:sim_fve}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/fve_denstimation.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/fve_denstimation.pgf}}
+    \caption[Simulation results: boxplots fve --- estimated densities]{Boxplot of
+    Fréchet fraction of variance explained with previously estimated densities, when
+    $K = 1$.}
+    \label{fig:sim_fve_denstimation}
+\end{figure}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%% NOT NEEDED; WE PLOT THEM SMALLER IN THE MAIN TEXT
 % \begin{figure}[h]
 %     \centering
 %     % \input{../bld/figures/fda/naive_trunc_rep_vs_orig.pgf}

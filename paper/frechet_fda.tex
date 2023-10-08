@@ -37,9 +37,26 @@
 \usepackage{minibox}
 \usepackage{pgf}
 \usepackage{graphicx}
+% For writing algorithms
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
+% For Python code in appendix
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstdefinestyle{python}{
+    language=Python,
+    basicstyle=\ttfamily\footnotesize,  % <-- updated here
+    commentstyle=\color{olive},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{gray},
+    numbers=left,
+    breaklines=true,  % <-- added here
+    tabsize=2  % <-- added here
+}
+
+
 
 % Bibliography
 \usepackage[
@@ -173,10 +190,11 @@
 \label{sec:Application}
 \input{Application.tex}
 
+\clearpage  % Flush all figures
+\newpage
 \section{Conclusion}
 \label{sec:conclusion}
 \input{Conclusion.tex}
-
 
 
 %%%%%%%% APPPENDIX %%%%%%%%%
@@ -189,15 +207,21 @@
 \label{sec:numerics}
 \input{Numerics.tex}
 
+\clearpage  % Flush all figures
+\newpage
+\section{Code}
+\label{sec:code}
+\input{Code.tex}
+
+\clearpage  % Flush all figures
+\newpage
 \section{Additional Figures}
 \label{sec:figures}
 \input{Figures.tex}
 
-\section{Code}
-\label{sec:code}
-
 %%%%%%%%%% BIBLIOGRAPY %%%%%%%%%%
 
+\clearpage  % Flush all figures
 \newpage
 
 \nocite{Gaudecker2019}

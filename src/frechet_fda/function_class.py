@@ -16,7 +16,7 @@ class Function:
         self.x = x
         self.y = y
         self.grid_size = len(x)
-        # Set initial_value attribute 
+        # Set initial_value attribute
         self.initial_value = None
         self.a = None
         self.b = None

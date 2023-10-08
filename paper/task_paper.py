@@ -26,7 +26,8 @@ for document in documents:
             "Chapter 5": PAPER_DIR / "Application.tex",
             "Chapter 6": PAPER_DIR / "Conclusion.tex",
             "Appendix A": PAPER_DIR / "Numerics.tex",
-            "Appendix B": PAPER_DIR / "Figures.tex",
+            "Appendix B": PAPER_DIR / "Code.tex",
+            "Appendix C": PAPER_DIR / "Figures.tex",
         },
     )
     def task_compile_document():

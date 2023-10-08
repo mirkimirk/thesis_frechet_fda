@@ -1,10 +1,13 @@
-Notably during the computation of the Wasserstein-Fréchet mean of a sample of density
-functions, we encountered numerical problems. Since the computation of the mean involves
-obtaining the quantile densities from the densities, the densities from the small
-variance distributions are very close to zero for much of their support, leading to the
-qfs to have a very steep slope (i.e. high valued qdfs) near the boundaries. These
-astronomical values (even "infs") lead to problems when computing the mean qdf and then
-transforming this to a corresponding pdf.
+For densities with smaller sigmas, we get very low density values for large parts of the
+support, leading to numerical artifacts when calculating the quantile densities (infs
+near the right bound, astronomical values near the left bound) since the qfs corresponding to
+those low variance pdfs have a very steep slope near the boundaries. These artifacts
+break further calculations and make it impossible to get the original densities from those broken qds
+again. We chose to calculate the "effective" support of the densities, if they have very
+small sigmas, defined by the density values being larger than some small $\delta > 0$ on
+this support (see Appendix~\ref{sec:code_optimal_range}). This makes the transformation
+method from \textcite{PetersenMüller2016} inadequate (which assumes a common support),
+hence we used the modified transformation from \textcite{KokoszkaEtAl2019}.
 
 \begin{figure}[h]
     \centering

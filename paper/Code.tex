@@ -1,0 +1,135 @@
+In this chapter, some code snippets are provided for the most important functions we
+used.
+
+Central in our code is the class "Function" that we defined. It can hold an analytical
+function, with atributes "x" (containing the domain values), "y" (containing the function
+values), and "grid\_size" (the number of discretization points at which the function
+is evaluated), among others. It has many different methods, like "integrate()",
+"differentiate()", "invert()" etc., that are used throughout the code and yield new 
+Function class objects. It can be inspected in the "function\_class.py" file in the
+GitHub repository (\url{https://github.com/mirkimirk/thesis_frechet_fda}) and would be
+too large to print here.
+
+\subsection{Python Code for pdf to qdf Conversion}
+\label{sec:code_pdf_to_qdf}
+The following code shows how we converted pdfs to qdfs and vice versa.
+
+The option "center\_on\_zero" in the qdf\_to\_pdf function artificially centers the resulting
+pdf around zero. It is not used in any of the plots in this thesis.
+
+\begin{lstlisting}[style=python]
+    def pdf_to_qdf(pdf: Function, save_support_start: bool = False) -> Function:
+        """Directly convert a pdf to a qdf using inverse function rule on qf."""
+        quantile_func = pdf.integrate().invert()
+        if save_support_start:
+            return (1 / pdf.compose(quantile_func), quantile_func.y[0])
+        else:
+            return 1 / pdf.compose(quantile_func)
+    
+    def qdf_to_pdf(
+        qdf: Function, start_val: float = 0, center_on_zero: bool = False,
+    ) -> Function:
+        """Directly convert a qdf to a pdf using inverse function rule on cdf."""
+        if center_on_zero:
+            cdf = qdf.integrate().vcenter().invert()
+        else:
+            cdf = (qdf.integrate() + start_val).invert()
+        return 1 / qdf.compose(cdf)
+\end{lstlisting}
+
+\subsection{Optimal Range Calculation in Python}
+\label{sec:code_optimal_range}
+This code shows our computation of the "effective" range by narrowing the domain
+of the pdf to the points where it is larger than $\delta = 10{-3}$
+
+\begin{lstlisting}[style=python]
+    def get_optimal_range(funcs: list[Function], delta: float = 1e-3) -> np.ndarray:
+        """Get narrower support if density values are too small (smaller than delta).
+
+        This is used so the qdfs dont get astronomically large at the boundaries and destroy
+        numerical methods.
+
+        Note: The method here assumes that the functions do have a compact
+        support (even if it is narrower than the initial support). So if there is a point x1
+        where func.y > delta is true, another point x2 > x1 where it is not, and then
+        another x3 > x2 where it is true again, then x2 is included in the new range
+        although it does not fullfill the condition.
+
+        """
+        new_ranges = np.zeros((len(funcs), 2))
+        for i, func in enumerate(funcs):
+            support_to_keep = func.x[func.y > delta]
+            new_ranges[i] = (support_to_keep[0], support_to_keep[-1])
+        return new_ranges
+\end{lstlisting}
+
+\subsection{LQD Transformations in Python}
+\label{sec:code_lqd}
+The following code shows our Python implementation of the LQD transformation and its
+inverse.
+\begin{lstlisting}[style=python]
+    def log_qd_transform(
+        densities_sample: list[Function], different_supports: bool = False,
+    ) -> list[Function]:
+        """Perform log quantile density transformation on a density sample."""
+        qdfs = [
+            pdf_to_qdf(density.drop_inf(), different_supports)
+            for density in densities_sample
+        ]
+        if different_supports:
+            qdfs_and_start_vals = np.array(qdfs)
+            lqdfs = [qdf.log() for qdf in qdfs_and_start_vals[:, 0]]
+            start_vals = np.array(qdfs_and_start_vals[:, 1], dtype=np.float64)
+            return lqdfs, start_vals
+        else:
+            return [qdf.log() for qdf in qdfs]
+
+    def inverse_log_qd_transform(
+        transformed_funcs: list[Function], start_of_support: list[float] = None,
+    ) -> list[Function]:
+        """Transform back into density space."""
+        natural_qfs = [func.exp().integrate() for func in transformed_funcs]
+        if start_of_support is not None:
+            natural_qfs += start_of_support
+            cdfs = [qf.invert() for qf in natural_qfs]
+        else:
+            cdfs = [qf.vcenter().invert() for qf in natural_qfs]
+        exponents = [
+            -func.compose(cdf) for func, cdf in zip(transformed_funcs, cdfs, strict=True)
+        ]
+        return [exponent.exp() for exponent in exponents]
+\end{lstlisting}
+
+\subsection{Solving Fréchet Quadratic Programming Problem}
+\label{sec:code_quadratic_program}
+The following Python code shows the implementation of the quadratic programming problem
+to solve for the Fréchet means.
+
+\begin{lstlisting}[style=Python]
+    def solve_frechet_qp(
+        xs_to_predict: np.ndarray,
+        x_observed: np.ndarray,
+        quantile_functions: list[Function],
+    ) -> list[Function]:
+        """Sets up quadratic programming problem and solves it."""
+        estimates = []
+        for x in xs_to_predict:
+            # Estimate condtional qf, drop support where values become nan or inf
+            estimated_qf = qf_tilde(x, x_observed, quantile_functions).drop_inf()
+            constraints_check = estimated_qf.y[1:] - estimated_qf.y[:-1]
+            if np.all(constraints_check > 0):
+                # If estimator valid qf, it is the optimal solution
+                estimates.append(estimated_qf)
+            else:
+                # Else, find closest vector to estimator that is a valid solution
+                qp_a = estimated_qf.y
+                grid_size = len(qp_a)
+                qp_g = np.identity(grid_size)  # make sure P is symmetric
+                qp_c = np.eye(grid_size, grid_size - 1, k=-1) - np.eye(
+                    grid_size, grid_size - 1,
+                )
+                qp_b = np.zeros(grid_size - 1)
+                solution = quadprog.solve_qp(qp_g, qp_a, qp_c, qp_b)[0]
+                estimates.append(Function(estimated_qf.x, solution))
+        return estimates
+\end{lstlisting}

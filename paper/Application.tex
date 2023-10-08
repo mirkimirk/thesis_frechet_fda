@@ -10,17 +10,24 @@ see that the variance rises with x. This information is not lost in the log qdfs
     \centering
     \begin{tabular}{lccc}
         \hline
-        ISE & $n = 50$ 1 & $n = 100$ 2 & $n = 200$ 3 \\
+        ISE & $n = 50$ & $n = 100$ & $n = 200$ \\
         \hline
-        Fréchet & 0.18 & 0.08 & 0.04 \\
-        Fréchet \& Est. & 32.31 & 27.98 & 27.38 \\
-        LQD & 34.49 & 31.19 & 31.88 \\
-        LQD \& Est. & 47.08 & 43.39 & 43.43 \\
+        Fréchet             & 0.18 & 0.08 & 0.04 \\
+        Fréchet, D.-Est.    & 32.31 & 27.98 & 27.38 \\
+        LQD                 & 34.49 & 31.19 & 31.88 \\
+        LQD, D.-Est.        & 47.08 & 43.39 & 43.43 \\
         \hline
     \end{tabular}
-    \caption{Mean ISE Values}
+    \caption{Mean ISE Values for different methods and scenarios. "D.-Est." indicates
+    a scenario with previous density estimation procedure.}
 \end{table}
 
+Moreover, the quality of the density estimates deteriorates with sample size, suggesting
+to vary the bandwidth choice with sample size, as \textcite{PetersenMüller2019} did in
+their comparison of the Fréchet estimator with the Nadaraya-Watson estimator. Due to
+time constraints and the computational requirements, we did not conduct such
+hyperparameter tuning but chose a rule-of-thumb bandwidth
+\parencites[Chapter~3.4.1]{Silverman1986}[Chapter~2.2.1]{LiRacine2007}
 
 The curve for the Fréchet mean with observed densities is farther off than the Fréchet
 mean with a previous density estimation step. We think this must be because the densities
@@ -28,10 +35,8 @@ yielded by the density estimation have a smaller variance in the left bounds of 
 support, so that the uncertainty introduced by the estimation of the new left bound for
 the average is smaller.
 
-
 \subsection{Results}
 \label{sec:sim_results}
-
 In this section, we briefly visualize and discuss the results from the simulation study.
 
 \begin{figure}[h]
@@ -65,7 +70,7 @@ Figure \ref{fig:ise_frechet_denstimation} shows the distribution of ISE values f
 the Fréchet method, in the scenario with a previously included density estimation step.
 Here, the ISE values are much higher, and increasing sample sizes yields only minor
 improvement. This hints at a problem in the density estimation method. Nonetheless,
-the values are better than the ISE values for the transfomraiton method in the same
+the values are better than the ISE values for the transformation method in the same
 scenario.
 
 \begin{figure}[h]
@@ -86,5 +91,7 @@ because of additional tuning that has to be done in the density estimation step 
 this scenario makes the Fréchet method also signifiantly worse), such as a better method
 of bandwidth choice. The big difference between the ISE boxplots for the Fréchet method and
 the transformation method even in the case of directly observed densities must be explained 
-by the beforementioned need to estimate the location of the support in the transformation
-method since this information is lost when transforming the pdf to the qdf.
+by the beforementioned (see Section~\ref{sec:transformation_interpretation}) need to
+estimate the location of the support in the transformation method since this information
+is lost when transforming the pdf to the qdf. Maybe one can improve upon the linear
+interpolation method to compute the left bounds.
