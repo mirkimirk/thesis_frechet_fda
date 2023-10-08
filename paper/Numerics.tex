@@ -4,9 +4,7 @@ obtaining the quantile densities from the densities, the densities from the smal
 variance distributions are very close to zero for much of their support, leading to the
 qfs to have a very steep slope (i.e. high valued qdfs) near the boundaries. These
 astronomical values (even "infs") lead to problems when computing the mean qdf and then
-transforming this to a corresponding pdf. 
-Figure \ref{fig:broken_qdf} shows one of the broken qdfs, and Figure \ref{fig:fixed_qdf}
-shows the fixed version of it by truncating the support of the pdf:
+transforming this to a corresponding pdf.
 
 \begin{figure}[h]
     \centering
@@ -25,3 +23,12 @@ shows the fixed version of it by truncating the support of the pdf:
     the pdf is greater than $\varepsilon = \nobreak 10^{-3}$.}
     \label{fig:fixed_qdf}
 \end{figure}
+
+Figure \ref{fig:broken_qdf} shows one of the broken qdfs, and Figure \ref{fig:fixed_qdf}
+shows the fixed version of it by truncating the support of the pdf:
+
+In their own R package (\citetitle{fdadensity}), the authors have "RegularizeByAlpha"
+function, which tries to raise the minimal value of a density to a given level alpha. This
+also gets rid of the numerical artifacts and doesnt change the support of the function,
+which makes the methods from their paper still adequate. At the end of calculations, they
+revert this change with "DeRegularizeByAlpha".

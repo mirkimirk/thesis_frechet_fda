@@ -37,6 +37,9 @@
 \usepackage{minibox}
 \usepackage{pgf}
 \usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
 
 % Bibliography
 \usepackage[
@@ -152,38 +155,27 @@
 
 \section{Introduction}
 \label{sec:introduction}
-\input{1_Introduction.tex}
-
-\citet{HorvathKokoszka2012}
-\citet{HallHorowitz2007}
-\citet{PetersenMüller2019}
-\citet{VanDerVaartWellner1996}
-\citet{Bosq2000}
-\citet{HastiTibshiraniFriedman2009}
-\citet{Boor2001}
-
-And some more text that is long long long long long long long long long long to see how
-it looks like.
+\input{Introduction.tex}
 
 \section{Functional Data Analysis}
 \label{sec:fda}
-\input{2_FDA.tex}
+\input{FDA.tex}
 
 \section{Density Regression}
 \label{sec:density regression}
-\input{3_Densities.tex}
+\input{Densities.tex}
 
 \section{Fréchet Regression}
 \label{sec:fréchet regression}
-\input{4_Fréchet.tex}
+\input{Fréchet.tex}
 
-\section{Simulation}
-\label{sec:simulation}
-\input{5_Simulation.tex}
+\section{Application}
+\label{sec:Application}
+\input{Application.tex}
 
 \section{Conclusion}
 \label{sec:conclusion}
-\input{6_Conclusion.tex}
+\input{Conclusion.tex}
 
 
 
@@ -197,22 +189,22 @@ it looks like.
 \label{sec:numerics}
 \input{Numerics.tex}
 
-\section{Code}
-\label{sec:code}
-
 \section{Additional Figures}
 \label{sec:figures}
 \input{Figures.tex}
 
-%%%%%%%%%% BIBLIOGRAPY %%%%%%%%%%
+\section{Code}
+\label{sec:code}
 
+%%%%%%%%%% BIBLIOGRAPY %%%%%%%%%%
 
 \newpage
 
 \nocite{Gaudecker2019}
 \printbibliography
 
-%%%%%% Statement of authorship
+%%%%%%%%%% STATEMENT OF AUTHORSHIP %%%%%%%%%%
+
 \newpage
 \thispagestyle{empty}  % No page number
 \null\vfill            % Center the text vertically

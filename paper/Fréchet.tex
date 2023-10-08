@@ -1,31 +1,42 @@
 This section will give an introduction to the concept of Fréchet regression
 and some background.
 
-\subsection{Fréchet Mean and Variance}
-\label{sec:fr mean and variance}
+\subsection{Conditional Fréchet Mean and Variance}
+\label{sec:condmean}
+
+\subsection{General model}
+\label{sec:general}
 
 \begin{figure}[h]
     \centering
     % \input{../bld/figures/frechet/1stlastqf.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/1stlastqf.pgf}}
-    \caption[Two sample qfs]{Plot of two sample qfs, one with predictor value $p = -1$, and the other
-    for $p = 1$.}
+    \caption[Two sample qfs]{Plot of two sample qfs, one with predictor value $p = -1$,
+    and the other for $p = 1$.}
     \label{fig:1stlastqf}
 \end{figure}
+
+Figure \ref{fig:1stlastqf} shows two example qfs, generated from the above mentioned
+process with the predictor values $p=-1$ and $p=1$. One can see that both location and
+scale are much larger for the curve with the higher predictor value.
 
 \begin{figure}[h]
     \centering
     % \input{../bld/figures/frechet/some_densities.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/some_densities.pgf}}
-    \caption[Several sampled densities]{Plot of several sample densities.}
+    \caption[Several sampled pdfs]{Plot of several sample pdfs.}
     \label{fig:some_densities}
 \end{figure}
+
+Figure \ref{fig:some_densities} plots the corresponding pdfs of some of the generated qfs.
 
 \begin{figure}[h]
     \centering
     % \input{../bld/figures/frechet/frechet_estimates.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/frechet_estimates.pgf}}
-    \caption[Estimated pdfs from Fréchet method]{Plot of estimated densities via Fréchet regression method.}
+    \caption[Estimated pdfs from Fréchet method]{Plot of estimated densities via Fréchet regression method.
+    The densities from left to right are corresponding to a predictor value $p$ on an
+    equidistant grid on $[-1,1]$ with 50 grid points.}
     \label{fig:frechet_estimates}
 \end{figure}
 
@@ -37,6 +48,13 @@ and some background.
     \label{fig:frechet_estimates_3d}
 \end{figure}
 
+Figures \ref{fig:frechet_estimates} and \ref{fig:frechet_estimates_3d} plot the Fréchet
+estimates of the pdfs and qfs respectively. In the first figure, the estimated pdfs for
+different predictor values are drawn on top of each other, and in the second, a 3d plot
+was used to visualize the change of shape of the qfs with a One can see a smooth
+increase in location and variance in both figures with an increase in the predictor
+value.
+
 % \begin{figure}[h]
 %     \centering
 %     % \input{../bld/figures/frechet/all_observations_3d.pgf}
@@ -47,67 +65,12 @@ and some background.
 
 \begin{figure}[h]
     \centering
-    % \input{../bld/figures/frechet/betas.pgf}
-    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/betas.pgf}}
-    \caption[Estimated betas in LQD functional regression]{Plot of estimated betas from
-    functional regression with LQD method.}
-    \label{fig:betas}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    % \input{../bld/figures/frechet/beta0vsmean.pgf}
-    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/beta0vsmean.pgf}}
-    \caption[Equality of mean LQD function and $\beta_0$]{Plot that shows the equality
-    of the mean LQD function and $\beta_0$.}
-    \label{fig:beta0vsmean}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    % \input{../bld/figures/frechet/func_est_vs_true.pgf}
-    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/func_est_vs_true.pgf}}
-    \caption[Comparison: estimated vs. true densities --- LQD]{Estimated
-    densities from functional regression with LQD method plotted against the true densities for some selected predictor values.}
-    \label{fig:func_est_vs_true}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
     % \input{../bld/figures/frechet/frechet_est_vs_true.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/frechet_est_vs_true.pgf}}
     \caption[Comparison: estimated vs. true densities --- Fréchet]{Estimated
     densities from Fréchet regression plotted against the true densities for some selected
     predictor values.}
     \label{fig:frechet_est_vs_true}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    % \input{../bld/figures/frechet/ise_frechet.pgf}
-    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/ise_frechet.pgf}}
-    \caption[Simulation results: boxplot ISE Fréchet]{Boxplot showing distribution of
-    ISE from Fréchet estimates in scenario with directly observed densities.}
-    \label{fig:ise_frechet}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    % \input{../bld/figures/frechet/ise_frechet_denstimation.pgf}
-    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/ise_frechet_denstimation.pgf}}
-    \caption[Simulation results: boxplot ISE Fréchet with density estimation]{Boxplot
-    showing distribution of ISE from Fréchet estimates in scenario with additional
-    density estimation step to obtain densities.}
-    \label{fig:ise_frechet_denstimation}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    % \input{../bld/figures/frechet/ise_func_reg_both.pgf}
-    \resizebox{\textwidth}{!}{\input{../bld/figures/frechet/ise_func_reg_both.pgf}}
-    \caption[Simulation results: boxplot ISE functional regression]{Boxplot showing
-    distribution of ISE from functional regression with LQD method in both scenarios.}
-    \label{fig:ise_func_reg_both}
 \end{figure}
 
 

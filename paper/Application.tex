@@ -1,0 +1,90 @@
+We see a more continous estimate in the Fréchet regression. Clearly the mean shifts
+steadily to the right, as x increases, as well as more variance.
+
+Because in the functional regression on the log transformed qds, we have to adjust with
+the range with the individual quantile of the observation, and otherwise there is no
+possibility to keep the mean, the linear dependence of the mean is lost. One can though
+see that the variance rises with x. This information is not lost in the log qdfs.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lccc}
+        \hline
+        ISE & $n = 50$ 1 & $n = 100$ 2 & $n = 200$ 3 \\
+        \hline
+        Fréchet & 0.18 & 0.08 & 0.04 \\
+        Fréchet \& Est. & 32.31 & 27.98 & 27.38 \\
+        LQD & 34.49 & 31.19 & 31.88 \\
+        LQD \& Est. & 47.08 & 43.39 & 43.43 \\
+        \hline
+    \end{tabular}
+    \caption{Mean ISE Values}
+\end{table}
+
+
+The curve for the Fréchet mean with observed densities is farther off than the Fréchet
+mean with a previous density estimation step. We think this must be because the densities
+yielded by the density estimation have a smaller variance in the left bounds of their
+support, so that the uncertainty introduced by the estimation of the new left bound for
+the average is smaller.
+
+
+\subsection{Results}
+\label{sec:sim_results}
+
+In this section, we briefly visualize and discuss the results from the simulation study.
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/ise_frechet.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/ise_frechet.pgf}}
+    \caption[Simulation results: ISE boxplot --- Fréchet method with observed densities]{Boxplot showing distribution of
+    ISE from Fréchet estimates in scenario with directly observed densities.}
+    \label{fig:ise_frechet}
+\end{figure}
+
+Figure \ref{fig:ise_frechet} shows the distribution of ISE values for the Fréchet method,
+in the scenario where the densities are directly observed. One can clearly see that, with
+increasing sample size, they become lower and have a lower variance, with less outliers
+outside the whiskers. This is as expected, since increasing the sample size
+means more information to use for estimation, so the predictions should be closer to
+their mean (the true value), and the variance of the predictions around their mean should
+get smaller.
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/ise_frechet_denstimation.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/ise_frechet_denstimation.pgf}}
+    \caption[Simulation results: ISE boxplot --- Fréchet method with estimated densities]{Boxplot
+    showing distribution of ISE from Fréchet estimates in scenario with additional
+    density estimation step to obtain densities.}
+    \label{fig:ise_frechet_denstimation}
+\end{figure}
+
+Figure \ref{fig:ise_frechet_denstimation} shows the distribution of ISE values for
+the Fréchet method, in the scenario with a previously included density estimation step.
+Here, the ISE values are much higher, and increasing sample sizes yields only minor
+improvement. This hints at a problem in the density estimation method. Nonetheless,
+the values are better than the ISE values for the transfomraiton method in the same
+scenario.
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/ise_func_reg_both.pgf}
+    \resizebox{\textwidth}{!}{\input{../bld/figures/frechet/ise_func_reg_both.pgf}}
+    \caption[Simulation results: ISE boxplot --- functional regression]{Boxplot showing
+    distribution of ISE from functional regression with LQD method in both scenarios.}
+    \label{fig:ise_func_reg_both}
+\end{figure}
+
+Finally, Figure \ref{fig:ise_func_reg_both} shows the distribution of ISE values for
+the functional regression method, in both scenarios and for different sample sizes. One 
+can see that the added uncertainty by the density estimation step lowers the convergence
+rate, and that in both scenarios the ISE gets stuck on a high level as increasing the
+sample size from 100 to 200 makes negligible difference. This is probably
+because of additional tuning that has to be done in the density estimation step (since
+this scenario makes the Fréchet method also signifiantly worse), such as a better method
+of bandwidth choice. The big difference between the ISE boxplots for the Fréchet method and
+the transformation method even in the case of directly observed densities must be explained 
+by the beforementioned need to estimate the location of the support in the transformation
+method since this information is lost when transforming the pdf to the qdf.

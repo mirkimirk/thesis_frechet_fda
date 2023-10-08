@@ -19,14 +19,14 @@ for document in documents:
     @pytask.mark.task(id=document)
     @pytask.mark.depends_on(
         {
-            "Chapter 1": PAPER_DIR / "1_Introduction.tex",
-            "Chapter 2": PAPER_DIR / "2_FDA.tex",
-            "Chapter 3": PAPER_DIR / "3_Densities.tex",
-            "Chapter 4": PAPER_DIR / "4_Fréchet.tex",
-            "Chapter 5": PAPER_DIR / "5_Simulation.tex",
-            "Chapter 6": PAPER_DIR / "6_Conclusion.tex",
+            "Chapter 1": PAPER_DIR / "Introduction.tex",
+            "Chapter 2": PAPER_DIR / "FDA.tex",
+            "Chapter 3": PAPER_DIR / "Densities.tex",
+            "Chapter 4": PAPER_DIR / "Fréchet.tex",
+            "Chapter 5": PAPER_DIR / "Application.tex",
+            "Chapter 6": PAPER_DIR / "Conclusion.tex",
             "Appendix A": PAPER_DIR / "Numerics.tex",
-            "Appendix C": PAPER_DIR / "Figures.tex",
+            "Appendix B": PAPER_DIR / "Figures.tex",
         },
     )
     def task_compile_document():

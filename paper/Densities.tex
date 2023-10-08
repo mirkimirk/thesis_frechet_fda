@@ -1,0 +1,297 @@
+(FIND PAPER WHERE I GOT THIS INTERPRETATION FROM!)
+In this chapter we are going to examine the case of density regression, i.e., a
+regression model with densities as responses. The densities that are of interest to
+us are given in the following definition:
+
+\begin{definition}
+    Denote by $\mathcal{D}$ the space of continuous densities $f$, where each
+    $f$ is supported on its own compact interval $[a_i, b_i]$ for some $a_i, b_i \in
+    \mathbb{R}$ with $a_i < b_i$.
+\end{definition}
+
+\subsection{Approaches}
+\label{sec:approaches}
+Here, we will briefly outline different interpretations of the density space, and the
+approaches that follow, to motivate our choice of the transformation method from
+\textcites{PetersenMüller2016}{KokoszkaEtAl2019}.
+
+\subsubsection{Subset of Hilbert space}
+\label{sec:l2_interpretation}
+Since $\mathcal{D} \subseteq L^2(\mathbb{R})$,
+one can choose to interpret the densities as elements of
+the Hilbert space $\mathcal{L}^2$ and directly apply fda methods on the densities
+\parencite[see e.g.][]{KneipUtikal2001}. Then one could handle the regression problem by
+applying the functional response regression method first described by \textcite{Faraway1997}.
+However, as $\mathcal{D}$ is not a linear subspace of $\mathcal{L}^2$, it is not guaranteed that
+we yield results within $\mathcal{D}$ --- it only means we will yield results within $\mathcal{L}^2$.
+Alternative characterizations of the space $\mathcal{D}$ have been explored, of which
+we will focus in this paper on the one of a nonlinear space \ref{sec:transformation_interpretation}
+and the \textit{Wasserstein space}. The latter interpretation will be explored in
+chapter~\ref{sec:fréchet regression}.
+
+\subsubsection{Transformation method}
+\label{sec:transformation_interpretation}
+Instead of the approach above, one can recognize the nonlinear character of the density
+space and accomodate the use of fda methods such that it is respected. Several authors
+have proposed a prior transformation of the densities into a linear space
+\parencites[e.g.][]{Hron2016}[][]{PetersenMüller2016} where one can then work with the
+usual fda methods on the transformed densities, and then later transform the results
+back to density space for interpretation and visualization purposes.
+
+Following the argument in \textcite{KokoszkaEtAl2019}, we use the method first outlined
+in \textcite{PetersenMüller2016} and use the log quantile density (LQD) transformation
+$\psi : \nobreak \mathcal{D} \to \mathcal{L}^2([0,1])$, defined by
+
+\begin{equation}
+    \label{eq:lqd_definition}
+    \psi (f)(u) = \log q(u) = -\log f(Q(u)), \quad u \in [0,1],
+\end{equation}
+
+to transform the pdfs from the constrained space $\mathcal{D}$ into the "unconstrained"
+space $\mathcal{L}^2([0,1])$.\footnote{We extend our usage of the argument $u$ to this
+function because this transformed density is by definition on the same support as are
+qfs and qdfs.} The intuition is that, from the functions given in
+Definition~\ref{def:distributionfuncs}, the qf and qdf have the least constraints ---
+only requiring that $q = \nobreak Q' \geq \nobreak 0$. Thus by working with the logarithm
+of the qdf, one deals with a function that has no more constraints \parencite[cf.][]{KokoszkaEtAl2019}.
+
+However, since the data generating process (DGP) that we will use in our simulation study
+produces densities that are on different supports, we violate the assumption of common
+compact support of the densities in the density sample that \textcite{PetersenMüller2016}
+need.\footnote{We also violate this assumption because of our method of dealing with
+numerical issues, see Appendix~\ref{sec:numerics}.} This leads to problems since the information
+about location of support is lost when transforming a pdf to a qdf.\footnote{Paraphrasing
+\textcite{KokoszkaEtAl2019}, the transformation from $f$ with quantile density $q$ to
+its LQD is not invertible, since for any constant $c$, the quantile density of
+$f(\cdot - c)$, the density $f$ shifted by $c$, is also $q$.}
+Hence we use the slightly modified transformation and inverse transformation described
+by \textcite{KokoszkaEtAl2019}. In this paper a very general transformation method is
+described for the case of different supports. Denote by $\mathcal{A}_i$ the support of
+the density $f_i$. For generality, we assume
+\begin{equation*}
+    \exists i, j \, : \, \mathcal{A}_i \cap \mathcal{A}_j = \emptyset,
+\end{equation*}
+i.e., we do not want to assume a common "anchor" point in the supports of the $f_i$. So
+we use the following most general transformation proposed by the authors:
+
+\begin{equation}
+    T : \mathcal{D} \to \mathcal{L}^2([0,1]) \times \mathcal{A}, \text{ given by } T(f) = (\psi(f), Q(u_0)),
+\end{equation}
+
+where $\mathcal{A}$ is the support of density $f$, $Q$ is the corresponding quantile function,
+and $u_0 \in [0,1]$ is a fixed percentile level for which we save the value of the support
+of $f$. Since we deal with a compact support, we can choose the boundary value
+0\footnote{\textcite{KokoszkaEtAl2019} excluded 0 and 1 because they allowed for the case
+of unbounded support, which could yield $Q(0)$ or $Q(1)$ to be infinity, so useless for
+the transformation method.}, which is most intuitive: we save the left bound of the
+support of $f$, and for the inverse transformation we 
+
+\begin{algorithm}
+    \caption{Forward transformation}
+    \label{alg:forward}
+    \begin{algorithmic}[1]
+    \Require Data pairs \( (x_l, f(x_l)), l = 0, \ldots, L \)
+    \Ensure Data pairs \( (s_l, Y(s_l)), l = 0, \ldots, L \) and \( c \)
+    \For{\( l = 1, \ldots, L \)}
+        \State Compute \( F(x_l) = \int_{x_0}^{x_l} f(x) \, dx \) by numerical integration of the pairs \( (x_l, f(x_l)) \)
+        \State Define \( s_l = F(x_l) \) so that \( Q(s_l) = x_l \)
+        \State Compute \( Y(s_l) = -\ln(f(x_l)) \)
+        \State Find \( j \) such that \( x_j = 0 \) and set \( c = F(x_j) = F(0) \)
+    \EndFor
+    \end{algorithmic}
+\end{algorithm}
+    
+\begin{algorithm}
+    \caption{Backward transformation}
+    \label{alg:backward}
+    \begin{algorithmic}[1]
+    \Require Data pairs \( (s_l, g(s_l)), l = 0, \ldots, L \) and \( c \)
+    \Ensure Data pairs \( (x_l, f(x_l)), l = 0, \ldots, L \)
+    \For{\( l = 1, \ldots, L \)}
+        \State Find \( j \) such that \( s_j = c \)
+        \State Compute \( Q(s_l) = \int_{s_j}^{s_l} \exp\{g(s)\} \, ds \) by numerical integration of the pairs \( (s_l, \exp\{g(s_l)\}) \)
+        \State Define \( x_l = Q(s_l) \) so that \( F(x_l) = s_l \)
+        \State Compute \( f(x_l) = \exp \{-g(s_l)\} \)
+    \EndFor
+    \end{algorithmic}
+\end{algorithm}
+    
+
+
+
+For the predicted $f_i$ hats,
+in the inverse transformation the $s_0i$ from the corresponding observation $f_i$ was
+assigned as estimate $s_0i$ hat.
+
+For the descriptive Fréchet mean of the sample of densities, we had to estimate the
+starting value for our modified inverse transformation method. Since it was a mean qdf,
+we deemed it appropriate to take a mean starting value. This estimation step indroduces
+uncertainty and thus our mean is not exactly centered around zero.
+
+(Transformation approach regression: underestimating mu and sigma for lower x,
+overestimating for higher x?) \textcite{PetersenLiuDivani2021}
+
+\newpage
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \resizebox{0.45\linewidth}{!}{\input{../bld/figures/fda/naive_trunc_rep_vs_orig.pgf}}
+        \caption[Truncated representation --- naive]{Naive method.}
+        \label{fig:naive_trunc_rep}
+    \end{subfigure}
+    \hfill % add some horizontal spacing
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \resizebox{0.45\linewidth}{!}{\input{../bld/figures/fda/trunc_rep_vs_orig.pgf}}
+        \caption[Truncated representation --- LQD method]{LQD method.}
+        \label{fig:trunc_rep}
+    \end{subfigure}
+    \caption[Truncated Karhunen-Loève representations]{Truncated Karhunen-Loève
+    representations of a sample density. The blue curves result from using one principal
+    component, the orange curves results from using two components.}
+    \label{fig:trunc_reps}
+\end{figure}
+
+Figure \ref{fig:trunc_reps} shows truncated Karhunen-Loève representations of a given
+pdf for the respective methods. The blue curve is for using only one component, the
+orange curve for using the two most important components. The black curve is the pdf
+that is to be represented. One can clearly see that the representations based on the LQD
+method produce much better fitting curves than the naive method. Also, the curves barely
+differ when including more components in the naive case.
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/1st_modes.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/1st_modes.pgf}}
+    \caption[Comparison: first mode of variation]{Comparison of first mode of variation
+    of naive approach and of LQD approach.}
+    \label{fig:1st_modes}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/2nd_modes.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/2nd_modes.pgf}}
+    \caption[Comparison: second mode of variation]{Comparison of second mode of variation
+    of naive approach and of LQD approach.}
+    \label{fig:2nd_modes}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/frechet_means.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/frechet_means.pgf}}
+    \caption[Simulation results: average Fréchet means]{Simulation results for calculating
+    Fréchet mean densities with different sample sizes.}
+    \label{fig:sim_f_mean}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \input{../bld/figures/fda/f_mean_vs_denstimation.pgf}
+    % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/f_mean_vs_denstimation.pgf}}
+    \caption[Simulation results: observed vs estimated densities --- Fréchet mean]{Simulation
+    results of Fréchet mean of observed densities vs. Fréchet mean of estimated densities.}
+    \label{fig:sim_f_denstimation}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/cs_mean_vs_denstimation.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/cs_mean_vs_denstimation.pgf}}
+    \caption[Simulation results: observed vs estimated densities --- cross-sectional mean]{Simulation
+    results of cross-sectional mean of observed densities vs. cross-sectional mean of
+    estimated densities.}
+    \label{fig:sim_cs_denstimation}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/comparison_f_cs.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/comparison_f_cs.pgf}}
+    \caption[Simulation results: Fréchet mean vs cross-sectional mean]{Simulation
+    results of Fréchet mean plotted against "naive" cross-sectional mean for $n = 200$.}
+    \label{fig:sim_f_vs_cs}
+\end{figure}
+
+Optimal K for directly observed densities always 1, so graphic omitted.
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/k_opt_denstimation_histogram.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/k_opt_denstimation_histogram.pgf}}
+    \caption[Simulation results: optimal $K$]{Simulation results for optimal choice of
+    $K$ in context of density estimation, given that $\text{fve} \geq 90 \%$}
+    \label{fig:sim_k_opt_denstimation}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/fve.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/fve.pgf}}
+    \caption[Simulation results: boxplots fve --- observed densities]{Boxplot of
+    Fréchet fraction of variance explained with directly observed
+    densities, when $K = 1$.}
+    \label{fig:sim_fve}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/fda/fve_denstimation.pgf}
+    \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/fve_denstimation.pgf}}
+    \caption[Simulation results: boxplots fve --- estimated densities]{Boxplot of
+    Fréchet fraction of variance explained with previously estimated densities, when
+    $K = 1$.}
+    \label{fig:sim_fve_denstimation}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/betas.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/betas.pgf}}
+    \caption[Estimated betas in LQD functional regression]{Plot of estimated betas from
+    functional regression with LQD method.}
+    \label{fig:betas}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/beta0vsmean.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/beta0vsmean.pgf}}
+    \caption[Equality of mean LQD function and $\beta_0$]{Plot that shows the equality
+    of the mean LQD function and $\beta_0$.}
+    \label{fig:beta0vsmean}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/func_est_vs_true.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/func_est_vs_true.pgf}}
+    \caption[Comparison: estimated vs. true densities --- LQD]{Estimated densities from
+    functional regression with LQD method plotted against the true densities for some
+    selected predictor values.}
+    \label{fig:func_est_vs_true}
+\end{figure}
+
+For densities with smaller sigmas, we get very low density values for big parts of the
+support, leading to numerical artifacts when calculating the quantile densities (infs
+to the right, astronomical values to the left) which breaks further calculations and
+makes it impossible to get the original densities from those broken qds again. We chose
+to calculate the "effective" support of the densities, if they have very small sigmas,
+defined by the density values being larger than some small $\varepsilon > 0$ on this support. This
+makes the transformation method from \textcite{PetersenMüller2016} inadequate, hence we
+used the modified transformation from \textcite{KokoszkaEtAl2019}. More details are in
+\ref{sec:numerics}.
+
+For the prediction of the start values, we linearly interpolated between the given start
+values from the predictor observations. The ISE increases with sample size, which must
+be explained by the uncertainty introduced through having to estimate the values in the
+inverse transformation.
+
+Moreover, the quality of the density estimates deteriorates with sample size, suggesting
+to vary the bandwidth choice with sample size, as \textcite{PetersenMüller2019} did in
+their comparison of the Fréchet estimator with the Nadaraya-Watson estimator. Due to
+time constraints and the computational requirements, we did not conduct such
+hyperparameter tuning but choose a rule-of-thumb bandwidth
+\parencites[Chapter~3.4.1]{Silverman1986}[Chapter~2.2.1]{LiRacine2007}
