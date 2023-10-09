@@ -48,7 +48,7 @@ def solve_frechet_qp(
             # Else, find closest vector to estimator that is a valid solution
             qp_a = estimated_qf.y
             grid_size = len(qp_a)
-            qp_g = np.identity(grid_size)  # make sure P is symmetric
+            qp_g = np.identity(grid_size)
             qp_c = np.eye(grid_size, grid_size - 1, k=-1) - np.eye(
                 grid_size, grid_size - 1,
             )

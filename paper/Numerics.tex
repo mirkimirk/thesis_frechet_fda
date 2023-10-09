@@ -30,8 +30,8 @@ hence we used the modified transformation from \textcite{KokoszkaEtAl2019}.
 Figure \ref{fig:broken_qdf} shows one of the broken qdfs, and Figure \ref{fig:fixed_qdf}
 shows the fixed version of it by truncating the support of the pdf:
 
-In their own R package (\citetitle{fdadensity}), the authors have "RegularizeByAlpha"
+In their own R package (\citetitle{fdadensity}), the authors have a "RegularizeByAlpha"
 function, which tries to raise the minimal value of a density to a given level alpha. This
-also gets rid of the numerical artifacts and doesnt change the support of the function,
-which makes the methods from their paper still adequate. At the end of calculations, they
+also gets rid of the numerical artifacts and does not change the support of the function,
+which makes the methods from their paper still adequate. At the end of the calculations, they
 revert this change with "DeRegularizeByAlpha".

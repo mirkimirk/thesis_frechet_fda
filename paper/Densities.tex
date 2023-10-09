@@ -3,9 +3,12 @@ regression model with densities as responses. The densities that are of interest
 us are given in the following definition:
 
 \begin{definition}
-    Denote by $\mathcal{D}$ the space of continuous densities $f$, where each
-    $f$ is supported on its own compact interval $[a_i, b_i]$ for some $a_i, b_i \in
-    \mathbb{R}$ with $a_i < b_i$.
+    Denote by \(\mathcal{D}\) the space of continuous, square-integrable densities \(f\),
+    where each \(f\) is supported on its own compact interval \([a_i, b_i]\) for some
+    \(a_i, b_i \in \mathbb{R}\) with \(a_i < b_i\). Formally, \(f \in \mathcal{D}\) if
+    \[
+    \int_{a_i}^{b_i} f(x)^2 \, dx < \infty.
+    \]
 \end{definition}
 
 \subsection{Approaches}
@@ -24,10 +27,9 @@ However, as $\mathcal{D}$ is not a linear subspace of $\mathcal{L}^2$, it is not
 we yield results within $\mathcal{D}$ --- it only means we will yield results within $\mathcal{L}^2$,
 so our estimates, modes of variation etc. are not guaranteed to be themselves densities.
 Alternative characterizations of the space $\mathcal{D}$ have been explored to tackle
-this problem, of which
-we will focus in this paper on the one of a nonlinear space \ref{sec:transformation_interpretation}
-and the \textit{Wasserstein space}. The latter interpretation will be explored in
-Section~\ref{sec:fréchet regression}.
+this problem, of which we will focus in this paper on the one of a nonlinear space
+\ref{sec:transformation_interpretation} and the \textit{Wasserstein space}. The latter
+interpretation will be explored in Section~\ref{sec:fréchet regression}.
 
 \subsubsection{Transformation Method}
 \label{sec:transformation_interpretation}
@@ -125,16 +127,16 @@ and used that as an estimator. These $\hat{c}$ are supposed to estimate the left
 of the support of the resulting density when performing the inverse transform $T^{-1}$
 described in \ref{alg:backward}.
 
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.9\textwidth}
         \centering
         \resizebox{\linewidth}{!}{\input{../bld/figures/fda/naive_trunc_rep_vs_orig.pgf}}
         \caption[Truncated representation --- naive]{Naive method.}
         \label{fig:naive_trunc_rep}
     \end{subfigure}
     \hfill % add some horizontal spacing
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.9\textwidth}
         \centering
         \resizebox{\linewidth}{!}{\input{../bld/figures/fda/trunc_rep_vs_orig.pgf}}
         \caption[Truncated representation --- LQD method]{LQD method.}
@@ -142,14 +144,17 @@ described in \ref{alg:backward}.
     \end{subfigure}
     \caption[Truncated Karhunen-Loève representations]{Truncated Karhunen-Loève
     representations of a sample density. The blue curves result from using one principal
-    component, the orange curves results from using two components.}
+    component, the orange curves results from using two components. The black curve is
+    the sample density that is to be represented.}
     \label{fig:trunc_reps}
 \end{figure}
 
 As an illustration for the difference in quality of the LQD method to the naive method,
 Figure~\ref{fig:trunc_reps} shows the truncated Karhunen-Loève representations of a
-sample density with both methods. Further illustrations, as well as the description of the
-DGP behind this density, are given in Appendix~\ref{sec:illustration_lqd}.
+sample density with both methods. One can clearly see that the representations based on
+the LQD method produce much better fitting curves than the naive method. Further
+illustrations, as well as the description of the DGP behind this density, are given in
+Appendix~\ref{sec:illustration_lqd}.
 
 In the following section, we will explain a functional regression model based on the
 LQD method.
@@ -165,7 +170,7 @@ In the following, $n$ denotes the sample size and $r$ denotes the number of scal
 predictors $p$. Our original regression model of interest is
 \begin{equation}
     \label{eq:dens_reg_model}
-    f_i(t) = \beta_0(t) + \sum_{j=1}^{r} p_{ij} \beta_j(t) + \varepsilon_i(t), \quad i = 1, \ldots, n,
+    f_i(x) = \beta_0(x) + \sum_{j=1}^{r} p_{ij} \beta_j(x) + \varepsilon_i(x), \quad i = 1, \ldots, n,
 \end{equation}
 where $f_i$ is the $i$-th observed density, $p_{ij}$ the $i$-th observed value of the
 $j$-th predictor, $\epsilon_i$ being an i.i.d. functional random error in $\mathcal{L}^2([0,1])$
@@ -173,57 +178,42 @@ with mean zero, and lastly $\beta_j$ being the $j$-th functional regression coef
 predictor $p_j$. This can be written simpler in matrix notation as
 \begin{equation}
     \label{eq:dens_reg_model_matrix}
-    \mathbf{f}(t) = \mathbf{P} \boldsymbol{\beta}(t) + \boldsymbol{\varepsilon}(t).
+    \mathbf{f}(x) = \mathbf{P} \boldsymbol{\beta}(x) + \boldsymbol{\varepsilon}(x).
 \end{equation}
 where $\mathbf{f}$ is the $n$-dimensional vector of observed pdfs, $\mathbf{P}$ is an $n \times (r+1)$
 matrix containing the scalar predictor values $p_{ij}$ (and the first column containing only
-ones), $\boldsymbol{\beta}$ is the $n$-dimensional vector of functional regression coefficients,
+ones), $\boldsymbol{\beta}$ is the $(r+1)$-dimensional vector of functional regression coefficients,
 and $\boldsymbol{\varepsilon}$ is the $n$-dimensional vector of functional random errors.
 
 Applying the LQD transformation \eqref{eq:lqd_definition} to \eqref{eq:dens_reg_model}
 yields
 \begin{equation}
     \label{eq:lqd_reg_model}
-    \psi(f_i)(t) = \psi(\beta_0)(t) + \sum_{j=1}^{r} p_{ij} \psi(\beta_j)(t) + \psi(\varepsilon_i)(t), \quad i = 1, \ldots, n.
+    \psi(f_i)(u) = \psi(\beta_0)(u) + \sum_{j=1}^{r} p_{ij} \psi(\beta_j)(u) + \psi(\varepsilon_i)(u), \quad i = 1, \ldots, n.
 \end{equation}
-Defining $\tilde{\beta}_j \coloneqq \psi(\beta_j)$, we estimate $\tilde{\beta}_j$ by
-minimizing the sum of squared errors:
+Defining $\psi(\boldsymbol{\beta})$ as the $(r+1)$-dimensional vector of transformed
+regression coefficients, we estimate $\psi(\boldsymbol{\beta})$ by minimizing the sum of
+squared errors:
+\begin{equation}
+    \psi(\hat{\boldsymbol{\beta}})(u)
+    \coloneqq \argmin_{\beta_0,\dots, \beta_r} \sum_{i=1}^{n} \|\psi(\varepsilon_i) (u)\|_2^2
+    = \int \sum_{i=1}^{n} \psi(\varepsilon_i)^2 (u) \, du
+    = \sum_{i=1}^{n} \left( \psi(f_i)(u) - \sum_{j=0}^{r} x_{ij} \beta_j(u) \right)^2,
+\end{equation}
+where $x_{i0} = 1 \ \forall i$, and the integral and summation operations have been
+exchanged in the first equality because they are both linear operators
+\parencites[cf.][Chapter~13.4]{RamsaySilverman2005}[][Chapter~5.1]{KokoszkaReimherr2017}.
 
+Since there are no particular restrictions on the functions in the transformed space,
+straightforward pointwise minimization can be performed by calculating
+\begin{equation}
+    \psi(\hat{\boldsymbol{\beta}})
+    = \left(\mathbf{P}^T \mathbf{P}\right)^{-1} \mathbf{P}^T \psi(\mathbf{f})
+\end{equation}
+on a dense grid of evaluation points will yield a discretized version of
+$\psi(\hat{\boldsymbol{\beta}})$. We use linear interpolation between these values to
+yield a function.
 
-(Transformation approach regression: underestimating mu and sigma for lower x,
-overestimating for higher x?) \textcite{PetersenLiuDivani2021}
-
-Figure \ref{fig:trunc_reps} shows truncated Karhunen-Loève representations of a given
-pdf for the respective methods. The blue curve is for using only one component, the
-orange curve for using the two most important components. The black curve is the pdf
-that is to be represented. One can clearly see that the representations based on the LQD
-method produce much better fitting curves than the naive method. Also, the curves barely
-differ when including more components in the naive case.
-
-\begin{figure}[h]
-    \centering
-    % \input{../bld/figures/frechet/betas.pgf}
-    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/betas.pgf}}
-    \caption[Estimated betas in LQD functional regression]{Plot of estimated betas from
-    functional regression with LQD method.}
-    \label{fig:betas}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    % \input{../bld/figures/frechet/beta0vsmean.pgf}
-    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/beta0vsmean.pgf}}
-    \caption[Equality of mean LQD function and $\beta_0$]{Plot that shows the equality
-    of the mean LQD function and $\beta_0$.}
-    \label{fig:beta0vsmean}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    % \input{../bld/figures/frechet/func_est_vs_true.pgf}
-    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/func_est_vs_true.pgf}}
-    \caption[Comparison: estimated vs. true densities --- LQD]{Estimated densities from
-    functional regression with LQD method plotted against the true densities for some
-    selected predictor values.}
-    \label{fig:func_est_vs_true}
-\end{figure}
+We will present this regression method in section \ref{sec:application} where we will
+compare it against the Fréchet regression method. To that end, we will explain the
+Fréchet regression model from \textcite{PetersenMüller2019} in the following section.
