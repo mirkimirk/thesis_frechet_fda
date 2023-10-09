@@ -7,6 +7,31 @@ and some background.
 \subsection{General model}
 \label{sec:general}
 
+\subsection{Wasserstein space}
+\label{sec:wasserstein_space}
+
+\subsection{Computational details}
+\label{sec:computation}
+
+CHECK THIS ALGORITHM FOR NOTATION
+\begin{algorithm}
+    \caption{Estimating \(\hat{Q}(x)\)}
+    \label{alg:quadprog}
+    \begin{algorithmic}[1]
+    \Require Predictor vector \( x \in \mathbb{R}^p \); quantile functions \( Q_i \), and grid \( 0 = t_1 < \ldots < t_m = 1 \)
+    \Ensure Estimates \( \hat{Q}(x; t_l); l = 1, \ldots, m \)
+    \For{\( l = 1, \ldots, m \)}
+        \State Compute \( Q_l = \frac{1}{n} \sum_{i=1}^{n} \sin(x) Q_i(t_l) \)
+    \EndFor
+    \If{\( Q_{l+1} \geq Q_l \) for all \( l \in \{1, \ldots, m-1\} \)}
+        \State Set \( \hat{Q}(x; t_l) = Q_l \)
+    \Else
+        \State Compute \( b^* = \min_{b \in \mathbb{R}^m} \frac{1}{2} b^\top A b - Q^\top A b \) subject to \( b_1 \leq \ldots \leq b_m \)
+        \State Set \( \hat{Q}(x; t_l) = b^*_l \)
+    \EndIf
+    \end{algorithmic}
+\end{algorithm}
+
 \begin{figure}[h]
     \centering
     % \input{../bld/figures/frechet/1stlastqf.pgf}

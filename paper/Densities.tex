@@ -16,7 +16,6 @@ approaches that follow, to motivate our choice of the transformation method from
 
 \subsubsection{Subset of Hilbert Space}
 \label{sec:l2_interpretation}
-ÜBERARBEITEN
 If one additionally assumes that $\mathcal{D} \subseteq L^2(\mathbb{R})$, one can choose
 to interpret the densities as elements of the Hilbert space $\mathcal{L}^2$ and directly
 apply fda methods on the densities \parencite[see e.g.][]{KneipUtikal2001}. Then one
@@ -40,7 +39,7 @@ special case of this general transformation approach described in \textcite{Pete
 The special case of this approach that we will explore in the following section is the
 log quantile density (LQD) transformation.
 
-\subsubsection{Transformation Method}
+\subsubsection{LQD transformation}
 \label{sec:transformation_interpretation}
 Instead of the approach above, one can recognize the nonlinear character of the density
 space and accomodate the use of fda methods such that it is respected. Several authors
@@ -87,13 +86,15 @@ we use the following most general transformation proposed by the authors:
 \end{equation}
 where $\mathcal{A}$ is the support of density $f$, $Q$ is the corresponding quantile function,
 and $u^* \in [0,1]$ is a fixed percentile level for which we save the value of the support
-of $f$. Since we deal with a compact support, we can choose the boundary value
-0\footnote{\textcite{KokoszkaEtAl2019} excluded 0 and 1 because they allowed for the case
-of unbounded support, which could yield $Q(0)$ or $Q(1)$ to be infinity, so useless for
-the transformation method.}, which is most intuitive: we save the left bound of the
-support of $f$, and for the inverse transformation we add that bound when computing
-the quantile function $Q$ from the LQD. The transformation method is described in the
-following two algorithms:
+of $f$. Since we deal with a compact support, we can\footnote{\textcite{KokoszkaEtAl2019}
+excluded 0 and 1 as possible values for $u^*$. This could have been motivated by having
+a possibly unbounded support of the pdfs which could yield $Q(0)$ or $Q(1)$ to be
+infinity, so useless for the transformation method. But this must have been a typo,
+since they also only considered densities with bounded support, as defined in their
+appendix.} choose the boundary value 0, which is most intuitive: we save the left bound
+of the support of $f$, and for the inverse transformation we add that bound when computing
+the quantile function $Q$ from the LQD. The (forward) transformation method is described
+in Algorithm~\ref{alg:forward}, and the inverse transformation in Algorithm~\ref{alg:backward}.
 
 \begin{algorithm}
     \caption{Forward transformation}
@@ -131,7 +132,7 @@ In our application we will deal with two kinds of functions $g$: estimated LQDs 
 our functional regression for some grid of predictor values; and a mean LQD computed from
 the LQD sample. For the former, we estimated $c$ by defining a function $c(p)$, which
 assigns each $c$ to the predictor value $p$ with which it was observed, and calculates $\hat{c}$
-with linear interpolation. For the mean LQD, we computed the mean of the $c$ in the sample
+via linear interpolation. For the mean LQD, we computed the mean of the $c$ values in the sample
 and used that as an estimator. These $\hat{c}$ are supposed to estimate the left bound
 of the support of the resulting density when performing the inverse transform $T^{-1}$
 described in \ref{alg:backward}.
@@ -183,8 +184,8 @@ predictors $p$. Our original regression model of interest is
     f_i(x) = \beta_0(x) + \sum_{j=1}^{r} p_{ij} \beta_j(x) + \varepsilon_i(x), \quad i = 1, \ldots, n,
 \end{equation}
 where $f_i$ is the $i$-th observed density, $p_{ij}$ the $i$-th observed value of the
-$j$-th predictor, $\varepsilon_i$ being an i.i.d. functional random error in $\mathcal{L}^2([0,1])$
-with mean zero, and lastly $\beta_j$ being the $j$-th functional regression coefficient of the $j$-th
+$j$-th predictor, $\varepsilon_i$ is an i.i.d. functional random error in $\mathcal{L}^2([0,1])$
+with mean zero, and lastly $\beta_j$ is the $j$-th functional regression coefficient of the $j$-th
 predictor $p_j$. This can be written simpler in matrix notation as
 \begin{equation}
     \label{eq:dens_reg_model_matrix}
