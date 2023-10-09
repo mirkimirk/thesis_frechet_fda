@@ -3,12 +3,9 @@ regression model with densities as responses. The densities that are of interest
 us are given in the following definition:
 
 \begin{definition}
-    Denote by \(\mathcal{D}\) the space of continuous, square-integrable densities \(f\),
-    where each \(f\) is supported on its own compact interval \([a_i, b_i]\) for some
-    \(a_i, b_i \in \mathbb{R}\) with \(a_i < b_i\). Formally, \(f \in \mathcal{D}\) if
-    \[
-    \int_{a_i}^{b_i} f(x)^2 \, dx < \infty.
-    \]
+    Denote by $\mathcal{D}$ the space of continuous densities $f$, where each
+    $f$ is supported on its own compact interval $[a_i, b_i]$ for some $a_i, b_i \in
+    \mathbb{R}$ with $a_i < b_i$.
 \end{definition}
 
 \subsection{Approaches}
@@ -19,17 +16,29 @@ approaches that follow, to motivate our choice of the transformation method from
 
 \subsubsection{Subset of Hilbert Space}
 \label{sec:l2_interpretation}
-Since $\mathcal{D} \subseteq L^2(\mathbb{R})$, one can choose to interpret the densities
-as elements of the Hilbert space $\mathcal{L}^2$ and directly apply fda methods on the densities
-\parencite[see e.g.][]{KneipUtikal2001}. Then one could handle the regression problem by
-applying the functional response regression method first described by \textcite{Faraway1997}.
+ÜBERARBEITEN
+If one additionally assumes that $\mathcal{D} \subseteq L^2(\mathbb{R})$, one can choose
+to interpret the densities as elements of the Hilbert space $\mathcal{L}^2$ and directly
+apply fda methods on the densities \parencite[see e.g.][]{KneipUtikal2001}. Then one
+could handle the regression problem by applying the functional response regression method
+first described by \textcite{Faraway1997}.
+
 However, as $\mathcal{D}$ is not a linear subspace of $\mathcal{L}^2$, it is not guaranteed that
 we yield results within $\mathcal{D}$ --- it only means we will yield results within $\mathcal{L}^2$,
 so our estimates, modes of variation etc. are not guaranteed to be themselves densities.
 Alternative characterizations of the space $\mathcal{D}$ have been explored to tackle
-this problem, of which we will focus in this paper on the one of a nonlinear space
-\ref{sec:transformation_interpretation} and the \textit{Wasserstein space}. The latter
-interpretation will be explored in Section~\ref{sec:fréchet regression}.
+this problem, for example the interpretation of elements in $\mathcal{D}$ as so-called
+compositional data, or as elements of the Wasserstein-2 space. The latter
+interpretation will be explored in Section~\ref{sec:fréchet regression} as this general
+approach to regression can easily incorporate the geometry of a given space that is
+implied by its metric (in this case, the Wasserstein-2 metric $d_\mathcal{W}$.)
+
+Another approach is the general characterization of $\mathcal{D}$ as a nonlinear space
+with certain constraints that can be done away with through a preliminary transformation
+to a linear representation space. The compositional data approach can be seen as a
+special case of this general transformation approach described in \textcite{PetersenMüller2016}.
+The special case of this approach that we will explore in the following section is the
+log quantile density (LQD) transformation.
 
 \subsubsection{Transformation Method}
 \label{sec:transformation_interpretation}
@@ -74,10 +83,10 @@ the density $f_i$. For generality, we assume
 i.e., we do not want to assume a common "anchor" point in the supports of the $f_i$. So
 we use the following most general transformation proposed by the authors:
 \begin{equation}
-    T : \mathcal{D} \to \mathcal{L}^2([0,1]) \times \mathcal{A}, \text{ given by } T(f) = (\psi(f), Q(u_0)),
+    T : \mathcal{D} \to \mathcal{L}^2([0,1]) \times \mathcal{A}, \text{ given by } T(f) = (\psi(f), Q(u^*)),
 \end{equation}
 where $\mathcal{A}$ is the support of density $f$, $Q$ is the corresponding quantile function,
-and $u_0 \in [0,1]$ is a fixed percentile level for which we save the value of the support
+and $u^* \in [0,1]$ is a fixed percentile level for which we save the value of the support
 of $f$. Since we deal with a compact support, we can choose the boundary value
 0\footnote{\textcite{KokoszkaEtAl2019} excluded 0 and 1 because they allowed for the case
 of unbounded support, which could yield $Q(0)$ or $Q(1)$ to be infinity, so useless for
@@ -108,7 +117,7 @@ following two algorithms:
     \Require Data pairs \( (u_l, g(u_l)), l = 0, \ldots, L \) and \( c \)
     \Ensure Data pairs \( (x_l, f(x_l)), l = 0, \ldots, L \)
     \For{\( l = 1, \ldots, L \)}
-        \State Compute \( Q(u_l) = c + \int_{0}^{u_l} \exp\{g(s)\} \, ds \) by numerical integration of the pairs \( (u_l, \exp\{g(u_l)\}) \)
+        \State Compute \( Q(u_l) = c + \int_{u^*}^{u_l} \exp\{g(s)\} \, ds \) by numerical integration of the pairs \( (u_l, \exp\{g(u_l)\}) \)
         \State Define \( x_l = Q(u_l) \) so that \( F(x_l) = u_l \)
         \State Compute \( f(x_l) = \exp \{-g(u_l)\} \)
     \EndFor
@@ -143,9 +152,10 @@ described in \ref{alg:backward}.
         \label{fig:trunc_rep}
     \end{subfigure}
     \caption[Truncated Karhunen-Loève representations]{Truncated Karhunen-Loève
-    representations of a sample density. The blue curves result from using one principal
-    component, the orange curves results from using two components. The black curve is
-    the sample density that is to be represented.}
+    representations of a sample density. The blue and orange curves result from using one
+    and two principal components, respectively. The black curve is the sample density
+    that is to be represented. We added a small perturbation to the orange curve in the
+    naive method to better differentiate it from the blue curve.}
     \label{fig:trunc_reps}
 \end{figure}
 
@@ -173,7 +183,7 @@ predictors $p$. Our original regression model of interest is
     f_i(x) = \beta_0(x) + \sum_{j=1}^{r} p_{ij} \beta_j(x) + \varepsilon_i(x), \quad i = 1, \ldots, n,
 \end{equation}
 where $f_i$ is the $i$-th observed density, $p_{ij}$ the $i$-th observed value of the
-$j$-th predictor, $\epsilon_i$ being an i.i.d. functional random error in $\mathcal{L}^2([0,1])$
+$j$-th predictor, $\varepsilon_i$ being an i.i.d. functional random error in $\mathcal{L}^2([0,1])$
 with mean zero, and lastly $\beta_j$ being the $j$-th functional regression coefficient of the $j$-th
 predictor $p_j$. This can be written simpler in matrix notation as
 \begin{equation}
@@ -198,9 +208,9 @@ squared errors:
     \psi(\hat{\boldsymbol{\beta}})(u)
     \coloneqq \argmin_{\beta_0,\dots, \beta_r} \sum_{i=1}^{n} \|\psi(\varepsilon_i) (u)\|_2^2
     = \int \sum_{i=1}^{n} \psi(\varepsilon_i)^2 (u) \, du
-    = \sum_{i=1}^{n} \left( \psi(f_i)(u) - \sum_{j=0}^{r} x_{ij} \beta_j(u) \right)^2,
+    = \sum_{i=1}^{n} \left( \psi(f_i)(u) - \sum_{j=0}^{r} p_{ij} \beta_j(u) \right)^2,
 \end{equation}
-where $x_{i0} = 1 \ \forall i$, and the integral and summation operations have been
+where $p_{i0} = 1 \ \forall i$, and the integral and summation operations have been
 exchanged in the first equality because they are both linear operators
 \parencites[cf.][Chapter~13.4]{RamsaySilverman2005}[][Chapter~5.1]{KokoszkaReimherr2017}.
 
@@ -208,11 +218,19 @@ Since there are no particular restrictions on the functions in the transformed s
 straightforward pointwise minimization can be performed by calculating
 \begin{equation}
     \psi(\hat{\boldsymbol{\beta}})
-    = \left(\mathbf{P}^T \mathbf{P}\right)^{-1} \mathbf{P}^T \psi(\mathbf{f})
+    = \left(\mathbf{P}^T \mathbf{P}\right)^{-1} \mathbf{P}^T \psi(\mathbf{f}).
 \end{equation}
-on a dense grid of evaluation points will yield a discretized version of
-$\psi(\hat{\boldsymbol{\beta}})$. We use linear interpolation between these values to
-yield a function.
+Practically, we observed $\psi(\mathbf{f})$ on a dense grid of evaluation points and
+accordingly computed a discretized version of $\psi(\hat{\boldsymbol{\beta}})$ with the
+above method. Using linear interpolation between these values, we obtained an approximation
+of $\psi(\hat{\boldsymbol{\beta}})$.
+
+We obtain the estimated pdf for any particular predictor values $p_1, \dots, p_r$ by
+calculating
+\begin{equation}
+    \psi(\hat{\boldsymbol{\beta}})
+    = \left(\mathbf{P}^T \mathbf{P}\right)^{-1} \mathbf{P}^T \psi(\mathbf{f}).
+\end{equation}
 
 We will present this regression method in section \ref{sec:application} where we will
 compare it against the Fréchet regression method. To that end, we will explain the

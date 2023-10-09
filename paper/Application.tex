@@ -10,6 +10,38 @@
 
 
 
+(Transformation approach regression: underestimating mu and sigma for lower x,
+overestimating for higher x?) \textcite{PetersenLiuDivani2021}
+
+
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/betas.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/betas.pgf}}
+    \caption[Estimated betas in LQD functional regression]{Plot of estimated betas from
+    functional regression with LQD method.}
+    \label{fig:betas}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/beta0vsmean.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/beta0vsmean.pgf}}
+    \caption[Equality of mean LQD function and $\beta_0$]{Plot that shows the equality
+    of the mean LQD function and $\beta_0$.}
+    \label{fig:beta0vsmean}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    % \input{../bld/figures/frechet/func_est_vs_true.pgf}
+    \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/func_est_vs_true.pgf}}
+    \caption[Comparison: estimated vs. true densities --- LQD]{Estimated densities from
+    functional regression with LQD method plotted against the true densities for some
+    selected predictor values.}
+    \label{fig:func_est_vs_true}
+\end{figure}
 
 
 
