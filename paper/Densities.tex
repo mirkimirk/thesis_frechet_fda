@@ -1,7 +1,86 @@
 In this chapter we are going to examine the case of density regression, i.e., a
-regression model with densities as responses. The densities that are of interest to
-us are given in the following definition:
+regression model with densities as responses.
 
+\subsection{Definitions}
+\label{sec:densities_defs}
+A very basic operation we will use throughout this work is switching between different functions
+that characterize a distribution. We will deal with the following four important classes
+of functions that characterize a distribution:
+
+\begin{definition}[pdfs, cdfs, qfs, and qdfs]
+    \label{def:distributionfuncs}
+    Let \(\mathbb{R}^+\) be the set of nonnegative reals.
+    \begin{enumerate}
+        \item The \textit{probability density function (pdf)} is a function
+        \( f: \mathbb{R} \to \mathbb{R}^+ \) such that \( \int_{\mathbb{R}} f(x) \, dx = 1 \)
+        and \( f(x) \geq 0 \) for all \( x \in \mathbb{R} \).
+
+        \item The \textit{cumulative cistribution function (cdf)} is given by
+        \( F(x) \coloneqq \int_{-\infty}^{x} f(t) \, dt \), where \( f \) is the pdf.
+        Note that \( F\) is non-decreasing and right-continuous,
+        with \( \lim_{{x \to -\infty}} F(x) = 0 \) and \( \lim_{{x \to \infty}} F(x) = 1 \).
+
+        \item The inverse of \(F\) is called the \textit{quantile function (qf)},
+        and is denoted by \(Q\). It is given by \( Q(u) \coloneqq F^{-1}(u) =
+        \inf \{ x \in \mathbb{R} \mid F(x) \geq u \} \) for \( u \in [0, 1] \).
+
+        \item The derivative of \(Q(u)\) w.r.t. \(u\) is called the \textit{quantile
+        density function (qdf)}, and is denoted by \(q\). It is given by
+        \(q(u) \coloneqq \frac{d}{du} Q(u)\) for \( u \in [0, 1] \).
+    \end{enumerate}
+\end{definition}
+
+For clarity, we will use the arguments $x$ and $z$ for pdfs and cdfs, and the arguments
+$u$ and $v$ for qfs and qdfs. Since we will later only look at densities from continuous
+distributions on their support (i.e., where $f > 0$), we will in the following assume
+that $F$ is strictly increasing and thus its inverse $Q$ to be well-defined.
+The following relation between the pdf and qdf will be useful later when computing
+transformations of the density functions \parencite[cf.][]{Jones1992}:
+
+\begin{lemma}
+\label{lemma:f eq inverse qdf}
+    Let \(f\) be a pdf, \(F\) the corresponding cdf, \(Q\) the corresponding qf, and
+    \(q\) the corresponding qdf. Then it holds that
+    \begin{equation}
+    \label{eq:qdfinversef}
+        {q}(u) = \frac{1}{{f}({Q}(u))},
+    \end{equation}
+    and
+    \begin{equation}
+    \label{eq:finverseqdf}
+        {f}(x) = \frac{1}{{q}({F}(x))},
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    We will show that \eqref{eq:qdfinversef} holds, \eqref{eq:finverseqdf} follows
+    analogously. Note that \( q = (F^{-1})' \), so we can use the inverse function
+    rule to characterize \(q \) with the inverse $Q = F^{-1}$ and derivative $f = F'$
+    of \( F \):
+    \begin{equation}
+    \label{eq:proof_qdfinversef}
+        (F^{-1})'(u) = \frac{1}{{F'}({F^{-1}}(u))} = \frac{1}{{f}({Q}(u))}
+    \end{equation}
+\end{proof}
+
+Because of the relation in \eqref{eq:qdfinversef}, the qdf is sometimes called the
+"sparsity function" \parencite[cf.][]{Tukey1965}.
+($\Omega$ denotes the space of random objects
+we are interested in. $\mathcal{G}$ will denote the "set of distributions", i.e., the set containing
+any class of functions that can represent a distribution.)
+
+Following \textcite{PetersenZhangKokoszka2022}, we denote with
+\begin{equation}
+\label{eq:density_set}
+    \mathcal{D} \subseteq \left\{ f : f(x) \geq 0, \int_{\mathbb{R}} f(x) \, dx = 1 \right\}
+\end{equation}
+the set of probability density functions (pdfs) that are of interest to us.\footnote{Note that
+this in particular means that $\mathcal{D}$ can contain densities with different supports.
+This will be significant later on when we perform transformations on these densities.}
+$\Omega$ will be of use when generally explaining fda methods and theory, as well as
+the concept of Fréchet regression. In the applications, we will be focussed on either
+$\Omega = \mathcal{G}$ or $\Omega = \mathcal{D}$
+
+The densities that are of interest to us are given in the following definition:
 \begin{definition}
     Denote by $\mathcal{D}$ the space of continuous densities $f$, where each
     $f$ is supported on its own compact interval $[a_i, b_i]$ for some $a_i, b_i \in
@@ -177,6 +256,8 @@ special case of the general transformation approach explained by \textcite{Peter
 \parencite[cf.][]{PetersenZhangKokoszka2022}. So we follow their modelling of a functional
 response model for our LQD transformation method.
 
+\subsubsection{Construction of model}
+\label{sec:model_construction}
 In the following, $n$ denotes the sample size and $r$ denotes the number of scalar
 predictors $p$. Our original regression model of interest is
 \begin{equation}
@@ -215,6 +296,8 @@ where $p_{i0} = 1 \ \forall i$, and the integral and summation operations have b
 exchanged in the first equality because they are both linear operators
 \parencites[cf.][Chapter~13.4]{RamsaySilverman2005}[][Chapter~5.1]{KokoszkaReimherr2017}.
 
+\subsubsection{Computational Details}
+\label{sec:com_details_func_reg}
 Since there are no particular restrictions on the functions in the transformed space,
 straightforward pointwise minimization can be performed by calculating
 \begin{equation}
