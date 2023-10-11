@@ -1,10 +1,10 @@
-This section provides mathematical background for fda, and establishes basic concepts
-and notation that will be used throughout this text.
+This section provides mathematical background for fda and the Wasserstein space. Basic
+concepts and notation are established that will be used throughout this thesis.
 
 \subsection{Hilbert Space Theory and $\mathcal{L}^2$ Space}
 \label{sec:hilbert spaces and l2}
-This section will introduce basic mathematical concepts needed for functional data
-analysis. In later sections, these will be used for derivations and proofs. It is mostly
+This section will introduce basic mathematical concepts required to explain basic fda
+methods. In later sections, these will be used for derivations and proofs. It is mostly
 based on \textcite[Chapter~2]{HsingEubank2015}.
 
 \subsubsection{Separable Hilbert Spaces}
@@ -12,9 +12,9 @@ based on \textcite[Chapter~2]{HsingEubank2015}.
 For many methods in fda to work and be theoretically justified, additional structure on
 the set of functions under consideration is assumed. This structure is most often the
 $\mathcal{L}^2$ space of square integrable functions. This space is a separable Hilbert
-space. To define $\mathcal{L}^2$ and the separable Hilbert space, we first need the
-following definitions:
-\begin{definition}[Inner Product, Inner Product Space, and Orthogonality]
+space. To define $\mathcal{L}^2$ and understand its properties as a separable Hilbert
+space, we first need the following definitions:
+\begin{definition}[Inner Product and Inner Product Space]
     \label{def:inpr}
     Let \( V \) be a real vector space. A function $\inpr{\cdot}{\cdot}_V$ that maps any
     two vectors \( s, t \in V \) to a real number \( \inpr{s}{t}_V \) is called an
@@ -25,9 +25,7 @@ following definitions:
         \item \textbf{Positive Definiteness}: \( \inpr{s}{t}_V \geq 0 \) and \( \inpr{t}{t}_V = 0 \) if and only if \( t = 0 \) for all \( s, t \in V \).
     \end{enumerate}
     A real vector space \( V \) equipped with such an inner product is called an
-    \textit{inner product space}. In an inner product space \( V \), two vectors
-    \( s, t \in V \) are said to be \textit{orthogonal} if
-    $\inpr{s}{t}_V = 0 $.
+    \textit{inner product space}.
 \end{definition}
 To generalize all the notions of interest for fda from Eucliean space to possibly
 infinite dimensional spaces, we need the following space:
@@ -48,13 +46,32 @@ $d_\mathcal{H}(a, b) = \norm{a - b}_\mathcal{H}$ to measure the distance between
 elements in $\mathcal{H}$. The concept of inner product makes it possible to evaluate
 the angle between two vectors in $\mathcal{H}$, which is useful for defining projections
 and for orthogonal decompositions of this space. Especially the latter will be very
-important for dimensionality reduction.
+important for dimensionality reduction. Orthogonality is defined in the following
+- Definition orthogonality, and orthonormal sequence in Inner product space (use Kronecker
+delta).
+
+Later we will be approximating elements of a Hilbert space by a combination of a finite
+number of its elements. So to find the most efficient subspace (in the sense of giving the
+best approximation for a given number of dimensions), we want to exploit some more
+structure of the space $\mathcal{L}^2$ that we will be interested in. For this we need an analogue notion of a \textit{linear span}
+from the finite dimensional vector spaces we know from multivariate analysis to this
+infinite dimensional space. The following definition gives this notion.
+
+Definition of closed span: Let $\mathcal{h}_1,\mathcal{h}_2, \dots $ be a sequence of
+elements in 
+
+
+
 
 For ..., we need a notion of 
-\begin{definition}[Closed Span]
+\begin{definition}[Closed Span, Orthogonality, and Orthonormal Sequence]
     \label{def:closed span}
     The \textit{closed span} of a subset \( A \) of a Hilbert space \( \mathcal{H} \) is the 
     closure of the linear span of \( A \) with respect to the metric induced by the inner product.
+
+    In an inner product space \( V \), two vectors \( s, t \in V \) are said to be
+    \textit{orthogonal} if
+    $\inpr{s}{t}_V = 0 $.
 \end{definition}
 
 \begin{definition}[Orthonormal Basis in a Hilbert Space]
@@ -73,28 +90,10 @@ of the basis elements. This foundational idea is critical for methods like Funct
 Component Analysis, where we approximate complex functions by projecting them onto a finite 
 subset of this basis.
 
-
-
-An operator is a functional of elements in this space. It serves as a generalization of
-a matrix and will play the same conceptual role in the FDA analogues to mv methods
-that matrices do in them.
-
-This is the covariance operator... it is symmetric and positive semi-definite, so
-a Hilbert-Schmidt operator (\textcite{WangChiouMüller2016} say because of the integral form,
-its a trace class, so compact Hilbert-Schmidt operator). It allows for the spectral
-decomposition (in terms of eigenfunctions and eigenvalues). The space of Hilbert-Schmidt
-operators is itself a separable Hilbert Space.
-
-\subsubsection{Riesz Representation Theorem}
-\label{sec:riesz}
-
-\subsubsection{Mercer's Theorem and Karhunen-Loève Decomposition}
-\label{sec:mercer and kh}
-
-\subsubsection{$L^2([a, b])$ Space}
+\subsubsection{$\mathcal{L}^2([a, b])$ Space}
 \label{sec:l2 space}
 In the context of FDA, it is assumed that the functional data live in
-the space of square integrable functions $L^2([a,b])$, with common
+the space of square integrable functions $\mathcal{L}^2([a,b])$, with common
 support $[a,b]$. This space is a separable Hilbert space, i.e., a complete inner
 product space, equipped with the norm induced by the inner product. Separability means
 its elements can be arbitrarily well approximated by elements of a dense subset of the
@@ -116,5 +115,139 @@ spaces.
     $\inpr{\cdot}{\cdot}_2$, and $d_2(\cdot, \cdot)$, respectively.
 \end{definition}
 
-\subsection{Fréchet mean and variance}
+\subsubsection{Linear Operators in Hilbert Spaces}
+\label{sec:operators}
+
+An operator is a functional of elements in this space. It serves as a generalization of
+a matrix and will play the same conceptual role in the FDA analogues to mv methods
+that matrices do in them. This section is mainly based on \textcite[Chapter~]{HorvathKokoszka2012}
+
+This is the covariance operator... it is symmetric and positive semi-definite, so
+a Hilbert-Schmidt operator (\textcite{WangChiouMüller2016} say because of the integral form,
+its a trace class, so compact Hilbert-Schmidt operator). It allows for the spectral
+decomposition (in terms of eigenfunctions and eigenvalues). The space of Hilbert-Schmidt
+operators is itself a separable Hilbert Space.
+
+\subsubsection{Important Theorems}
+\label{sec:theorems}
+
+\subsubsection{Riesz Representation Theorem}
+\label{sec:riesz}
+Will help later in interpreting the covariance operator as it is an integral operator
+and can be written as an inner product $\inpr{\gamma(x, \cdot)}{\mathcal{h}(\cdot)}$.
+Will also be useful finding the solution of Fréchet optimization problem in Wasserstein
+space.
+
+\subsubsection{Mercer's Theorem and Karhunen-Loève Decomposition}
+\label{sec:mercer and kh}
+Mercer makes the calculation of eigenfunctions and values of the covariance operator
+useful to represent the covariance function with this. This will be an optimal orthonormal
+basis, capturing in descending order the most important directions of variation, so that
+when truncated to finite dimensional basis, we have the best possible representation of
+elements in the Hilbert space given the truncation parameter.
+
+
+\subsection{Statistical Foundations in Function Spaces}
+\label{sec:stat_foundations}
+
+\subsubsection{Preliminaries and Definitions}
+\label{sec:definitions}
+A very basic operation we will use throughout this work is switching between different functions
+that characterize a distribution. We will deal with the following four important classes
+of functions that characterize a distribution:
+\begin{definition}[pdfs, cdfs, qfs, and qdfs]
+    \label{def:distributionfuncs}
+    Let \(\mathbb{R}^+\) be the set of nonnegative reals.
+    \begin{enumerate}
+        \item The \textit{probability density function (pdf)} is a function
+        \( f: \mathbb{R} \to \mathbb{R}^+ \) such that \( \int_{\mathbb{R}} f(x) \, dx = 1 \)
+        and \( f(x) \geq 0 \) for all \( x \in \mathbb{R} \).
+
+        \item The \textit{cumulative cistribution function (cdf)} is given by
+        \( F(x) \coloneqq \int_{-\infty}^{x} f(t) \, dt \), where \( f \) is the pdf.
+        Note that \( F\) is non-decreasing and right-continuous,
+        with \( \lim_{{x \to -\infty}} F(x) = 0 \) and \( \lim_{{x \to \infty}} F(x) = 1 \).
+
+        \item The inverse of \(F\) is called the \textit{quantile function (qf)},
+        and is denoted by \(Q\). It is given by \( Q(u) \coloneqq F^{-1}(u) =
+        \inf \{ x \in \mathbb{R} \mid F(x) \geq u \} \) for \( u \in [0, 1] \).
+
+        \item The derivative of \(Q(u)\) w.r.t. \(u\) is called the \textit{quantile
+        density function (qdf)}, and is denoted by \(q\). It is given by
+        \(q(u) \coloneqq \frac{d}{du} Q(u)\) for \( u \in [0, 1] \).
+    \end{enumerate}
+\end{definition}
+For clarity, we will use the arguments $x$ and $z$ for pdfs and cdfs, and the arguments
+$u$ and $v$ for qfs and qdfs. Since we will later only look at densities from continuous
+distributions on their support (i.e., where $f > 0$), we will in the following assume
+that $F$ is strictly increasing and thus its inverse $Q$ to be well-defined.
+The following relation between the pdf and qdf will be useful later when computing
+transformations of the density functions \parencite[cf.][]{Jones1992}:
+\begin{lemma}
+\label{lemma:f eq inverse qdf}
+    Let \(f\) be a pdf, \(F\) the corresponding cdf, \(Q\) the corresponding qf, and
+    \(q\) the corresponding qdf. Then it holds that
+    \begin{equation}
+    \label{eq:qdfinversef}
+        {q}(u) = \frac{1}{{f}({Q}(u))},
+    \end{equation}
+    and
+    \begin{equation}
+    \label{eq:finverseqdf}
+        {f}(x) = \frac{1}{{q}({F}(x))},
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    We will show that \eqref{eq:qdfinversef} holds, \eqref{eq:finverseqdf} follows
+    analogously. Note that \( q = (F^{-1})' \), so we can use the inverse function
+    rule to characterize \(q \) with the inverse $Q = F^{-1}$ and derivative $f = F'$
+    of \( F \):
+    \begin{equation}
+    \label{eq:proof_qdfinversef}
+        (F^{-1})'(u) = \frac{1}{{F'}({F^{-1}}(u))} = \frac{1}{{f}({Q}(u))}
+    \end{equation}
+\end{proof}
+Because of the relation in \eqref{eq:qdfinversef}, the qdf is sometimes called the
+"sparsity function" \parencite[cf.][]{Tukey1965}.
+($\Omega$ denotes the space of random objects
+we are interested in. $\mathcal{G}$ will denote the "set of distributions", i.e., the set containing
+any class of functions that can represent a distribution.)
+
+Following \textcite{PetersenZhangKokoszka2022}, we denote with
+\begin{equation}
+\label{eq:density_set}
+    \mathcal{D} \subseteq \left\{ f : f(x) \geq 0, \int_{\mathbb{R}} f(x) \, dx = 1 \right\}
+\end{equation}
+the set of probability density functions (pdfs) that are of interest to us.\footnote{Note that
+this in particular means that $\mathcal{D}$ can contain densities with different supports.
+This will be significant later on when we perform transformations on these densities.}
+$\Omega$ will be of use when generally explaining fda methods and theory, as well as
+the concept of Fréchet regression. In the applications, we will be focussed on either
+$\Omega = \mathcal{G}$ or $\Omega = \mathcal{D}$
+
+The densities that are of interest to us are given in the following definition:
+\begin{definition}
+    Denote by $\mathcal{D}$ the space of continuous densities $f$, where each
+    $f$ is supported on its own compact interval $[a_i, b_i]$ for some $a_i, b_i \in
+    \mathbb{R}$ with $a_i < b_i$.
+\end{definition}
+
+\subsubsection{Stochastic Processes and Data Generation}
+\label{sec:stochastic_processes}
+\paragraph{Introduction to Stochastic Processes}
+\label{sec:intro_stochastic}
+\paragraph{Data Generation Mechanism}
+\label{sec:data_generation}
+
+\subsubsection{Fréchet Mean and Variance}
 \label{sec:f_mean}
+% Existing Content
+
+\subsubsection{Wasserstein Distance and Its Properties}
+\label{sec:wasserstein_distance}
+% Existing Content
+
+\subsubsection{Wasserstein-Fréchet Mean}
+\label{sec:wasserstein_f_mean}
+% Existing Content
+d perhaps its relationship with the quantile synchronized mean.
