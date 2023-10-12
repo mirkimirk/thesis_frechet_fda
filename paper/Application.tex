@@ -4,6 +4,8 @@ will produce the data for our illustrations and
 
 \subsection{Data Generating Process}
 \label{sec:app_dgp}
+The DGP used here is the same as \textcite{PetersenMüller2019} used in their simulation
+
 
 \subsection{Illustration of Methods in Example}
 \label{sec:app_illustration}
@@ -11,11 +13,7 @@ will produce the data for our illustrations and
 \subsubsection{LQD method}
 \label{sec:app_lqd}
 
-
-(Transformation approach regression: underestimating mu and sigma for lower x,
-overestimating for higher x?) \textcite{PetersenLiuDivani2021}
-
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
     % \input{../bld/figures/frechet/betas.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/betas.pgf}}
@@ -23,17 +21,32 @@ overestimating for higher x?) \textcite{PetersenLiuDivani2021}
     functional regression with LQD method.}
     \label{fig:betas}
 \end{figure}
-
-\begin{figure}[h]
+Figure~\ref{fig:betas} shows the estimated $\psi(\hat{\boldsymbol{\beta}})$ values. $\psi(\hat{\beta_1})$
+is estimated to be a constant greater than one, meaning that $\hat{\beta}_1$ is a positive
+constant after back transformation, reflecting the positive linear effect that $p$ has
+on the responses. $\psi(\hat{\beta}_0)$ reflects the mean LQD, or $\hat{\beta}_0$ reflects
+the mean pdf. Calculating fitted values via $\psi(\hat{f}) = \psi(\hat{\beta}_0) + \psi(\hat{\beta}_1) p$
+means that we are adding an increasing constant for increasing $p$ to a (log) qdf, and
+this constant makes the qdf values uniformly larger everywhere, thus making them relatively
+more even. A flatter qdf means more variance so we should see a gradual increase in
+variance  in the plots of the estimated pdfs via LQD method. The location, as mentioned
+in Section~\ref{sec:transformation_interpretation}, has to be estimated separately and is not
+contained in the information of qdfs, so also not in the estimated LQDs or regression
+coefficients.
+\begin{figure}[h!]
     \centering
     % \input{../bld/figures/frechet/beta0vsmean.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/beta0vsmean.pgf}}
-    \caption[Equality of mean LQD function and $\beta_0$]{Plot that shows the equality
-    of the mean LQD function and $\beta_0$.}
+    \caption[Equality of mean LQD function and $\psi(\hat{\beta}_0)$]{Plot that shows the equality
+    of the mean LQD function and $\beta_0$. Some perturbation was added so one can
+    distinguish the curves.}
     \label{fig:beta0vsmean}
 \end{figure}
-
-\begin{figure}[h]
+To show that $\psi(\hat{\beta}_0)$ and the (cross-sectional) mean LQD function are the
+same, we printed Figure~\ref{fig:beta0vsmean}. Next, we will turn to the estimates of
+the densities obtained via LQD method and compare them with the densities produces by
+the true stochastic process.
+\begin{figure}[h!]
     \centering
     % \input{../bld/figures/frechet/func_est_vs_true.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/func_est_vs_true.pgf}}
@@ -42,6 +55,10 @@ overestimating for higher x?) \textcite{PetersenLiuDivani2021}
     selected predictor values.}
     \label{fig:func_est_vs_true}
 \end{figure}
+Figure~\ref{fig:func_est_vs_true} plots the estimated densities against their true
+counterparts. We see that the general trend to higher variance is well reflected in the
+estimated curves
+
 Because in the functional regression on the log transformed qds, we have to adjust with
 the range with the individual quantile of the observation, and otherwise there is no
 possibility to keep the mean, the linear dependence of the mean is lost. One can though
@@ -50,7 +67,7 @@ see that the variance rises with x. This information is not lost in the log qdfs
 \subsubsection{Fréchet method}
 \label{sec:app_frechet}
 
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
     % \input{../bld/figures/frechet/1stlastqf.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/1stlastqf.pgf}}
@@ -63,7 +80,7 @@ Figure \ref{fig:1stlastqf} shows two example qfs, generated from the above menti
 process with the predictor values $p=-1$ and $p=1$. One can see that both location and
 scale are much larger for the curve with the higher predictor value.
 
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
     % \input{../bld/figures/frechet/some_densities.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/some_densities.pgf}}
@@ -73,17 +90,17 @@ scale are much larger for the curve with the higher predictor value.
 
 Figure \ref{fig:some_densities} plots the corresponding pdfs of some of the generated qfs.
 
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
     % \input{../bld/figures/frechet/frechet_estimates.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/frechet_estimates.pgf}}
     \caption[Estimated pdfs from Fréchet method]{Plot of estimated densities via Fréchet regression method.
-    The densities from left to right are corresponding to a predictor value $p$ on an
+    The densities from left to right are corresponding to increasing predictor values $p$ on an
     equidistant grid on $[-1,1]$ with 50 grid points.}
     \label{fig:frechet_estimates}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
     % \input{../bld/figures/frechet/frechet_estimates_3d.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/frechet_estimates_3d.pgf}}
@@ -98,7 +115,7 @@ was used to visualize the change of shape of the qfs with a One can see a smooth
 increase in location and variance in both figures with an increase in the predictor
 value.
 
-% \begin{figure}[h]
+% \begin{figure}[h!]
 %     \centering
 %     % \input{../bld/figures/frechet/all_observations_3d.pgf}
 %     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/all_observations_3d.pgf}}
@@ -106,7 +123,7 @@ value.
 %     \label{fig:all_observations_3d}
 % \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
     % \input{../bld/figures/frechet/frechet_est_vs_true.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/frechet_est_vs_true.pgf}}
@@ -115,19 +132,15 @@ value.
     predictor values.}
     \label{fig:frechet_est_vs_true}
 \end{figure}
-
-We see a more continous estimate in the Fréchet regression. Clearly the mean shifts
-steadily to the right, as x increases, as well as more variance.
-
-
-
-
+Figure~\ref{fig:frechet_est_vs_true} shows a more continuous estimate in the Fréchet
+regression. Clearly the mean shifts steadily to the right, as x increases, as well as
+more variance.
 
 \subsection{Results}
 \label{sec:app_results}
 In this section, we briefly visualize and discuss the results from the simulation study.
 
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
     % \input{../bld/figures/frechet/ise_frechet.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/ise_frechet.pgf}}
@@ -144,7 +157,7 @@ means more information to use for estimation, so the predictions should be close
 their mean (the true value), and the variance of the predictions around their mean should
 get smaller.
 
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
     % \input{../bld/figures/frechet/ise_frechet_denstimation.pgf}
     \resizebox{1\textwidth}{!}{\input{../bld/figures/frechet/ise_frechet_denstimation.pgf}}
@@ -161,7 +174,7 @@ improvement. This hints at a problem in the density estimation method. Nonethele
 the values are better than the ISE values for the transformation method in the same
 scenario.
 
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
     % \input{../bld/figures/frechet/ise_func_reg_both.pgf}
     \resizebox{\textwidth}{!}{\input{../bld/figures/frechet/ise_func_reg_both.pgf}}
@@ -181,11 +194,11 @@ of bandwidth choice. The big difference between the ISE boxplots for the Fréche
 the transformation method even in the case of directly observed densities must be explained
 by the beforementioned (see Section~\ref{sec:transformation_interpretation}) need to
 estimate the location of the support in the transformation method since this information
-is lost when transforming the pdf to the qdf. Maybe one can improve upon the linear
-interpolation method to compute the left bounds.
+is lost when transforming the pdf to the qdf. An area of improvement could be to use
+more sophisticated estimation methods than linear interpolation to compute the left bounds
+of the supports.
 
-
-\begin{table}[h]
+\begin{table}[h!]
     \centering
     \begin{tabular}{lccc}
         \hline
@@ -199,8 +212,11 @@ interpolation method to compute the left bounds.
     \end{tabular}
     \caption{Mean ISE Values for different methods and scenarios. "D.-Est." indicates
     a scenario with previous density estimation procedure.}
+    \label{tab:mean_ise_values}
 \end{table}
-
+Table~\ref{tab:mean_ise_values} shows the mean ISE values from the different simulation
+settings, for both methods. They reflect the same findings discussed in the boxplots
+above.
 Moreover, the quality of the density estimates deteriorates with sample size, suggesting
 to vary the bandwidth choice with sample size, as \textcite{PetersenMüller2019} did in
 their comparison of the Fréchet estimator with the Nadaraya-Watson estimator. Due to

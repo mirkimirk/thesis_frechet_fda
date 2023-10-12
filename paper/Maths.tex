@@ -40,71 +40,59 @@ infinite dimensional spaces, we need the following space:
 \end{definition}
 This concept helps generalizing many useful notions from the finite-dimensional
 Euclidean space in multivariate analysis to infinite-dimensional function spaces. The norm
-$\norm{\cdot}_\mathcal{H}$ measures the size of an element in $\mathcal{H}$ and makes it
+$\norm{\cdot}_\mathcal{H}$ measures the size of an element in a Hilbert space $\mathcal{H}$ and makes it
 comparable with others. It also induces a metric via
 $d_\mathcal{H}(a, b) = \norm{a - b}_\mathcal{H}$ to measure the distance between two
 elements in $\mathcal{H}$. The concept of inner product makes it possible to evaluate
-the angle between two vectors in $\mathcal{H}$, which is useful for defining projections
-and for orthogonal decompositions of this space. Especially the latter will be very
-important for dimensionality reduction. Orthogonality is defined in the following
-- Definition orthogonality, and orthonormal sequence in Inner product space (use Kronecker
-delta).
+the angle between two vectors in $\mathcal{H}$, which is useful for orthogonal
+decompositions of this space. Especially the latter will be very important for dimensionality reduction.
 
-Later we will be approximating elements of a Hilbert space by a combination of a finite
-number of its elements. So to find the most efficient subspace (in the sense of giving the
-best approximation for a given number of dimensions), we want to exploit some more
-structure of the space $\mathcal{L}^2$ that we will be interested in. For this we need an analogue notion of a \textit{linear span}
-from the finite dimensional vector spaces we know from multivariate analysis to this
-infinite dimensional space. The following definition gives this notion.
-
-Definition of closed span: Let $\mathcal{h}_1,\mathcal{h}_2, \dots $ be a sequence of
-elements in 
-
-
-
-
-For ..., we need a notion of 
-\begin{definition}[Closed Span, Orthogonality, and Orthonormal Sequence]
+To get closer to the goal of dimensionality reduction, we first need some more definitions
+to explain the kind of lower-dimensional subspaces we are interested in, and how the
+concept of orthogonality plays into that. 
+\begin{definition}[Closed Span]
     \label{def:closed span}
-    The \textit{closed span} of a subset \( A \) of a Hilbert space \( \mathcal{H} \) is the 
-    closure of the linear span of \( A \) with respect to the metric induced by the inner product.
-
-    In an inner product space \( V \), two vectors \( s, t \in V \) are said to be
-    \textit{orthogonal} if
-    $\inpr{s}{t}_V = 0 $.
+    Let \( A \) be a subset of elements in a Hilbert
+    space \( \mathcal{H} \). The \textit{closed span} of these
+    elements is the closure of their linear span with respect to the metric induced by the
+    norm, and will be denoted $\overline{\text{Span}(A)}$.
 \end{definition}
+\begin{definition}[Orthonormal Sequence and Orthonormal Basis]
+    \label{def:orthonormal sequence}
+    A sequence \( \{ e_n \} \) in a Hilbert space \( \mathcal{H} \) is called an
+    \textit{orthonormal sequence} if it satisfies:
+    \[
+    \inpr{e_i}{e_j}_\mathcal{H} = \delta_{ij}
+    \]
+    where \( \delta_{ij} \) is the Kronecker delta.
 
-\begin{definition}[Orthonormal Basis in a Hilbert Space]
-    An orthonormal sequence \( \{ e_n \} \) in a Hilbert space \( \mathcal{H} \) is called 
-    an \textit{orthonormal basis} if its closed span equals \( \mathcal{H} \).
+    If $\overline{\text{Span}(\{ e_n \})} =  \mathcal{H}$, then $\{ e_n \}$ is called an
+    \textit{orthonormal basis} of $\mathcal{H}$.
 \end{definition}
-
-\begin{definition}[Separable Hilbert Space]
-    A Hilbert space \( \mathcal{H} \) is \textit{separable} if it has an orthonormal basis, 
-    which also serves as a countable, dense subset.
-\end{definition}
+\begin{theorem}[Separability and Orthonormal Basis in Hilbert Spaces]
+    \label{thm:separability-orthonormal-basis}
+    A Hilbert space \( \mathcal{H} \) is \textit{separable} --- i.e., contains a countable dense 
+    subset --- if and only if it has an orthonormal basis.
+\end{theorem}
+Later we will be approximating elements of a Hilbert space by a combination of a finite
+number of its elements. So an orthonormal basis assures us, that there is this dense
+subset that can get arbitrarily close to any element in the space. To find the most
+efficient subspace (in the sense of giving the best approximation of any element for a
+given number of dimensions of the subspace), we want to exploit some more structure of
+the space $\mathcal{L}^2$ that we will be interested in. This structure
+is given by its separability and Hilbert space properties.
 
 In a separable Hilbert space, the existence of a countable orthonormal basis allows us to 
 approximate any element \( f \) in the space arbitrarily closely by finite linear combinations 
 of the basis elements. This foundational idea is critical for methods like Functional Principal 
 Component Analysis, where we approximate complex functions by projecting them onto a finite 
-subset of this basis.
+subset of this basis. This will be explained further in Section~\ref{sec:fpca}.
 
-\subsubsection{$\mathcal{L}^2([a, b])$ Space}
+\subsubsection{The Space $\mathcal{L}^2([a, b])$}
 \label{sec:l2 space}
 In the context of FDA, it is assumed that the functional data live in
 the space of square integrable functions $\mathcal{L}^2([a,b])$, with common
-support $[a,b]$. This space is a separable Hilbert space, i.e., a complete inner
-product space, equipped with the norm induced by the inner product. Separability means
-its elements can be arbitrarily well approximated by elements of a dense subset of the
-space, and that this subset is not unhandably large.
-This allows to generalize notions of distance (as the norm induces a
-metric), magnitude (given by the norm), and orthogonality (defined by
-$\inpr{x}{y} = 0$, with $\inpr{\cdot}{\cdot}$ being the inner product) of elements
-in the space from the Euclidean space, in which we usually work, to more
-abstract and potentially infinite dimensional spaces, such as function
-spaces.
-
+support $[a,b]$.
 \begin{definition}[Space of square integrable functions $\mathcal{L}^2$]
     Let $\mathcal{A} \subseteq \mathbb{R}$ be compact. The space \( \mathcal{L}^2(\mathcal{A}) \)
     consists of all functions \( f: \mathcal{A} \to \mathbb{R} \) such that
@@ -114,41 +102,15 @@ spaces.
     Its norm, inner product, and distance are denoted by $\norm{\cdot}_2$,
     $\inpr{\cdot}{\cdot}_2$, and $d_2(\cdot, \cdot)$, respectively.
 \end{definition}
+The concepts introduced here will be needed for an explanation of fda methods in Section~\ref{sec:fda}.
+Before that, we will turn to introducing basic statistical notions in function spaces
+and the Wasserstein geometry that will be important later.
 
-\subsubsection{Linear Operators in Hilbert Spaces}
-\label{sec:operators}
-
-An operator is a functional of elements in this space. It serves as a generalization of
-a matrix and will play the same conceptual role in the FDA analogues to mv methods
-that matrices do in them. This section is mainly based on \textcite[Chapter~]{HorvathKokoszka2012}
-
-This is the covariance operator... it is symmetric and positive semi-definite, so
-a Hilbert-Schmidt operator (\textcite{WangChiouMüller2016} say because of the integral form,
-its a trace class, so compact Hilbert-Schmidt operator). It allows for the spectral
-decomposition (in terms of eigenfunctions and eigenvalues). The space of Hilbert-Schmidt
-operators is itself a separable Hilbert Space.
-
-\subsubsection{Important Theorems}
-\label{sec:theorems}
-
-\subsubsection{Riesz Representation Theorem}
-\label{sec:riesz}
-Will help later in interpreting the covariance operator as it is an integral operator
-and can be written as an inner product $\inpr{\gamma(x, \cdot)}{\mathcal{h}(\cdot)}$.
-Will also be useful finding the solution of Fréchet optimization problem in Wasserstein
-space.
-
-\subsubsection{Mercer's Theorem and Karhunen-Loève Decomposition}
-\label{sec:mercer and kh}
-Mercer makes the calculation of eigenfunctions and values of the covariance operator
-useful to represent the covariance function with this. This will be an optimal orthonormal
-basis, capturing in descending order the most important directions of variation, so that
-when truncated to finite dimensional basis, we have the best possible representation of
-elements in the Hilbert space given the truncation parameter.
-
-
-\subsection{Statistical Foundations in Function Spaces}
+\subsection{Statistics in Functional Spaces}
 \label{sec:stat_foundations}
+Here, we will introduce distribution functions, the concept of Fréchet means as generalizations
+of the usual expected values for arbitrary metric spaces, and the Wasserstein geometry
+that we will deal with in the Fréchet regression context.
 
 \subsubsection{Preliminaries and Definitions}
 \label{sec:definitions}
@@ -209,45 +171,91 @@ transformations of the density functions \parencite[cf.][]{Jones1992}:
 \end{proof}
 Because of the relation in \eqref{eq:qdfinversef}, the qdf is sometimes called the
 "sparsity function" \parencite[cf.][]{Tukey1965}.
-($\Omega$ denotes the space of random objects
-we are interested in. $\mathcal{G}$ will denote the "set of distributions", i.e., the set containing
-any class of functions that can represent a distribution.)
-
-Following \textcite{PetersenZhangKokoszka2022}, we denote with
-\begin{equation}
-\label{eq:density_set}
-    \mathcal{D} \subseteq \left\{ f : f(x) \geq 0, \int_{\mathbb{R}} f(x) \, dx = 1 \right\}
-\end{equation}
-the set of probability density functions (pdfs) that are of interest to us.\footnote{Note that
-this in particular means that $\mathcal{D}$ can contain densities with different supports.
-This will be significant later on when we perform transformations on these densities.}
-$\Omega$ will be of use when generally explaining fda methods and theory, as well as
-the concept of Fréchet regression. In the applications, we will be focussed on either
-$\Omega = \mathcal{G}$ or $\Omega = \mathcal{D}$
 
 The densities that are of interest to us are given in the following definition:
 \begin{definition}
-    Denote by $\mathcal{D}$ the space of continuous densities $f$, where each
-    $f$ is supported on its own compact interval $[a_i, b_i]$ for some $a_i, b_i \in
-    \mathbb{R}$ with $a_i < b_i$.
+    \label{def:spaceD}
+    Denote by \( \mathcal{D} \) the space of continuous densities \( f \) supported on their own
+    compact interval \( [a_i, b_i] \) for some \( a_i, b_i \in \mathbb{R} \) with \( a_i < b_i \),
+    and having a finite second moment. Formally, \( f \in \mathcal{D} \) if:
+    \[
+    \int_{a_i}^{b_i} x^2 f(x) \, dx < \infty
+    \]
 \end{definition}
-
-\subsubsection{Stochastic Processes and Data Generation}
-\label{sec:stochastic_processes}
-\paragraph{Introduction to Stochastic Processes}
-\label{sec:intro_stochastic}
-\paragraph{Data Generation Mechanism}
-\label{sec:data_generation}
+the set of probability density functions (pdfs) that are of interest to us. Note that
+the densities need not share any point in their support.
 
 \subsubsection{Fréchet Mean and Variance}
 \label{sec:f_mean}
-% Existing Content
+
+\begin{equation}
+    \omega_\oplus = \argmin_{\omega \in \Omega} \mathbb{E} \left[ d^2(Y, \omega) \right]
+\end{equation}
+
+\begin{equation}
+    V_\oplus = \mathbb{E} \left[ d^2(Y, \omega_\oplus) \right]
+\end{equation}
 
 \subsubsection{Wasserstein Distance and Its Properties}
 \label{sec:wasserstein_distance}
-% Existing Content
+\begin{definition}[2-Wasserstein Distance]
+    \label{def:wasserstein_2_dist}
+    For \( f, g \in \mathcal{D} \), consider the collection \( \mathcal{M}_{f,g} \) of maps \( M \)
+    such that if \( U \sim f \) and \( M \in \mathcal{M}_{f,g} \), then \( M(U) \sim g \).
+    The 2-Wasserstein distance between \( f \) and \( g \) is defined as:
+    \[
+    d_W(f, g) = \left( \inf_{M \in \mathcal{M}_{f,g}} \int (M(u) - u)^2 f(u) \, du \right)^{1/2}
+    \]
+\end{definition}
+While in general the Wasserstein distance is not simple to evaluate, in our case it can
+be shown that it is equal to the quantile distance, given by
+\[
+dQ(f, g)^2 = \int_{0}^{1} (F^{-1}(t) - G^{-1}(t))^2 dt,
+\]
+for any two densities $f, g \in \mathcal{D}$ space. (Also explain how quantile
+synchronized mean different and better than naive cross-sectional mean.)
+\begin{lemma}
+    \label{lemma:dqeqdw}
+    $d_Q = d_W$
+\end{lemma}
+\begin{proof}
+    asdsadasdads
+\end{proof}
+
+Then we can see that:
+\begin{lemma}
+    The Wasserstein-Fréchet mean estimator is given by
+    \begin{equation}
+        \hat{f}_\oplus(x) = \frac{1}{\hat{q}_\oplus(\hat{F}_\oplus(x))},
+    \end{equation}
+    with $\hat{q}_\oplus = \frac{1}{n} \sum_{1}^{n} q_i$.
+\end{lemma}
+\begin{proof}
+    By \ref{lemma:dqeqdw}, we can substitute the quantile distance for the
+    Wasserstein distance in the computation of the Fréchet mean. We set
+    $Q_\oplus(t) = \mathbb{E}[Q(t)]$ because $\mathbb{E}[Q(t)]$ is the minimizer of
+    \begin{equation}
+    \label{eq:wf_mean}
+        \begin{aligned}
+            \mathbb{E}[d_w^2(f_i, f_\oplus)]	& =
+            \mathbb{E}\left[\int_{0}^{1}(F_i^{-1}(t) - F_\oplus^{-1}(t))^2 \,dt\right] \\
+                                    & =
+            \mathbb{E}\left[\int_{0}^{1}(Q_i(t) - Q_\oplus(t))^2 \,dt\right],
+        \end{aligned}
+    \end{equation}
+    see \citet[Chapter~3.1.4]{PanaretosZemel2020}. To compute the corresponding density
+    function, use inverse function rule to get
+    $f_\oplus(x) = \frac{1}{q_\oplus(F_\oplus(x))}$, which shows that it suffices to
+    estimate $q_\oplus$. Remember that
+    $q_\oplus = \frac{\mathrm{d}Q_\oplus}{\mathrm{d}t}$. Because of Assumption REFER A1,
+    we can pass the differentiation inside the expectation to see
+    $q_\oplus = \mathbb{E}\left[\frac{\mathrm{d}Q}{\mathrm{d}t}\right]$, which by analogy
+    principle suggests to average the sample observed (or previously estimated)
+    quantile densities $q_i$ to obtain an estimator $\hat{q}_\oplus$ for $q_\oplus$.
+\end{proof}
+
 
 \subsubsection{Wasserstein-Fréchet Mean}
 \label{sec:wasserstein_f_mean}
-% Existing Content
+While the Fréchet mean is in general not straightforward to compute, the computation
 d perhaps its relationship with the quantile synchronized mean.

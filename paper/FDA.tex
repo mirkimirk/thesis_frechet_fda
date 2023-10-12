@@ -2,6 +2,71 @@ This section will introduce basic fda concepts and methods used throughout this 
 
 \subsection{Covariance Operator and Covariance Fuctions}
 \label{sec:covs}
+Here we will briefly talk about properties of the covariance operator. It is assumed
+that the functions under consideration here are realizations of an $\mathcal{L}^2$
+stochastic process, as defined in \textcite[Chapter~1.1.2]{Ash1975}. The section is
+mostly based on \textcite[Chapter~2]{HorvathKokoszka2012}
+
+\subsubsection{Definition}
+\label{sec:cov_def}
+
+\begin{definition}[Covariance Operator]
+    \label{def:cov_operator}
+    Let \( X \) be a square-integrable random curve in \( \mathcal{L}^2([a,b]) \), i.e., 
+    \[
+        \mathbb{E}\left[ \int_a^b X^2(t) \, dt \right] < \infty,
+    \]
+    and let \( \mathbb{E}[X] = 0 \). Then, the covariance operator \( \Gamma \) is defined for any \( y \in \mathcal{L}^2([a,b]) \) as
+    \[
+    \Gamma(y) = \mathbb{E}\left[ \langle X, y \rangle_{2} X \right].
+    \]
+\end{definition}
+\subsubsection{Important Theorems}
+\label{sec:theorems}
+Here we will introduce important theorems that characterize the covariance operator
+and will help us obtain the functional principal components with which we will span
+an optimal (in the sense that was mentioned in the previous section) lower dimensional subspace.
+\begin{theorem}[Riesz Representation Theorem]
+    \label{th:riesz}
+    For every continuous linear functional \(\Gamma\) on a Hilbert space \(\mathcal{H}\), there
+    exists a unique \(h_0 \in \mathcal{H}\) such that
+    \[
+        \Gamma(h) = \langle h, h_0 \rangle_{\mathcal{H}}, \quad \forall h \in \mathcal{H}.
+    \]
+\end{theorem}
+See \Textcite[Chapter~1, \S 3]{Conway2007}. This theorem is crucial for interpreting the
+covariance operator as it can be considered an integral operator that can be represented
+as an inner product:
+\begin{equation}
+    (\Gamma(f))(s) = \int_{T} \gamma(s, t) f(t) \, dt = \inpr{\gamma(s, \cdot)}{f},
+\end{equation}
+where $\gamma(s, t) = \text{Cov}(X_s, X_t) = \mathbb{E}[(X_s - \mathbb{E}[X_s])(X_t - \mathbb{E}[X_t])]$
+It also aids in finding solutions to the Fréchet optimization problem in Wasserstein space
+later.
+
+\begin{theorem}[Mercer's Theorem]
+Given a symmetric, non-negative definite kernel \(\gamma(x, y)\) defined on a product space
+\(A \times A\), where \(A\) is a subset of \(\mathbb{R}\), the kernel can be represented
+as
+\[
+K(x, y) = \sum_{n=1}^{\infty} \lambda_n \phi_n(x) \phi_n(y).
+\]
+\end{theorem}
+\begin{theorem}[Karhunen-Loève Decomposition]
+Let \(X(t)\) be a zero-mean square-integrable stochastic process with a covariance
+function \(R(s, t)\). Then \(X(t)\) can be represented as
+\[
+X(t) = \sum_{n=1}^{\infty} \sqrt{\lambda_n} Z_n \phi_n(t),
+\]
+where \(Z_n\) are uncorrelated zero-mean random variables, and \(\phi_n(t)\) and
+\(\lambda_n\) are the eigenfunctions and eigenvalues of \(R(s, t)\), respectively.
+\end{theorem}
+Mercer's Theorem enables the calculation of eigenfunctions and eigenvalues of the
+covariance operator, providing an optimal orthonormal basis that captures the most
+important directions of variation. When truncated to a finite-dimensional basis, this
+offers the best possible representation of elements in the Hilbert space. Karhunen-Loève
+Decomposition further enhances this by offering a powerful tool for dimensionality
+reduction and noise filtering in stochastic processes.
 
 \subsection{Functional Principal Component Analysis}
 \label{sec:fpca}
@@ -15,7 +80,9 @@ We computed the discretized grid as described in \citet[Chapter~8.4.1]{RamsaySil
 is described in \textcite{KneipUtikal2001}. (\textcite{Delicado2011} SUMMARIZES THIS.)
 
 \subsection{Descriptive Methods}
-\label{sec:fpca_descriptives}
+\label{sec:fda_descriptives}
+For visualization purposes in Appendix~\ref{sec:illustration_lqd}, we used modes of
+variation as defined in \textcite{Castro1986}.
 
-\subsubsection{Modes of Variation}
-\label{sec:modes_of_variation}
+\subsubsection{Measure of Explained Variance}
+\label{sec:def_fve}

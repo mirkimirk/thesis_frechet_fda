@@ -130,6 +130,12 @@ and used that as an estimator. These $\hat{c}$ are supposed to estimate the left
 of the support of the resulting density when performing the inverse transform $T^{-1}$
 described in \ref{alg:backward}.
 
+A word about the application of fda methods in the transformation approach: the concepts
+introduced in Section~\ref{sec:fda_descriptives} are always applied to objects in the
+transformed space. The resulting functions are then transformed back to the density
+space. So for example, the (truncated) Karhunen-Loève representation of the densities is the
+translated representation of the transformed functions. Similarly for the modes of variation.
+
 \begin{figure}[h!]
     \centering
     \begin{subfigure}[b]{0.9\textwidth}
@@ -229,6 +235,10 @@ calculating
     \psi(\hat{\boldsymbol{\beta}})
     = \left(\mathbf{P}^T \mathbf{P}\right)^{-1} \mathbf{P}^T \psi(\mathbf{f}).
 \end{equation}
+
+Using $\psi(\hat{\boldsymbol{\beta}})$, we can obtain fitted values and predictions in
+the transformed space. These results can be translated back to densitiy space via
+inverse transformation for interpretation.
 
 We will present this regression method in section \ref{sec:application} where we will
 compare it against the Fréchet regression method. To that end, we will explain the
