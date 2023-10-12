@@ -9,23 +9,23 @@ approaches that follow, to motivate our choice of the transformation method from
 
 \subsubsection{Subset of Hilbert Space}
 \label{sec:l2_interpretation}
-If one additionally assumes that $\mathcal{D} \subseteq L^2(\mathbb{R})$, one can choose
+If one additionally assumes that $\mathcal{G} \subseteq L^2(\mathbb{R})$, one can choose
 to interpret the densities as elements of the Hilbert space $\mathcal{L}^2$ and directly
 apply fda methods on the densities \parencite[see e.g.][]{KneipUtikal2001}. Then one
 could handle the regression problem by applying the functional response regression method
 first described by \textcite{Faraway1997}.
 
-However, as $\mathcal{D}$ is not a linear subspace of $\mathcal{L}^2$, it is not guaranteed that
-we yield results within $\mathcal{D}$ --- it only means we will yield results within $\mathcal{L}^2$,
+However, as $\mathcal{G}$ is not a linear subspace of $\mathcal{L}^2$, it is not guaranteed that
+we yield results within $\mathcal{G}$ --- it only means we will yield results within $\mathcal{L}^2$,
 so our estimates, modes of variation etc. are not guaranteed to be themselves densities.
-Alternative characterizations of the space $\mathcal{D}$ have been explored to tackle
-this problem, for example the interpretation of elements in $\mathcal{D}$ as so-called
+Alternative characterizations of the space $\mathcal{G}$ have been explored to tackle
+this problem, for example the interpretation of elements in $\mathcal{G}$ as so-called
 compositional data, or as elements of the Wasserstein-2 space. The latter
 interpretation will be explored in Section~\ref{sec:fréchet regression} as this general
 approach to regression can easily incorporate the geometry of a given space that is
 implied by its metric (in this case, the Wasserstein-2 metric $d_\mathcal{W}$.)
 
-Another approach is the general characterization of $\mathcal{D}$ as a nonlinear space
+Another approach is the general characterization of $\mathcal{G}$ as a nonlinear space
 with certain constraints that can be done away with through a preliminary transformation
 to a linear representation space. The compositional data approach can be seen as a
 special case of this general transformation approach described in \textcite{PetersenMüller2016}.
@@ -43,12 +43,12 @@ back to density space for interpretation and visualization purposes.
 
 Following the argument in \textcite{KokoszkaEtAl2019}, we use the method first outlined
 in \textcite{PetersenMüller2016} and use the log quantile density (LQD) transformation
-$\psi : \nobreak \mathcal{D} \to \mathcal{L}^2([0,1])$, defined by
+$\psi : \nobreak \mathcal{G} \to \mathcal{L}^2([0,1])$, defined by
 \begin{equation}
     \label{eq:lqd_definition}
     \psi (f)(u) = \log q(u) = -\log f(Q(u)), \quad u \in [0,1],
 \end{equation}
-to transform the pdfs from the constrained space $\mathcal{D}$ into the "unconstrained"
+to transform the pdfs from the constrained space $\mathcal{G}$ into the "unconstrained"
 space $\mathcal{L}^2([0,1])$.\footnote{We extend our usage of the argument $u$ to this
 function because this transformed density is by definition on the same support as are
 qfs and qdfs.} The intuition is that, from the functions given in
@@ -75,7 +75,7 @@ the density $f_i$. For generality, we assume
 i.e., we do not want to assume a common "anchor" point in the supports of the $f_i$. So
 we use the following most general transformation proposed by the authors:
 \begin{equation}
-    T : \mathcal{D} \to \mathcal{L}^2([0,1]) \times \mathcal{A}, \text{ given by } T(f) = (\psi(f), Q(u^*)),
+    T : \mathcal{G} \to \mathcal{L}^2([0,1]) \times \mathcal{A}, \text{ given by } T(f) = (\psi(f), Q(u^*)),
 \end{equation}
 where $\mathcal{A}$ is the support of density $f$, $Q$ is the corresponding quantile function,
 and $u^* \in [0,1]$ is a fixed percentile level for which we save the value of the support

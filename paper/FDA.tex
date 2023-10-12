@@ -1,26 +1,32 @@
 This section will introduce basic fda concepts and methods used throughout this thesis.
+Proofs will be omitted and can be found in the cited literature.
 
 \subsection{Covariance Operator and Covariance Fuctions}
 \label{sec:covs}
 Here we will briefly talk about properties of the covariance operator. It is assumed
 that the functions under consideration here are realizations of an $\mathcal{L}^2$
-stochastic process, as defined in \textcite[Chapter~1.1.2]{Ash1975}. The section is
-mostly based on \textcite[Chapter~2]{HorvathKokoszka2012}
+stochastic process, as defined in \textcite[Chapter~1.1.2]{Ash1975}. We denote the
+stochastic process as $\{ X(t) : t \in T \}$. The section is mostly based on
+\textcite[Chapter~2]{HorvathKokoszka2012}.
 
 \subsubsection{Definition}
 \label{sec:cov_def}
-
+We will use the following definition of the covariance operator:
 \begin{definition}[Covariance Operator]
     \label{def:cov_operator}
-    Let \( X \) be a square-integrable random curve in \( \mathcal{L}^2([a,b]) \), i.e., 
+    Let \( X \) be a square-integrable random curve in \( \mathcal{L}^2([a,b]) \), i.e.,
     \[
-        \mathbb{E}\left[ \int_a^b X^2(t) \, dt \right] < \infty,
+        \mathbb{E}\left[ \int_a^b X^2(t) \, dt \right] < \infty.
     \]
-    and let \( \mathbb{E}[X] = 0 \). Then, the covariance operator \( \Gamma \) is defined for any \( y \in \mathcal{L}^2([a,b]) \) as
+    and let \( \mathbb{E}[X] = \mu \). Then, the covariance operator \( \Gamma \) is defined for any \( y \in \mathcal{L}^2([a,b]) \) as
     \[
-    \Gamma(y) = \mathbb{E}\left[ \langle X, y \rangle_{2} X \right].
+    \Gamma(y) = \mathbb{E}\left[ \langle (X-\mu), y \rangle_{2} (X-\mu) \right].
     \]
 \end{definition}
+The coditions in this definition are functional analogues of the usual conditions of
+finite first and second moments. This operator's properties and estimation will be further explained
+in the following section after introducing some important theorems for the computation
+and interpretation of the covariance operator.
 \subsubsection{Important Theorems}
 \label{sec:theorems}
 Here we will introduce important theorems that characterize the covariance operator
@@ -40,7 +46,7 @@ as an inner product:
 \begin{equation}
     (\Gamma(f))(s) = \int_{T} \gamma(s, t) f(t) \, dt = \inpr{\gamma(s, \cdot)}{f},
 \end{equation}
-where $\gamma(s, t) = \text{Cov}(X_s, X_t) = \mathbb{E}[(X_s - \mathbb{E}[X_s])(X_t - \mathbb{E}[X_t])]$
+where $\gamma(s, t) = \text{Cov}(X(s), X(s)) = \mathbb{E}[(X(s) - \mathbb{E}[X(s)])(X(t) - \mathbb{E}[X(t)])]$
 It also aids in finding solutions to the Fréchet optimization problem in Wasserstein space
 later.
 
@@ -49,17 +55,17 @@ Given a symmetric, non-negative definite kernel \(\gamma(x, y)\) defined on a pr
 \(A \times A\), where \(A\) is a subset of \(\mathbb{R}\), the kernel can be represented
 as
 \[
-K(x, y) = \sum_{n=1}^{\infty} \lambda_n \phi_n(x) \phi_n(y).
+    \gamma(x, y) = \sum_{n=1}^{\infty} \lambda_n \phi_n(x) \phi_n(y).
 \]
 \end{theorem}
 \begin{theorem}[Karhunen-Loève Decomposition]
 Let \(X(t)\) be a zero-mean square-integrable stochastic process with a covariance
-function \(R(s, t)\). Then \(X(t)\) can be represented as
+function \(\gamma(s, t)\). Then \(X(t)\) can be represented as
 \[
-X(t) = \sum_{n=1}^{\infty} \sqrt{\lambda_n} Z_n \phi_n(t),
+    X(t) = \sum_{n=1}^{\infty} \sqrt{\lambda_n} Z_n \phi_n(t),
 \]
 where \(Z_n\) are uncorrelated zero-mean random variables, and \(\phi_n(t)\) and
-\(\lambda_n\) are the eigenfunctions and eigenvalues of \(R(s, t)\), respectively.
+\(\lambda_n\) are the eigenfunctions and eigenvalues of \(\gamma(s, t)\), respectively.
 \end{theorem}
 Mercer's Theorem enables the calculation of eigenfunctions and eigenvalues of the
 covariance operator, providing an optimal orthonormal basis that captures the most
@@ -83,6 +89,3 @@ is described in \textcite{KneipUtikal2001}. (\textcite{Delicado2011} SUMMARIZES 
 \label{sec:fda_descriptives}
 For visualization purposes in Appendix~\ref{sec:illustration_lqd}, we used modes of
 variation as defined in \textcite{Castro1986}.
-
-\subsubsection{Measure of Explained Variance}
-\label{sec:def_fve}

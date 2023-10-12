@@ -14,8 +14,59 @@ normal distribution with varying variances, centered on zero. The true center of
 is a truncated standard normal distribution, so thats what we would expect to see as
 estimated mean.
 
-\subsubsection{Simulation results}
-\label{sec:illustration_simulation}
+As a measure of explained variance, we used the Fréchet variance explained (fve) that
+\textcite{PetersenMüller2016} defined. Using the Fréchet variance $V_\oplus$ defined
+in~\ref{eq:fvar}.
+
+\begin{equation}
+    \tilde{V}_\infty = \frac{1}{n} \sum_{i=1}^{n} d_W(f_i, \tilde{f}_\oplus)^2
+    \label{eq:tilde_V_infinity}
+\end{equation}
+
+\begin{equation}
+    V_K := V_\infty - \mathbb{E}\left[d_W(f_i, f_{i,K})^2\right]
+    \label{eq:V_K}
+\end{equation}
+
+\begin{equation}
+    \tilde{V}_K = \tilde{V}_\infty - \frac{1}{n} \sum_{i=1}^{n} d_W(f_i, \tilde{f}_{i,K})^2
+    \label{eq:tilde_V_K}
+\end{equation}
+
+\begin{equation}
+    \text{FVE} = \frac{V_K}{V_\infty}
+    \label{eq:FVE}
+\end{equation}
+
+\begin{equation}
+    \tilde{\text{FVE}} = \frac{\tilde{V}_K}{\tilde{V}_\infty}
+    \label{eq:tilde_FVE}
+\end{equation}
+
+\begin{equation}
+    K^* = \min \left\{ K : \frac{V_K}{V_\infty} > p \right\}
+    \label{eq:K_star}
+\end{equation}
+
+\begin{equation}
+    \tilde{K}^* = \min \left\{ K : \frac{\tilde{V}_K}{\tilde{V}_\infty} > p \right\}
+    \label{eq:tilde_K_star}
+\end{equation}
+
+
+We used this measure in two ways: frist, to judge the number $K$ of how many components need to
+be included in the Karhunen-Loève representation to reach a given level of variance explained;
+and second, to compare the accuracy of the LQD method in the scenario with additional density estimation
+step to the one without this step. For this, $K = 1$ was fixed as this is the true number
+of principal components driving the variation in the sample curves (all variation in the sample is given
+by the variation in one parameter $\sigma$). Then the fve was calculated on the basis
+of the resultant Karhunen-Loève representations.
+
+Before we present the simulation results, we turn to another visual comparison of
+the naive application of fda methods with the LQD method.
+
+\subsubsection{Modes of Variation}
+\label{sec:mov_example}
 
 \begin{figure}[h]
     \centering
@@ -34,6 +85,17 @@ estimated mean.
     of naive approach and of LQD approach.}
     \label{fig:2nd_modes}
 \end{figure}
+
+\subsubsection{Simulation results}
+\label{sec:illustration_simulation}
+The density estimation procedure is the same as explained in Section~\ref{sec:app_density_estimation}
+but with one deviation: here, we used the boundary corrected estimator defined in
+\textcite{PetersenMüller2016}. Since we used the standard normal kernel, the estimator
+as defined in this paper, was not continuous. So we made it continuous by setting the
+weight function equal to
+\begin{equation*}
+    \left( \int_{-1}^{1} \kappa(u) du \right)^{-1}
+\end{equation*}
 
 \begin{figure}[h]
     \centering
