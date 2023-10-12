@@ -10,35 +10,96 @@ of a conditional Fréchet mean, with a corresponding conditional Fréchet varian
 \end{equation}
 
 \begin{equation}
-    M_\oplus(\cdot, x) = E \left[ d^2(Y, \cdot) \mid X = x \right]
+    M_\oplus(\cdot, x) = \mathbb{E} \left[ d^2(Y, \cdot) \mid X = x \right]
 \end{equation}
-This is done characterizing the well-known linear regression model in terms
+This is done characterizing the well-known linear regression model in terms of a sequence
+of weighted means. For t
+\begin{lemma}
+    \label{lemma:sequence_weights}
+    Let \( X \in \mathbb{R}^r \), \( m(x) \coloneqq \mathbb{E}(Y | X = x) \), and let \( \mu \) 
+    be the mean and \( \Sigma \) the covariance matrix of \( X \). Define
+    \[
+        s(z, x) \coloneqq 1 + (z - \mu)^T \Sigma^{-1} (x - \mu)
+    \]
+    Then \( m(x) \) is the value that minimizes 
+    \[
+        \mathbb{E} \left[ s(X, x) \, d_E^2(Y, y)   \right]
+    \]
+    over \( y \in \mathbb{R} \), i.e.,
+    \begin{equation}
+        m(x) = \argmin_{y \in \mathbb{R}} \mathbb{E} \left[ s(X, x) \, d_E^2(Y, y) \right]
+    \end{equation}
+\end{lemma}
+\begin{proof}
+    First, we express \( m(x) \) as
+    \[
+    m(x) = \beta_0^* + (\beta_1^*)^T (x - \mu)
+    \]
+    and introduce the estimated model \( \hat{m}(x) \) as
+    \[
+    \hat{m}(x) = \beta_0 + \beta_1^T (x - \mu)
+    \]
+    
+    We want to characterize \( \beta_0^* \) and \( \beta_1^* \) as the optimal solutions
+    to the minimization of the quadratic risk
+    \[
+    \mathbb{E}_X \left[ d_E^2(m(x), \hat{m}(x)) \right]
+    \]
+    where \( \mathbb{E}_X \) denotes the expectation with respect to \( X \).
+    
+    Expanding this objective function, we get
+    \[
+    \mathbb{E}_X \left[ d_E^2(m(x), \hat{m}(x)) \right] = \mathbb{E}_X \left[ \left( \mathbb{E}(Y|X=x) - \left( \beta_0 + \beta_1^T (x - \mu) \right) \right)^2 \right]
+    \]
+    To find the values of \( \beta_0 \) and \( \beta_1 \) that minimize the objective 
+    function, we take the derivatives and set them to zero. First, considering the 
+    derivative with respect to \( \beta_0 \), we have:
+    \begin{alignat*}{2}
+        & -2 \mathbb{E}_X \left[ \mathbb{E}(Y|X=x) - \beta_0 - \beta_1^T (x - \mu) \right] && = 0 \\
+        & \iff \mathbb{E}_X \left[ \mathbb{E}(Y|X=x) \right] && = \beta_0 + \beta_1^T (\mathbb{E}_X \left[ x \right] - \mu)\\
+        & \iff \mathbb{E}(Y) && = \beta_0 + \beta_1^T \cdot 0,
+    \end{alignat*}
+    where in the last equality a continuous version of the law of total probability was used to write
+    $ \mathbb{E}_X \left[ \mathbb{E}(Y|X=x) = \mathbb{E}(Y)\right]$, and $\mathbb{E}_X \left[ x \right] = \mu$.
+    Now, considering the derivative with respect to $\beta_1$, we have:
+    \begin{alignat*}{2}
+        & \mathbb{E}_X \left[ \left(\mathbb{E}(Y|X=x) - \beta_0 - \beta_1^T (x - \mu)\right) (x - \mu)^T \right] && = 0 \\
+        & \iff \mathbb{E}_X \left[ \mathbb{E}(Y|X=x) (x-\mu)^T\right] && = \beta_0 \mathbb{E}_X \left[ (x- \mu)^T \right]+ \beta_1^T \mathbb{E}_X \left[ (x- \mu) (x - \mu)^T \right] \\
+        & \iff \mathbb{E}_X \left[ \mathbb{E}(Y(x-\mu)^T|X=x) \right] && = \beta_0 \cdot 0 + \beta_1^T \Sigma \\
+        & \iff \mathbb{E}(Y(X-\mu)^T) && = \beta_1^T \Sigma,
+    \end{alignat*}
+    with $\Sigma$ being the covariance matrix of the predictors. Setting $\sigma_{YX} = \mathbb{E}(Y(X-\mu)^T)$
+    and using the symmetry of $\Sigma$,
+    we yield $\beta_0^* = \mathbb{E}(Y)$ and $\beta_1^* = \Sigma^{-1} \sigma_{YX}$.
 
-\subsection{Wasserstein Space}
-\label{sec:wasserstein_space}
+    Plugging in of these solutions into $m(x)$ and some rearranging of the terms in
+    $\mathbb{E}(Y)$ and $\sigma_{YX}$ yields the term that was to show.
+\end{proof}
+Replacing the Euclidean distance above with a general metric yields the general Fréchet
+regression model.
 
+Next, we choose the distance to be $d_W$ and the space of $Y$ to be $\mathcal{G}$ as in Definition~\ref{def:spaceD}.
 \subsection{Computational Details}
 \label{sec:computation}
-
-CHECK THIS ALGORITHM FOR NOTATION
+We used this algorithm provided in the supplementary material of \textcite{PetersenLiuDivani2021}.
+It first checks whether our estimator is a valid qf, otherwise it finds the closest qf
+to the estimator via quadratic programming.
 \begin{algorithm}
-    \caption{Estimating \(\hat{Q}(x)\)}
+    \caption{Estimating \(\hat{Q}(p)\)}
     \label{alg:quadprog}
     \begin{algorithmic}[1]
-    \Require Predictor vector \( x \in \mathbb{R}^p \); quantile functions \( Q_i \), and grid \( 0 = t_1 < \ldots < t_m = 1 \)
-    \Ensure Estimates \( \hat{Q}(x; t_l); l = 1, \ldots, m \)
+    \Require Predictor vector \( p \in \mathbb{R}^r \); quantile functions \( Q_i \), and grid \( 0 = u_1 < \ldots < u_m = 1 \)
+    \Ensure Estimates \( \hat{Q}(p; u_l); l = 1, \ldots, m \)
     \For{\( l = 1, \ldots, m \)}
-        \State Compute \( Q_l = \frac{1}{n} \sum_{i=1}^{n} \sin(x) Q_i(t_l) \)
+        \State Compute \( Q_l = \frac{1}{n} \sum_{i=1}^{n} \sin(p) Q_i(u_l) \)
     \EndFor
     \If{\( Q_{l+1} \geq Q_l \) for all \( l \in \{1, \ldots, m-1\} \)}
-        \State Set \( \hat{Q}(x; t_l) = Q_l \)
+        \State Set \( \hat{Q}(p; u_l) = Q_l \)
     \Else
         \State Compute \( b^* = \min_{b \in \mathbb{R}^m} \frac{1}{2} b^\top A b - Q^\top A b \) subject to \( b_1 \leq \ldots \leq b_m \)
-        \State Set \( \hat{Q}(x; t_l) = b^*_l \)
+        \State Set \( \hat{Q}(p; u_l) = b^*_l \)
     \EndIf
     \end{algorithmic}
 \end{algorithm}
 
-
-Calculation of quadratic programming problem done according to algorithm in \textcite{PetersenLiuDivani2021}.
-Checking for estimated qf as valid solution saved much computing time.
+Results for this method are shown in Section~\ref{sec:application}. 

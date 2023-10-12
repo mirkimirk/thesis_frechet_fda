@@ -15,59 +15,59 @@ is a truncated standard normal distribution, so thats what we would expect to se
 estimated mean.
 
 As a measure of explained variance, we used the Fréchet variance explained (fve) that
-\textcite{PetersenMüller2016} defined. Using the Fréchet variance $V_\oplus$ defined
-in~\ref{eq:fvar}.
+\textcite{PetersenMüller2016} defined. We refer to that paper for a definition of fve.
 
-\begin{equation}
-    \tilde{V}_\infty = \frac{1}{n} \sum_{i=1}^{n} d_W(f_i, \tilde{f}_\oplus)^2
-    \label{eq:tilde_V_infinity}
-\end{equation}
+% \begin{equation}
+%     \tilde{V}_\infty = \frac{1}{n} \sum_{i=1}^{n} d_W(f_i, \tilde{f}_\oplus)^2
+%     \label{eq:tilde_V_infinity}
+% \end{equation}
 
-\begin{equation}
-    V_K := V_\infty - \mathbb{E}\left[d_W(f_i, f_{i,K})^2\right]
-    \label{eq:V_K}
-\end{equation}
+% \begin{equation}
+%     V_K := V_\infty - \mathbb{E}\left[d_W(f_i, f_{i,K})^2\right]
+%     \label{eq:V_K}
+% \end{equation}
 
-\begin{equation}
-    \tilde{V}_K = \tilde{V}_\infty - \frac{1}{n} \sum_{i=1}^{n} d_W(f_i, \tilde{f}_{i,K})^2
-    \label{eq:tilde_V_K}
-\end{equation}
+% \begin{equation}
+%     \tilde{V}_K = \tilde{V}_\infty - \frac{1}{n} \sum_{i=1}^{n} d_W(f_i, \tilde{f}_{i,K})^2
+%     \label{eq:tilde_V_K}
+% \end{equation}
 
-\begin{equation}
-    \text{FVE} = \frac{V_K}{V_\infty}
-    \label{eq:FVE}
-\end{equation}
+% \begin{equation}
+%     \text{FVE} = \frac{V_K}{V_\infty}
+%     \label{eq:FVE}
+% \end{equation}
 
-\begin{equation}
-    \tilde{\text{FVE}} = \frac{\tilde{V}_K}{\tilde{V}_\infty}
-    \label{eq:tilde_FVE}
-\end{equation}
+% \begin{equation}
+%     \tilde{\text{FVE}} = \frac{\tilde{V}_K}{\tilde{V}_\infty}
+%     \label{eq:tilde_FVE}
+% \end{equation}
 
-\begin{equation}
-    K^* = \min \left\{ K : \frac{V_K}{V_\infty} > p \right\}
-    \label{eq:K_star}
-\end{equation}
+% \begin{equation}
+%     K^* = \min \left\{ K : \frac{V_K}{V_\infty} > p \right\}
+%     \label{eq:K_star}
+% \end{equation}
 
-\begin{equation}
-    \tilde{K}^* = \min \left\{ K : \frac{\tilde{V}_K}{\tilde{V}_\infty} > p \right\}
-    \label{eq:tilde_K_star}
-\end{equation}
+% \begin{equation}
+%     \tilde{K}^* = \min \left\{ K : \frac{\tilde{V}_K}{\tilde{V}_\infty} > p \right\}
+%     \label{eq:tilde_K_star}
+% \end{equation}
 
 
-We used this measure in two ways: frist, to judge the number $K$ of how many components need to
+We used this measure in two ways: frist, to judge the number $K^*$ of how many components need to
 be included in the Karhunen-Loève representation to reach a given level of variance explained;
 and second, to compare the accuracy of the LQD method in the scenario with additional density estimation
 step to the one without this step. For this, $K = 1$ was fixed as this is the true number
 of principal components driving the variation in the sample curves (all variation in the sample is given
 by the variation in one parameter $\sigma$). Then the fve was calculated on the basis
-of the resultant Karhunen-Loève representations.
+of the resultant Karhunen-Loève representations. More details are in \textcite{PetersenMüller2016}.
 
 Before we present the simulation results, we turn to another visual comparison of
 the naive application of fda methods with the LQD method.
 
 \subsubsection{Modes of Variation}
 \label{sec:mov_example}
-
+Here, we briefly show the difference in the estimated modes of variance from the naive
+and LQD approach.
 \begin{figure}[h]
     \centering
     % \input{../bld/figures/fda/1st_modes.pgf}
@@ -76,7 +76,6 @@ the naive application of fda methods with the LQD method.
     of naive approach and of LQD approach.}
     \label{fig:1st_modes}
 \end{figure}
-
 \begin{figure}[h]
     \centering
     % \input{../bld/figures/fda/2nd_modes.pgf}
@@ -85,7 +84,9 @@ the naive application of fda methods with the LQD method.
     of naive approach and of LQD approach.}
     \label{fig:2nd_modes}
 \end{figure}
-
+Figure~\ref{fig:1st_modes} and Figure~\ref{fig:2nd_modes} show the frist two modes of variation yielded
+by the two methods. One can see that the naive method yields very similar modes, explaining
+similar areas of variance while the LQD method captures different aspects.
 \subsubsection{Simulation results}
 \label{sec:illustration_simulation}
 The density estimation procedure is the same as explained in Section~\ref{sec:app_density_estimation}
@@ -94,19 +95,21 @@ but with one deviation: here, we used the boundary corrected estimator defined i
 as defined in this paper, was not continuous. So we made it continuous by setting the
 weight function equal to
 \begin{equation*}
-    \left( \int_{-1}^{1} \kappa(u) du \right)^{-1}
+    \left( \int_{-1}^{1} \kappa(u) du \right)^{-1},
 \end{equation*}
+instead of 1 for values of $x$ that are \textit{not} near the boundaries.
 
 \begin{figure}[h]
     \centering
     \input{../bld/figures/fda/f_mean_vs_denstimation.pgf}
     % \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/f_mean_vs_denstimation.pgf}}
-    \caption[Simulation results: observed vs estimated densities --- Fréchet mean]{Simulation
-    results of Fréchet mean of observed densities vs. Fréchet mean of estimated densities,
+    \caption[Simulation results: observed vs estimated densities --- Wasserstein mean]{Simulation
+    results of Wasserstein mean of observed densities vs. Wasserstein mean of estimated densities,
     $n=200$.}
     \label{fig:sim_f_denstimation}
 \end{figure}
-
+Figure~\ref{fig:sim_f_denstimation} shows the Wasserstein mean of the density functions,
+both in the scenarios with and without previous density estimation.
 \begin{figure}[h]
     \centering
     % \input{../bld/figures/fda/cs_mean_vs_denstimation.pgf}
@@ -116,25 +119,29 @@ weight function equal to
     estimated densities, $n=200$.}
     \label{fig:sim_cs_denstimation}
 \end{figure}
+Figure~\ref{fig:sim_cs_denstimation} shows the cross-sectional mean of the density functions,
+both in the scenarios with and without previous density estimation.
 
 \begin{figure}[h]
     \centering
     % \input{../bld/figures/fda/comparison_f_cs.pgf}
     \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/comparison_f_cs.pgf}}
-    \caption[Simulation results: Fréchet mean vs cross-sectional mean]{Simulation
-    results of Fréchet mean plotted against "naive" cross-sectional mean for $n = 200$.}
+    \caption[Simulation results: Wasserstein mean vs cross-sectional mean]{Simulation
+    results of Wasserstein mean plotted against "naive" cross-sectional mean for $n = 200$.}
     \label{fig:sim_f_vs_cs}
 \end{figure}
+Figure~\ref{fig:sim_f_vs_cs} compares the Wasserstein mean to the cross sectional mean,
+in the scenario without density estimation and for $n=200$.
 
 \begin{figure}[h]
     \centering
     % \input{../bld/figures/fda/frechet_means.pgf}
     \resizebox{0.9\textwidth}{!}{\input{../bld/figures/fda/frechet_means.pgf}}
     \caption[Simulation results: average Fréchet means]{Simulation results for calculating
-    Fréchet mean densities with different sample sizes.}
+    Wasserstein mean densities with different sample sizes.}
     \label{fig:sim_f_mean}
 \end{figure}
-
+Figure~\ref{fig:sim_f_mean} shows the Fréchet 
 \begin{figure}[h]
     \centering
     % \input{../bld/figures/fda/k_opt_denstimation_histogram.pgf}

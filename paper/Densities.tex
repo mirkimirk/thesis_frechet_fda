@@ -23,14 +23,14 @@ this problem, for example the interpretation of elements in $\mathcal{G}$ as so-
 compositional data, or as elements of the Wasserstein-2 space. The latter
 interpretation will be explored in Section~\ref{sec:fréchet regression} as this general
 approach to regression can easily incorporate the geometry of a given space that is
-implied by its metric (in this case, the Wasserstein-2 metric $d_\mathcal{W}$.)
+implied by its metric (in this case, the Wasserstein-2 metric $d_W$.)
 
 Another approach is the general characterization of $\mathcal{G}$ as a nonlinear space
 with certain constraints that can be done away with through a preliminary transformation
 to a linear representation space. The compositional data approach can be seen as a
 special case of this general transformation approach described in \textcite{PetersenMüller2016}.
 The special case of this approach that we will explore in the following section is the
-log quantile density (LQD) transformation.
+LQD transformation.
 
 \subsubsection{LQD Transformation}
 \label{sec:transformation_interpretation}
@@ -42,7 +42,7 @@ usual fda methods on the transformed densities, and then later transform the res
 back to density space for interpretation and visualization purposes.
 
 Following the argument in \textcite{KokoszkaEtAl2019}, we use the method first outlined
-in \textcite{PetersenMüller2016} and use the log quantile density (LQD) transformation
+in \textcite{PetersenMüller2016} and use the LQD transformation
 $\psi : \nobreak \mathcal{G} \to \mathcal{L}^2([0,1])$, defined by
 \begin{equation}
     \label{eq:lqd_definition}
@@ -152,7 +152,9 @@ translated representation of the transformed functions. Similarly for the modes 
         \label{fig:trunc_rep}
     \end{subfigure}
     \caption[Truncated Karhunen-Loève representations]{Truncated Karhunen-Loève
-    representations of a sample density. The blue and orange curves result from using one
+    representations of a sample density. Figure~\ref{fig:naive_trunc_rep} shows the
+    representations with the naive method, Figure~\ref{fig:trunc_rep} shows it for
+    the LQD method. The blue and orange curves result from using one
     and two principal components, respectively. The black curve is the sample density
     that is to be represented. We added a small perturbation to the orange curve in the
     naive method to better differentiate it from the blue curve.}

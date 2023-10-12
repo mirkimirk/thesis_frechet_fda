@@ -90,7 +90,7 @@ subset of this basis. This will be explained further in Section~\ref{sec:fpca}.
 
 \subsubsection{The Space $\mathcal{L}^2([a, b])$}
 \label{sec:l2 space}
-In the context of FDA, it is assumed that the functional data live in
+In the context of fda, it is assumed that the functional data live in
 the space of square integrable functions $\mathcal{L}^2([a,b])$, with common
 support $[a,b]$.
 \begin{definition}[Space of square integrable functions $\mathcal{L}^2$]
@@ -172,20 +172,19 @@ transformations of the density functions \parencite[cf.][]{Jones1992}:
 Because of the relation in \eqref{eq:qdfinversef}, the qdf is sometimes called the
 "sparsity function" \parencite[cf.][]{Tukey1965}.
 
-The densities that are of interest to us are given in the following definition:
+The distributions that are of interest to us are given in the following definition:
 \begin{definition}
     \label{def:spaceD}
     Denote by \( \mathcal{G} \) the space of absolutely continuous probability
     distributions \( G \) supported on their own compact interval \( [a_i, b_i] \)
     for some \( a_i, b_i \in \mathbb{R} \) with \( a_i < b_i \), and having a finite
     second moment. A distribution \( G \) is in \( \mathcal{G} \) if it admits a
-    density function \( f \) such that:
+    density function \( f \) such that
     \[
-        \int_{a_i}^{b_i} x^2 \, dG(x) = \int_{a_i}^{b_i} x^2 f(x) \, dx < \infty
+        \int_{a_i}^{b_i} x^2 \, dG(x) = \int_{a_i}^{b_i} x^2 f(x) \, dx < \infty.
     \]
 \end{definition}
-the set of probability density functions (pdfs) that are of interest to us. Note that
-the densities need not share any point in their support.
+Note that the distributions need not share any point in their support.
 
 Lastly, we denote by $\mathcal{F}$ the density-valued stochastic process producing our
 sample.
@@ -198,7 +197,7 @@ $\Omega$. We define the Fréchet mean by
     Y_\oplus = \argmin_{\omega \in \Omega} \mathbb{E} \left[ d^2(Y, \omega) \right]
     \label{eq:fmean}
 \end{equation}
-This concept generalized the estimation of mean values to any metric space. If $d$ is
+This concept generalizes the estimation of mean values to any metric space. If $d$ is
 the Euclidean distance $d_E$, this mean reduces to the usual mean $\mathbb{E}(Y)$. Accordingly,
 we define Fréchet variance as
 \begin{equation}
@@ -228,53 +227,46 @@ we discuss some properties and characterizations of this distance.
 While in general the Wasserstein distance is not simple to evaluate, in our case it can
 be shown that it is equal to the quantile distance, given by
 \[
-dQ(f, g)^2 = \int_{0}^{1} (F^{-1}(t) - G^{-1}(t))^2 dt,
+d_Q(f, g)^2 \coloneqq d_Q(Q_f, Q_g)^2 = \int_{0}^{1} (Q_f(t) - Q_g(t))^2 dt,
 \]
-for any two densities $f, g \in \mathcal{G}$ space. The following Lemma will show that
-following the optimal transport reasoning given in \textcite{PetersenLiuDivani2021}-
+where $Q_f, Q_g$ are the quantile functions corresponding to the densities $f, g \in \mathcal{G}$ space.
+
 \begin{lemma}
     \label{lemma:dqeqdw}
     $d_Q = d_W$
 \end{lemma}
-\begin{proof}
-    asdsadasdads
-\end{proof}
+See \textcite{PetersenLiuDivani2021} and the supplement of \textcite{PetersenMüller2016}
+for proofs.
 
-Then we can see that:
-\begin{lemma}
-    The Wasserstein-Fréchet mean estimator is given by
-    \begin{equation}
-        \hat{f}_\oplus(x) = \frac{1}{\hat{q}_\oplus(\hat{F}_\oplus(x))},
-    \end{equation}
-    with $\hat{q}_\oplus = \frac{1}{n} \sum_{1}^{n} q_i$.
-\end{lemma}
-\begin{proof}
-    By Lemma~\ref{lemma:dqeqdw}, we can substitute the quantile distance for the
-    Wasserstein distance in the computation of the Fréchet mean. We set
-    $Q_\oplus(t) = \mathbb{E}[Q(t)]$ because $\mathbb{E}[Q(t)]$ is the minimizer of
-    \begin{equation}
-    \label{eq:wf_mean}
-        \begin{aligned}
-            \mathbb{E}[d_w^2(f_i, f_\oplus)]	& =
-            \mathbb{E}\left[\int_{0}^{1}(F_i^{-1}(t) - F_\oplus^{-1}(t))^2 \,dt\right] \\
-                                    & =
-            \mathbb{E}\left[\int_{0}^{1}(Q_i(t) - Q_\oplus(t))^2 \,dt\right],
-        \end{aligned}
-    \end{equation}
-    see \citet[Chapter~3.1.4]{PanaretosZemel2020}. To compute the corresponding density
-    function, use inverse function rule to get
-    $f_\oplus(x) = \frac{1}{q_\oplus(F_\oplus(x))}$, which shows that it suffices to
-    estimate $q_\oplus$. Remember that
-    $q_\oplus = \frac{\mathrm{d}Q_\oplus}{\mathrm{d}t}$. Because of Assumption REFER A1,
-    we can pass the differentiation inside the expectation to see
-    $q_\oplus = \mathbb{E}\left[\frac{\mathrm{d}Q}{\mathrm{d}t}\right]$, which by analogy
-    principle suggests to average the sample observed (or previously estimated)
-    quantile densities $q_i$ to obtain an estimator $\hat{q}_\oplus$ for $q_\oplus$.
-\end{proof}
+Setting the distance function to be $d_W(f, g)$ in \ref{eq:fmean}, we yield the Wasserstein-Fréchet mean.
+See \textcite{PetersenLiuDivani2021} for a definition.
 
-
-\subsubsection{Wasserstein-Fréchet Mean}
-\label{sec:wasserstein_f_mean}
-While the Fréchet mean is in general not straightforward to compute, the computation
-d perhaps its relationship with the quantile synchronized mean.
-and we will use the resulting notion of mean to obtain the mean of a density-valued
+% \begin{lemma}
+%     The Wasserstein-Fréchet mean estimator is given by
+%     \begin{equation}
+%         \hat{f}_\oplus(x) = \frac{1}{\hat{q}_\oplus(\hat{F}_\oplus(x))},
+%     \end{equation}
+%     with $\hat{q}_\oplus = \frac{1}{n} \sum_{1}^{n} q_i$.
+% \end{lemma}
+% \begin{proof}
+%     By Lemma~\ref{lemma:dqeqdw}, we can substitute the quantile distance for the
+%     Wasserstein distance in the computation of the Fréchet mean. We set
+%     $Q_\oplus(t) = \mathbb{E}[Q(t)]$ because $\mathbb{E}[Q(t)]$ is the minimizer of
+%     \begin{equation}
+%     \label{eq:wf_mean}
+%         \begin{aligned}
+%             \mathbb{E}[d_w^2(f_i, f_\oplus)]	& =
+%             \mathbb{E}\left[\int_{0}^{1}(F_i^{-1}(t) - F_\oplus^{-1}(t))^2 \,dt\right] \\
+%                                     & =
+%             \mathbb{E}\left[\int_{0}^{1}(Q_i(t) - Q_\oplus(t))^2 \,dt\right],
+%         \end{aligned}
+%     \end{equation}
+%     see \citet[Chapter~3.1.4]{PanaretosZemel2020}. To compute the corresponding density
+%     function, use inverse function rule to get
+%     $f_\oplus(x) = \frac{1}{q_\oplus(F_\oplus(x))}$, which shows that it suffices to
+%     estimate $q_\oplus$. Remember that
+%     $q_\oplus = \frac{\mathrm{d}Q_\oplus}{\mathrm{d}t}$. We can pass the differentiation inside the expectation to see
+%     $q_\oplus = \mathbb{E}\left[\frac{\mathrm{d}Q}{\mathrm{d}t}\right]$, which by analogy
+%     principle suggests to average the sample observed (or previously estimated)
+%     quantile densities $q_i$ to obtain an estimator $\hat{q}_\oplus$ for $q_\oplus$.
+% \end{proof}

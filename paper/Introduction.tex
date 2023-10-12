@@ -1,53 +1,45 @@
-This thesis is about comparing different methods to solving the task of density
-regression. In functional data analysis (FDA) literature, several modifications to
-the usual methods to examine functional data have been proposed to handle the case of
-density functions as responses in a regression setting. As the space of density functions is itself
-not a linear space, key assumptions from FDA literature are violated and the results
-of the usual procedures are not guaranteed to stay in the density space.
+This thesis undertakes the task of comparing different approaches to 
+the problem of density regression. Specifically, we will juxtapose the 
+novel Fréchet regression method against a particular method from Functional Data 
+Analysis (fda) literature. Within the scope of this thesis, the term Fréchet 
+regression is confined to the global regression context.
 
-We will focus on the transformation method described in \textcite{PetersenMüller2016}.
-This approach guarantees to get results in the density space when applying the usual
-FDA methods on a transformed space and mapping the transformed values back via an
-inverse mapping into the density space.
+In the fda literature, various methods have been adapted to handle density 
+functions as responses within a regression framework. Density data have found 
+applications in a multitude of fields, such as income distributions 
+\parencite{HildenbrandKneipUtikal1999,KneipUtikal2001} and financial markets \parencite{KokoszkaEtAl2019}. 
+However, the space of density functions is inherently not a linear space, thereby 
+violating key assumptions in fda. This non-linearity makes it challenging to 
+ensure that the outcomes of standard procedures remain in the density space.
 
-A different strand of literature is the one about object oriented data analysis. To this,
-functional data is a special case of a general random object. \textcite{PetersenMüller2019}
-explored a method for a general form of regression where the response is only assumed to
-be metric space-valued. As this is a general approach encompassing the case of the
-response space being the space of densities (with a suitable metric defined on it),
-this method should be more flexible in adjusting to the structure of the space and
-provide a more direct alternative to the transformation method and other approaches
-trying to make FDA methods work.
+Our primary focus is the transformation method as delineated by 
+\textcite{PetersenMüller2016}, which employs a log quantile density (LQD) 
+transformation. This approach has been slightly modified by \textcite{KokoszkaEtAl2019}
+and ensures that the results stay within the density space by performing standard 
+fda methods in a transformed space and then inverting this transformation. A 
+comprehensive overview of fda can be found in \textcite{WangChiouMüller2016}, 
+and an in-depth discussion on the modeling of density functions is presented in 
+\textcite{PetersenZhangKokoszka2022}.
 
-In the following we will compare both methods in a simulation study, both in a case
-where the sample of densities is directly observed an in the more realistic case of
-first having to obtain the sample via density estimation. Before, section 2 will give
-a review of the mathematical requisites for FDA and the Fréchet regression framework.
-Section 3 will explain the setup and results of the simulation study, and chapter 4
-concludes.
+In contrast, another emerging avenue of research is object-oriented data analysis, 
+which offers a more generalized perspective on functional data. Here, functional 
+data serve as a special case within a broader category of random objects. 
+\textcite{PetersenMüller2019} have delved into this approach and proposed a 
+regression method where the response variable is assumed to be in a metric space. 
+This flexibility makes it a more direct and adaptable alternative to the 
+transformation methods and other adaptations of fda, especially since it doesn't 
+rely on the "extrinsic" properties of the Hilbert space of which the density space 
+is a subset.
 
-- Thesis about comparing novel Fréchet regression method in the context of density regression
-with particular method from fda literature.
-- throughout this thesis, Fréchet regression refers only to global regression
-- Density data occur in many applications, for example income distributions \parencites{HildenbrandKneipUtikal1999}{KneipUtikal2001},
-financial markets
-- An overview of fda described in \textcite{WangChiouMüller2016}, and overview of modelling
-of density functions in \textcite{PetersenZhangKokoszka2022}
-- Direct application of fda methods on density samples viewed as inappropriate because
-it makes use of "extrinsic" properties of the Hilbert space of which the density space is
-a subset
-- different modifications to fda methods done, here: LQD transformation from \textcite{PetersenMüller2016},
-with slight modification from \textcite{KokoszkaEtAl2019}.
-- Fréchet regression method \textcite{PetersenMüller2019} from object oriented data analysis strand of literature.
-Much more general regression method from, here applied to distribution sample
+To empirically compare these two frameworks, a simulation study will be conducted. 
+This study will assess the efficacy of each method in scenarios where density samples 
+are directly observed and in more realistic settings where these samples are estimated. 
+The remainder of this thesis is organized as follows: Section 2 offers a mathematical 
+foundation for fda and the Fréchet regression framework, Section 3 explain basic fda
+concepts. Section 4 discusses density regression and the inadequacy of directly applying
+fda methods on the space of densities, along with the transfromation approach. Section 5
+explain the Fréchet method, with a special focus on our regression context in the Wasserstein
+space of distributions. Section 6 illustrates the methods, and compares them in a simulation study.
+Section 7 concludes.
 
-
-\citet{HorvathKokoszka2012}
-\citet{HallHorowitz2007}
-\citet{PetersenMüller2019}
-\citet{VanDerVaartWellner1996}
-\citet{Bosq2000}
-\citet{HastiTibshiraniFriedman2009}
-\citet{Boor2001}
-
-The code to this thesis can be found in \url{https://github.com/mirkimirk/thesis_frechet_fda}
+The code to this thesis can be found in \url{https://github.com/mirkimirk/thesis_frechet_fda}log quantile density (LQD)

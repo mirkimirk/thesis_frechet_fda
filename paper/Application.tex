@@ -1,21 +1,55 @@
 In this section, we show how the LQD method and Fréchet method work in practice and
 compare their performance in a simulation study. First, we will describe the DGP that
-will produce the data for our illustrations and
+will produce the data for our illustrations and descibe the density estimation step.
+Before turning to the results of the simulation study, we will use a sample dataset
+generate by this DGP to illustrate the behavior of the two methods.
 
 \subsection{Data Generating Process}
 \label{sec:app_dgp}
-The DGP used here is the same as \textcite{PetersenMüller2019} used in their simulation
+The DGP used here is (almost) the same as \textcite{PetersenMüller2019} used in their first simulation
+scenario. We generate a sample of qfs that is positively linearly dependent on our predictor
+$p$. The basis is a normal qf whose location and scale both rise linearly in
+$p$. The qf-valued stochastic process is given as follows:
+\[
+    m_{\oplus}(x)(\cdot) = \mathbb{E}[Y(\cdot)|X = x] = \mu_0 + \beta x + (\sigma_0 + \gamma x) \Phi^{-1}(\cdot),
+\]
+where $\Phi$ is the cdf of the standard normal distribution.
+Compared to the version of the authors, we slightly exaggerated the parameters for more pronounced visualization. In our case
+$\beta = 4$ amd $\gamma = 2$, while having $\mu_0$ and $\sigma_0$ both still equal to 0 and 3, respectively.
+
+The sample is generated as follows. First we sample the predictor $p \sim U([-1,1])$.
+Then we draw the corresponding location and scale parameters as follows
+\[
+    \mu|X \sim \mathcal{N}(\mu_0 + \beta X, v_1)
+\]
+\[
+    \sigma|X \sim \text{Gam} \left( \frac{( \sigma_0 + \gamma X )^2}{v_2}, \frac{v_2}{\sigma_0 + \gamma X} \right).
+\]
+Sampling the scale from a Gamma distribution ensures drawing positive parameters, as is
+required. The values for $v_1$ and $v_2$ are $0.25$ and $1$, respectively. Drawing $\mu$ and
+$\sigma$ like this adds some noise to the observation since the observed parameter will osciliate
+with standard deviation $v_1$ and $v_2$ around the true value.
+
+More details can be found in the paper. We now briefly mention the density estimation
+step.
 
 \subsection{Density Estimation}
 \label{sec:app_density_estimation}
 Since we will have a scenario where we have to estimate the densities $f_i$ from a finite sample
-$x_i1,\dots, x_im$ of observed points for each of the $f_i$
+$x_{i1},\dots, x_{im}$ of observed points for each of the $f_i$. The densities were
+estimated using a kernel density estimator with standard normal kernel. This gives
+additional uncertainty and we will see in the simulation results if the estimates
+by the different methods respond differently to this uncertainty though we do not expect them
+to.
 
 \subsection{Illustration of Methods in Example}
 \label{sec:app_illustration}
+Before turning to the simulation study, we briefly illustrate the behavior of the
+two methods for a given sample generated with the DGP desribed above.
 
 \subsubsection{LQD method}
 \label{sec:app_lqd}
+Here, we show the behavior of the LQD method in estimating the true stochastic process.
 
 \begin{figure}[h!]
     \centering
@@ -61,13 +95,10 @@ the true stochastic process.
 \end{figure}
 Figure~\ref{fig:func_est_vs_true} plots the estimated densities against their true
 counterparts. We see that the general trend to higher variance is well reflected in the
-estimated curves
+estimated curves but the estimation of the support location is taking its toll on
+accuracy.
 
-Because in the functional regression on the log transformed qds, we have to adjust with
-the range with the individual quantile of the observation, and otherwise there is no
-possibility to keep the mean, the linear dependence of the mean is lost. One can though
-see that the variance rises with x. This information is not lost in the log qdfs.
-
+Next, we will briefly show the performance of the Fréchet mean.
 \subsubsection{Fréchet method}
 \label{sec:app_frechet}
 
@@ -137,8 +168,8 @@ value.
     \label{fig:frechet_est_vs_true}
 \end{figure}
 Figure~\ref{fig:frechet_est_vs_true} shows a more continuous estimate in the Fréchet
-regression. Clearly the mean shifts steadily to the right, as x increases, as well as
-more variance.
+regression. Clearly the location shifts steadily to the right, as x increases, and the
+variance increases as well.
 
 \subsection{Results}
 \label{sec:app_results}
