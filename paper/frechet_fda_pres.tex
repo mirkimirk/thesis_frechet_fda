@@ -1,0 +1,80 @@
+\documentclass[11pt, aspectratio=169]{beamer}
+% \documentclass[11pt,handout]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage{float, afterpage, rotating, graphicx}
+\usepackage{epstopdf}
+\usepackage{longtable, booktabs, tabularx}
+\usepackage{fancyvrb, moreverb, relsize}
+\usepackage{eurosym, calc}
+\usepackage{amsmath, amssymb, amsfonts, amsthm, bm}
+\usepackage[
+    natbib=true,
+    bibencoding=inputenc,
+    bibstyle=authoryear-ibid,
+    citestyle=authoryear-comp,
+    maxcitenames=3,
+    maxbibnames=10,
+    useprefix=false,
+    sortcites=true,
+    backend=biber
+]{biblatex}
+\AtBeginDocument{\toggletrue{blx@useprefix}}
+\AtBeginBibliography{\togglefalse{blx@useprefix}}
+\setlength{\bibitemsep}{1.5ex}
+\addbibresource{refs.bib}
+
+\hypersetup{colorlinks=true, linkcolor=black, anchorcolor=black, citecolor=black, filecolor=black, menucolor=black, runcolor=black, urlcolor=black}
+
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{frametitle}{\centering\vspace{1ex}\insertframetitle\par}
+
+
+\begin{document}
+
+\title{Fréchet Regression and Functional Data}
+
+\author[Mirkan Öcal]
+{
+{\bf Mirkan Öcal}\\
+{\small University of Cologne}\\[1ex]
+}
+
+
+\begin{frame}
+    \titlepage
+    \note{~}
+\end{frame}
+
+
+\begin{frame}[t]
+    \frametitle{heading here}
+    \begin{itemize}
+        \item 
+        \item 
+    \end{itemize}
+    \note{~}
+\end{frame}
+
+
+
+\begin{frame}[plain]
+    \begin{figure}
+        \centering
+        % \input{../bld/figures/frechet/some_densities.pgf}
+        \resizebox{0.9\textwidth}{0.9\textheight}{\input{../bld/figures/frechet/some_densities.pgf}}
+        \caption[Several sampled pdfs]{Plot of several sample pdfs.}
+        \label{fig:some_densities}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks]
+    \frametitle{References}
+    \renewcommand{\bibfont}{\normalfont\footnotesize}
+    \printbibliography
+\end{frame}
+
+\end{document}
