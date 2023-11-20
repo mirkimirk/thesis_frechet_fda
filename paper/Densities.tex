@@ -128,10 +128,10 @@ assigns each $c$ to the predictor value $p$ with which it was observed, and calc
 via linear interpolation. For the mean LQD, we computed the mean of the $c$ values in the sample
 and used that as an estimator. These $\hat{c}$ are supposed to estimate the left bound
 of the support of the resulting density when performing the inverse transform $T^{-1}$
-described in \ref{alg:backward}.
+described in Algorithm~\ref{alg:backward}.
 
 A word about the application of fda methods in the transformation approach: the concepts
-introduced in Section~\ref{sec:fda_descriptives} are always applied to objects in the
+introduced in Section~\ref{sec:fpca} are always applied to objects in the
 transformed space. The resulting functions are then transformed back to the density
 space. So for example, the (truncated) Karhunen-Loève representation of the densities is the
 translated representation of the transformed functions. Similarly for the modes of variation.
