@@ -1,0 +1,101 @@
+\begin{postsub}[Post-submission section]
+This thesis has so far presented two routes to density regression in two different
+languages: Section~\ref{sec:density regression} works with the log quantile density (LQD)
+transformation in the Hilbert space $\mathcal{L}^2([0,1])$, whereas
+Section~\ref{sec:fréchet regression} works intrinsically in the Wasserstein space
+$(\mathcal{G}, d_W)$. In this section we place both methods in a single template, which
+makes their similarities precise and gives a geometric explanation for the gap between
+them observed in the simulation study of Section~\ref{sec:application}.
+
+\subsection{A common template}
+\label{sec:common_template}
+Both methods share the structure
+\begin{equation}
+    \label{eq:transformation_template}
+    \mathcal{G} \xrightarrow{\ \Phi\ } \mathcal{H}
+    \xrightarrow{\ \text{linear regression}\ } \mathcal{H}
+    \xrightarrow{\ \Phi^{-1}\ } \mathcal{G},
+\end{equation}
+that is, a \emph{representation map} (or chart) $\Phi$ sends a density to an element of a
+Hilbert space $\mathcal{H}$, a linear regression is carried out there, and the fit is
+mapped back to $\mathcal{G}$ for interpretation. The two methods differ only in the choice
+of $\Phi$.
+
+\paragraph{LQD method.} Here $\Phi = \psi$ is the LQD transformation
+\eqref{eq:lqd_definition} and $\mathcal{H} = \mathcal{L}^2([0,1])$. The image is
+unconstrained, so the regression reduces to coefficientwise ordinary least squares. The
+price is twofold: $\psi$ is a nonlinear map, and it is \emph{blind to location}, since a
+density $f$ and any translate $f(\cdot - c)$ share the same quantile density
+(cf.\ Section~\ref{sec:transformation_interpretation}). The location must therefore be
+carried as a separate scalar $c = Q(u^*)$ and reconstructed on inversion.
+
+\paragraph{Fréchet method.} Here $\Phi = Q$ is the quantile representation and again
+$\mathcal{H} = \mathcal{L}^2([0,1])$, but the image is restricted to the closed convex
+cone $\mathcal{Q}$ of non-decreasing functions. By Lemma~\ref{lemma:dqeqdw} the map
+$\Phi : (\mathcal{G}, d_W) \to (\mathcal{Q}, \norm{\cdot}_2)$ is an \emph{isometry}
+\parencite[cf.][Chapter~2]{PanaretosZemel2020}. As shown in
+Definition~\ref{def:global_frechet}, global Fréchet regression is then ordinary linear
+regression on the quantile functions $Q_i$ inside this cone, followed by the
+$\mathcal{L}^2$-projection onto $\mathcal{Q}$ of Algorithm~\ref{alg:quadprog}. Because the
+location is encoded in $Q$ itself, no separate anchor is needed.
+
+Table~\ref{tab:method_comparison} summarises the correspondence.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{lll}
+        \toprule
+                                     & LQD method              & Fréchet method \\
+        \midrule
+        Representation $\Phi$        & $\psi = \log q$         & $Q$ (quantile function) \\
+        Image space $\mathcal{H}$    & $\mathcal{L}^2([0,1])$  & cone $\mathcal{Q}\subset\mathcal{L}^2([0,1])$ \\
+        Constraints in $\mathcal{H}$ & none                    & monotonicity (convex cone) \\
+        Location information         & lost; anchor $c=Q(u^*)$ & retained in $Q$ \\
+        Regression step              & coefficientwise OLS     & weighted mean of $Q_i$ \\
+        Return to $\mathcal{G}$      & $\psi^{-1}$ and anchor  & projection onto $\mathcal{Q}$ \\
+        Relation to $d_W$            & nonlinear distortion    & isometry \\
+        \bottomrule
+    \end{tabular}
+    \caption[Comparison of the two transformation maps]{The LQD and Fréchet methods as two
+    instances of the template \eqref{eq:transformation_template}, differing only in the
+    representation map $\Phi$.}
+    \label{tab:method_comparison}
+\end{table}
+
+\subsection{Why the geometry favours the Fréchet method}
+\label{sec:geometry_argument}
+The two charts are not interchangeable, because the error criterion is itself defined in
+one of them. The integrated squared error reported in Section~\ref{sec:application} is
+measured in $d_W$, and by Lemma~\ref{lemma:dqeqdw} this equals the squared $\mathcal{L}^2$
+distance between quantile functions. The Fréchet method therefore regresses in
+\emph{exactly} the chart in which the loss is the flat $\mathcal{L}^2$ metric. Since
+$\Phi = Q$ is an isometry, a linear model in $Q$-space is consistent with the Wasserstein
+geometry: minimising in-chart squared error coincides with minimising $d_W$ risk. The only
+departure from a plain linear fit is the projection onto the cone $\mathcal{Q}$; but
+projection onto a closed convex set in a Hilbert space is non-expansive, and the true
+conditional quantile function $m_\oplus(x)$ lies in $\mathcal{Q}$, so
+\begin{equation}
+    \label{eq:nonexpansive}
+    \big\| \Pi_{\mathcal{Q}}\bigl(\tilde{Q}(x)\bigr) - m_\oplus(x) \big\|_2
+    \le \big\| \tilde{Q}(x) - m_\oplus(x) \big\|_2,
+\end{equation}
+where $\Pi_{\mathcal{Q}}$ denotes the projection onto $\mathcal{Q}$. The monotonicity
+correction can thus only reduce the $d_W$ error: it is, in this sense, ``free''.
+
+For the LQD method the situation is different. The chart $\Phi = \psi$ is a nonlinear,
+non-isometric distortion of $(\mathcal{G}, d_W)$. A linear model that is optimal in
+$\psi$-space --- that is, in $\mathcal{L}^2$ error on the log quantile densities --- is in
+general \emph{not} optimal for $d_W$ risk, because $\psi$ does not preserve the metric. In
+addition, the location component discarded by $\psi$ must be reinstated from the separately
+estimated anchors $c(p)$ (here by linear interpolation), and any error in this
+reconstruction enters the $d_W$ risk directly and does not vanish as the fit of the log
+quantile densities improves.
+
+This gives a geometric, rather than merely computational, explanation for the persistent
+gap in Table~\ref{tab:mean_ise_values}. Even when the densities are observed directly, the
+LQD risk is dominated by representation and location error, whereas the Fréchet risk
+reflects only estimation error in the chart aligned with the loss. The density-estimation
+step adds a comparable amount of noise to both methods but does not change this ordering.
+In short, the Fréchet method performs better here not by an accident of tuning, but
+because it linearises the problem in the same geometry in which performance is measured.
+\end{postsub}

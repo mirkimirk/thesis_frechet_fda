@@ -1,0 +1,50 @@
+\begin{postsub}[Post-submission addition: from the Euclidean case to general metric spaces]
+The lemma above characterises the Euclidean conditional mean as the minimiser of a
+\emph{weighted} least-squares criterion whose weights $s(z, x)$ depend on the predictor
+only through the first two moments of $X$. The global Fréchet regression model of
+\textcite{PetersenMüller2019} is obtained by keeping these weights and replacing the
+Euclidean distance $d_E$ by a general metric $d$.
+\begin{definition}[Global Fréchet regression]
+    \label{def:global_frechet}
+    Let $(\Omega, d)$ be a metric space, let $X \in \mathbb{R}^r$ be a predictor with mean
+    $\mu$ and non-singular covariance matrix $\Sigma$, and define
+    \[
+        s(z, x) = 1 + (z - \mu)^\top \Sigma^{-1} (x - \mu).
+    \]
+    The \emph{global Fréchet regression function} is
+    \begin{equation}
+        \label{eq:global_frechet_pop}
+        m_\oplus(x) = \argmin_{\omega \in \Omega}\,
+        \mathbb{E}\!\left[ s(X, x)\, d^2(Y, \omega) \right].
+    \end{equation}
+    Given a sample $(X_i, Y_i)_{i=1}^n$, write $\bar{X}$ for the sample mean and
+    $\hat{\Sigma}$ for the sample covariance of the $X_i$, and set
+    \[
+        s_{in}(x) = 1 + (X_i - \bar{X})^\top \hat{\Sigma}^{-1} (x - \bar{X}).
+    \]
+    The corresponding estimator is
+    \begin{equation}
+        \label{eq:global_frechet_emp}
+        \hat{m}_\oplus(x) = \argmin_{\omega \in \Omega}\,
+        \frac{1}{n} \sum_{i=1}^{n} s_{in}(x)\, d^2(Y_i, \omega).
+    \end{equation}
+\end{definition}
+Setting $\Omega = \mathcal{G}$ and $d = d_W$ specialises this to our context. Because
+$d_W = d_Q$ by Lemma~\ref{lemma:dqeqdw}, the criterion \eqref{eq:global_frechet_emp}
+becomes a weighted average of squared $\mathcal{L}^2$ distances between quantile
+functions,
+\begin{equation}
+    \label{eq:frechet_qf_objective}
+    \hat{m}_\oplus(x) = \argmin_{Q}\,
+    \frac{1}{n} \sum_{i=1}^{n} s_{in}(x) \int_0^1 \bigl(Q_i(u) - Q(u)\bigr)^2 \, du,
+\end{equation}
+whose \emph{unconstrained} minimiser is the weighted cross-sectional mean of the sample
+quantile functions,
+\[
+    \tilde{Q}(x)(\cdot) = \frac{1}{n} \sum_{i=1}^{n} s_{in}(x)\, Q_i(\cdot).
+\]
+When $\tilde{Q}(x)$ is non-decreasing it is already a valid quantile function and hence the
+solution; otherwise $\hat{m}_\oplus(x)$ is its $\mathcal{L}^2$-projection onto the cone of
+non-decreasing functions, which is precisely the quadratic program in
+Algorithm~\ref{alg:quadprog}.
+\end{postsub}

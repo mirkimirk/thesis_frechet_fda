@@ -103,6 +103,25 @@
 \newcommand{\inpr}[2]{\left \langle #1, #2 \right \rangle}
 \newcommand{\norm}[1]{\|#1\|}
 
+% --- Post-submission additions -------------------------------------------------
+% Everything wrapped in the "postsub" environment (or guarded by \ifshowpostsub)
+% was added AFTER the thesis was submitted in October 2023 and is not part of the
+% graded version. Set the toggle below to \showpostsubfalse to regenerate the
+% exact submitted document (additions are removed and section numbering reverts).
+\definecolor{postsubaccent}{RGB}{0,80,150}
+\newif\ifshowpostsub
+\showpostsubtrue
+\newenvironment{postsub}[1][Post-submission addition]{%
+  \par\medskip\noindent
+  {\color{postsubaccent}\rule{\linewidth}{1pt}}\par\nopagebreak\smallskip
+  \noindent{\color{postsubaccent}\sffamily\bfseries #1.}\;%
+  {\color{postsubaccent}\small\itshape Not part of the thesis submitted in October~2023.}%
+  \par\nopagebreak\smallskip
+}{%
+  \par\smallskip\noindent{\color{postsubaccent}\rule{\linewidth}{1pt}}\par\medskip
+}
+% -------------------------------------------------------------------------------
+
 % Theorems etc.
 \newtheoremstyle{break}
   {\topsep}{\topsep}%
@@ -189,6 +208,14 @@
 \section{Fréchet Regression}
 \label{sec:fréchet regression}
 \input{Fréchet.tex}
+
+% Post-submission section: toggling \showpostsubfalse removes it and restores the
+% submitted section numbering (Application becomes Section 6 again).
+\ifshowpostsub
+\section{A Common Transformation Framework}
+\label{sec:comparison}
+\input{Comparison.tex}
+\fi
 
 \section{Application}
 \label{sec:application}
