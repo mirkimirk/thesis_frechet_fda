@@ -9,6 +9,7 @@
 \usepackage{fancyvrb, moreverb, relsize}
 \usepackage{eurosym, calc}
 \usepackage{amsmath, amssymb, amsfonts, amsthm, bm}
+\DeclareMathOperator*{\argmin}{arg\,min}
 \usepackage[
     natbib=true,
     bibencoding=inputenc,
@@ -52,32 +53,46 @@
 \begin{frame}[allowframebreaks]
     \frametitle{Introduction}
     \begin{itemize}
-        \item Thesis about comparing different methods in the context of density Regression
-        \item First method from FDA literature based on \textcite{PetersenMüller2016}
-        \item Second method is novel Fréchet regression method from OODA literature developed in \textcite{PetersenMüller2019}
+        \item Thesis compares two methods for regression with density responses
+        \item First method from the fda literature: functional regression after the
+        log quantile density (LQD) transformation
+        \parencites{PetersenMüller2016}{KokoszkaEtAl2019}
+        \item Second method: global Fréchet regression from the object-oriented data
+        analysis literature \parencite{PetersenMüller2019}
     \end{itemize}
     \framebreak
     \begin{itemize}
-        \item As the space of densities is not a linear space it is inappropriate to directly apply FDA methods on these objects
-        \item In particular, resulting functions are still guaranteed to be in the linear space of which the density space is a subset,
-        but not in the density space itself
-        \item \textcite{PetersenMüller2016} propose to apply a previous transformation step which we will elaborate next
+        \item The space of densities is not a linear space, so directly applying fda
+        methods to densities is inappropriate
+        \item Results are only guaranteed to lie in the ambient linear space
+        ($\mathcal{L}^2$), not in the density space itself
+        \item Two ways out: transform to an unconstrained space first
+        \parencite{PetersenMüller2016}, or respect the geometry of the density space
+        directly \parencite{PetersenMüller2019}
     \end{itemize}
 \end{frame}
 
 \begin{frame}[allowframebreaks]
     \frametitle{Transformation Approach}
     \begin{itemize}
-        \item Thesis about comparing different methods in the context of density Regression
-        \item First method from FDA literature based on \textcite{PetersenMüller2016}
-        \item Second method is novel Fréchet regression method from OODA literature developed in \textcite{PetersenMüller2019}
+        \item Transform each density $f$ to its log quantile density
+        $\psi(f)(u) = -\log f(Q(u))$, an (essentially) unconstrained element of
+        $\mathcal{L}^2([0,1])$
+        \item Perform standard functional linear regression on the transformed
+        functions, then map the fitted values back to density space
+        \item Densities with differing supports require storing an anchor point
+        $Q(0)$ per density and estimating it for predictions
+        \parencite{KokoszkaEtAl2019} --- a key practical drawback
     \end{itemize}
     \framebreak
     \begin{itemize}
-        \item As the space of densities is not a linear space it is inappropriate to directly apply FDA methods on these objects
-        \item In particular, resulting functions are still guaranteed to be in the linear space of which the density space is a subset,
-        but not in the density space itself
-        \item \textcite{PetersenMüller2016} propose to apply a previous transformation step which we will elaborate next
+        \item Fréchet regression instead generalizes the conditional mean to metric
+        spaces: $m_\oplus(x) = \argmin_{\omega} \mathbb{E}[d^2(Y, \omega) \mid X = x]$
+        \item With the Wasserstein-2 distance, estimation reduces to weighted
+        averaging of quantile functions plus a monotonicity projection
+        (quadratic programming)
+        \item No transformation, no support estimation, results are valid
+        distributions by construction
     \end{itemize}
 \end{frame}
 
@@ -91,6 +106,72 @@
         \caption[Several sampled pdfs]{Plot of several sample pdfs.}
         \label{fig:some_densities}
     \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Simulation Results}
+    \begin{itemize}
+        \item DGP: normal distributions, location and scale linear in the predictor
+        (as in \textcite{PetersenMüller2019}); scenarios with directly observed and
+        with estimated densities
+    \end{itemize}
+    \begin{table}
+        \centering
+        \begin{tabular}{lccc}
+            \hline
+            Mean ISE & $n = 50$ & $n = 100$ & $n = 200$ \\
+            \hline
+            Fréchet             & 0.18 & 0.08 & 0.04 \\
+            Fréchet, D.-Est.    & 32.31 & 27.98 & 27.38 \\
+            LQD                 & 34.49 & 31.19 & 31.88 \\
+            LQD, D.-Est.        & 47.08 & 43.39 & 43.43 \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \begin{itemize}
+        \item Fréchet regression clearly dominates; most of the LQD error stems from
+        having to estimate the support location, which the transformation discards
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Additional Scenarios}
+    \begin{itemize}
+        \item Three further scenarios vary which method is correctly specified
+        (200 Monte Carlo repetitions, directly observed densities)
+    \end{itemize}
+    \begin{table}
+        \centering
+        \small
+        \begin{tabular}{llccc}
+            \hline
+            Scenario & Method & $n = 50$ & $n = 100$ & $n = 200$ \\
+            \hline
+            Common support ($\times 10^{-3}$)  & Fréchet & 0.026 & 0.012 & 0.005 \\
+                                               & LQD     & 0.360 & 0.327 & 0.304 \\
+            Linear in LQD space ($\times 10^{-3}$) & Fréchet & 4.315 & 4.019 & 3.851 \\
+                                               & LQD     & 0.330 & 0.210 & 0.084 \\
+            Nonlinear                          & Fréchet & 7.485 & 7.205 & 7.099 \\
+                                               & LQD     & 28.708 & 30.793 & 30.972 \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \begin{itemize}
+        \item Common support makes LQD competitive $\Rightarrow$ support estimation
+        drives its error; under misspecification, Fréchet degrades gracefully
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Conclusion}
+    \begin{itemize}
+        \item Fréchet regression adapts to the geometry of the density space and
+        avoids transformation and back-transformation steps entirely
+        \item The LQD method is competitive only when the information destroyed by
+        the transformation (support location) does not matter
+        \item The density estimation step dominates the error of both methods when
+        densities are not directly observed --- bandwidth choice matters
+    \end{itemize}
 \end{frame}
 
 
