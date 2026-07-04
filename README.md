@@ -15,10 +15,6 @@ Functions by Transformation to a Hilbert Space" (2016) and "Fréchet Regression 
 Random Objects with Euclidean Predictors" (2019) from Alexander Petersen and Hans-Georg
 Müller.
 
-**NOTE**: This project is unfinished and will be worked over at a later point in time
-(December 2023). The text is very unfinished, and the simulation needs some more
-interesting scenarios to compare both methods.
-
 ### What to look for
 
 The three Jupyter notebooks in src / frechet_fda contain all the code done to illustrate
@@ -26,6 +22,12 @@ the methods and compute the simulations. They are somewhat differentiated into a
 notebook that tries to reproduce methods and results from Petersen & Müller (2016), one
 to reproduce the methods from Petersen & Müller (2019) as well as do a simulation study,
 and one to produce and save all the plots to use in the thesis.
+
+The script `simulation_new_scenarios.py` contains three additional simulation
+scenarios (common support, linear in LQD space, and nonlinear) that vary which of the
+two methods is correctly specified. Run it with `python
+src/frechet_fda/simulation_new_scenarios.py`; it stores its results in
+`src/frechet_fda/sim_results/` and prints a table of mean ISE values.
 
 ### Important helper files
 
