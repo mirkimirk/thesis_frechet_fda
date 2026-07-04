@@ -1,7 +1,7 @@
 This section will introduce basic fda concepts and methods used throughout this thesis.
 Proofs will be omitted and can be found in the cited literature.
 
-\subsection{Covariance Operator and Covariance Fuctions}
+\subsection{Covariance Operator and Covariance Functions}
 \label{sec:covs}
 Here we will briefly talk about properties of the covariance operator. It is assumed
 that the functions under consideration here are realizations of an $\mathcal{L}^2$
@@ -23,7 +23,7 @@ We will use the following definition of the covariance operator:
     \Gamma(y) = \mathbb{E}\left[ \langle (X-\mu), y \rangle_{2} (X-\mu) \right].
     \]
 \end{definition}
-The coditions in this definition are functional analogues of the usual conditions of
+The conditions in this definition are functional analogues of the usual conditions of
 finite first and second moments. This operator's properties and estimation will be further explained
 in the following section after introducing some important theorems for the computation
 and interpretation of the covariance operator.
@@ -46,7 +46,7 @@ as an inner product:
 \begin{equation}
     (\Gamma(f))(s) = \int_{T} \gamma(s, t) f(t) \, dt = \inpr{\gamma(s, \cdot)}{f},
 \end{equation}
-where $\gamma(s, t) = \text{Cov}(X(s), X(s)) = \mathbb{E}[(X(s) - \mathbb{E}[X(s)])(X(t) - \mathbb{E}[X(t)])]$
+where $\gamma(s, t) = \text{Cov}(X(s), X(t)) = \mathbb{E}[(X(s) - \mathbb{E}[X(s)])(X(t) - \mathbb{E}[X(t)])]$.
 It also aids in finding solutions to the Fréchet optimization problem in Wasserstein space
 later.
 

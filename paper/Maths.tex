@@ -22,12 +22,12 @@ space, we first need the following definitions:
     \begin{enumerate}
         \item \textbf{Symmetry}: \( \inpr{s}{t}_V  = \inpr{t}{s}_V \) for all \( s, t \in V \).
         \item \textbf{Linearity in First Argument}: \( \inpr{as + bt}{w}_V = a \inpr{s}{w}_V + b \inpr{t}{w}_V \) for all \( s, t, w \in V \) and \( a, b \in \mathbb{R} \).
-        \item \textbf{Positive Definiteness}: \( \inpr{s}{t}_V \geq 0 \) and \( \inpr{t}{t}_V = 0 \) if and only if \( t = 0 \) for all \( s, t \in V \).
+        \item \textbf{Positive Definiteness}: \( \inpr{t}{t}_V \geq 0 \) for all \( t \in V \), and \( \inpr{t}{t}_V = 0 \) if and only if \( t = 0 \).
     \end{enumerate}
     A real vector space \( V \) equipped with such an inner product is called an
     \textit{inner product space}.
 \end{definition}
-To generalize all the notions of interest for fda from Eucliean space to possibly
+To generalize all the notions of interest for fda from Euclidean space to possibly
 infinite dimensional spaces, we need the following space:
 \begin{definition}[Hilbert Space]
     \label{def:hilbert space}
@@ -125,7 +125,7 @@ of functions that characterize a distribution:
         \( f: \mathbb{R} \to \mathbb{R}^+ \) such that \( \int_{\mathbb{R}} f(x) \, dx = 1 \)
         and \( f(x) \geq 0 \) for all \( x \in \mathbb{R} \).
 
-        \item The \textit{cumulative cistribution function (cdf)} is given by
+        \item The \textit{cumulative distribution function (cdf)} is given by
         \( F(x) \coloneqq \int_{-\infty}^{x} f(t) \, dt \), where \( f \) is the pdf.
         Note that \( F\) is non-decreasing and right-continuous,
         with \( \lim_{{x \to -\infty}} F(x) = 0 \) and \( \lim_{{x \to \infty}} F(x) = 1 \).
@@ -205,7 +205,7 @@ we define Fréchet variance as
     \label{eq:fvar}
 \end{equation}
 In Section~\ref{sec:cond_fmean}, this notion will be generalized to that of a conditional
-Fréchet mean, to make use in a regression context and define Fréchet regression.The metric
+Fréchet mean, to make use in a regression context and define Fréchet regression. The metric
 we will be using throughout is the 2-Wasserstein distance defined in the following section.
 
 \subsubsection{Wasserstein Distance and Its Properties}
@@ -238,35 +238,41 @@ where $Q_f, Q_g$ are the quantile functions corresponding to the densities $f, g
 See \textcite{PetersenLiuDivani2021} and the supplement of \textcite{PetersenMüller2016}
 for proofs.
 
-Setting the distance function to be $d_W(f, g)$ in \ref{eq:fmean}, we yield the Wasserstein-Fréchet mean.
-See \textcite{PetersenLiuDivani2021} for a definition.
-
-% \begin{lemma}
-%     The Wasserstein-Fréchet mean estimator is given by
-%     \begin{equation}
-%         \hat{f}_\oplus(x) = \frac{1}{\hat{q}_\oplus(\hat{F}_\oplus(x))},
-%     \end{equation}
-%     with $\hat{q}_\oplus = \frac{1}{n} \sum_{1}^{n} q_i$.
-% \end{lemma}
-% \begin{proof}
-%     By Lemma~\ref{lemma:dqeqdw}, we can substitute the quantile distance for the
-%     Wasserstein distance in the computation of the Fréchet mean. We set
-%     $Q_\oplus(t) = \mathbb{E}[Q(t)]$ because $\mathbb{E}[Q(t)]$ is the minimizer of
-%     \begin{equation}
-%     \label{eq:wf_mean}
-%         \begin{aligned}
-%             \mathbb{E}[d_w^2(f_i, f_\oplus)]	& =
-%             \mathbb{E}\left[\int_{0}^{1}(F_i^{-1}(t) - F_\oplus^{-1}(t))^2 \,dt\right] \\
-%                                     & =
-%             \mathbb{E}\left[\int_{0}^{1}(Q_i(t) - Q_\oplus(t))^2 \,dt\right],
-%         \end{aligned}
-%     \end{equation}
-%     see \citet[Chapter~3.1.4]{PanaretosZemel2020}. To compute the corresponding density
-%     function, use inverse function rule to get
-%     $f_\oplus(x) = \frac{1}{q_\oplus(F_\oplus(x))}$, which shows that it suffices to
-%     estimate $q_\oplus$. Remember that
-%     $q_\oplus = \frac{\mathrm{d}Q_\oplus}{\mathrm{d}t}$. We can pass the differentiation inside the expectation to see
-%     $q_\oplus = \mathbb{E}\left[\frac{\mathrm{d}Q}{\mathrm{d}t}\right]$, which by analogy
-%     principle suggests to average the sample observed (or previously estimated)
-%     quantile densities $q_i$ to obtain an estimator $\hat{q}_\oplus$ for $q_\oplus$.
-% \end{proof}
+Setting the distance function to be $d_W$ in \eqref{eq:fmean} yields the
+Wasserstein--Fréchet mean $f_\oplus$ \parencite[cf.][]{PetersenLiuDivani2021}. The
+following lemma shows that it can be estimated by simple averaging in the space of
+quantile density functions:
+\begin{lemma}
+    \label{lemma:wf_mean_estimator}
+    The Wasserstein--Fréchet mean estimator is given by
+    \begin{equation}
+        \hat{f}_\oplus(x) = \frac{1}{\hat{q}_\oplus(\hat{F}_\oplus(x))},
+    \end{equation}
+    with $\hat{q}_\oplus = \frac{1}{n} \sum_{i=1}^{n} q_i$, and $\hat{F}_\oplus$ the cdf
+    corresponding to $\hat{q}_\oplus$.
+\end{lemma}
+\begin{proof}
+    By Lemma~\ref{lemma:dqeqdw}, we can substitute the quantile distance for the
+    Wasserstein distance in the computation of the Fréchet mean. We set
+    $Q_\oplus(t) = \mathbb{E}[Q(t)]$ because the pointwise mean $\mathbb{E}[Q(t)]$ is
+    the minimizer of
+    \begin{equation}
+    \label{eq:wf_mean}
+        \begin{aligned}
+            \mathbb{E}[d_W^2(f_i, f_\oplus)]	& =
+            \mathbb{E}\left[\int_{0}^{1}(F_i^{-1}(t) - F_\oplus^{-1}(t))^2 \,dt\right] \\
+                                    & =
+            \mathbb{E}\left[\int_{0}^{1}(Q_i(t) - Q_\oplus(t))^2 \,dt\right],
+        \end{aligned}
+    \end{equation}
+    see \citet[Chapter~3.1.4]{PanaretosZemel2020}. To compute the corresponding density
+    function, we use \eqref{eq:finverseqdf} to get
+    $f_\oplus(x) = \frac{1}{q_\oplus(F_\oplus(x))}$, which shows that it suffices to
+    estimate $q_\oplus$. Since
+    $q_\oplus = \frac{\mathrm{d}Q_\oplus}{\mathrm{d}t}$, we can pass the differentiation
+    inside the expectation to see
+    $q_\oplus = \mathbb{E}\left[\frac{\mathrm{d}Q}{\mathrm{d}t}\right] = \mathbb{E}[q]$,
+    which by the analogy principle suggests averaging the observed (or previously
+    estimated) quantile densities $q_i$ to obtain an estimator $\hat{q}_\oplus$ for
+    $q_\oplus$.
+\end{proof}

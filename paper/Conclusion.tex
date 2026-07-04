@@ -1,32 +1,51 @@
-In this thesis, we delved into the complexities and nuances of Functional Data
-Analysis (fda), specifically focusing on the comparative advantages of Fréchet
-regression over functional regression methods.
+In this thesis, we compared two approaches to regression with density responses: the
+functional regression model after transformation to the space of log quantile
+densities \parencites{PetersenMüller2016}{KokoszkaEtAl2019}, and global Fréchet
+regression in the Wasserstein space \parencite{PetersenMüller2019}.
 
-One of the most salient points is the ease of application of the Fréchet methods.
-These methods offer a natural way to adapt to the geometry of the underlying function
-space, thus providing a more intuitive approach to data analysis in this context.
+The simulation study makes the practical trade-off between the two methods concrete.
+When the true regression function is linear in the space of quantile functions and
+the densities have differing supports (Section~\ref{sec:app_dgp}), Fréchet
+regression is both correctly specified and unburdened by nuisance parameters: its
+mean ISE falls from $0.18$ to $0.04$ as the sample size grows from 50 to 200, while
+the LQD method remains stuck above $31$. The additional scenarios in
+Section~\ref{sec:app_additional_scenarios} disentangle why. With a common support,
+the very same comparison shrinks from a factor of several hundred to well within an
+order of magnitude, showing that almost all of the LQD method's error is caused by
+having to re-estimate the support location that the transformation discards --- not
+by the regression in the transformed space itself. Conversely, when the truth is
+linear in LQD space, the LQD method wins, but the misspecified Fréchet estimator
+still settles at a small bias of about $4 \times 10^{-3}$; when neither model holds,
+the Fréchet method degrades far more gracefully (mean ISE of about 7 against about
+31). Finally, an estimation step for the densities themselves dominates the error of
+both methods and erodes their convergence, underlining the importance of the
+bandwidth choice discussed in Section~\ref{sec:app_results}.
 
-On the other hand, functional regression comes with its own set of challenges. Notably,
-the method is laden with numerous prerequisites and tuning parameters, which make it
-both theoretically and practically cumbersome.
+Beyond the numbers, the two methods differ markedly in their ease of application.
+Fréchet regression adapts to the geometry of the Wasserstein space directly, needs
+no transformation and back-transformation, produces valid distributions by
+construction, and required no tuning in our implementation beyond the monotonicity
+projection of Algorithm~\ref{alg:quadprog}. The transformation method is more
+delicate: it requires the choice of an anchor point and an estimator for it,
+inherits the numerical fragility of quantile densities near the boundaries
+(Appendix~\ref{sec:numerics}), and its results are only as good as the linearity
+assumption in the transformed space. Its strength is the converse of that
+assumption: when a functional linear model in LQD space is plausible --- and the
+supports are common or anchored --- it attains the better rate, and it gives access
+to the full fda toolbox in the transformed space.
 
-The multitude of tuning parameters in functional regression not only complicates its
-application but also introduces multiple sources of bias and potential problems. The
-method's user-unfriendliness exacerbates these issues, making it less accessible for
-broader application.
+Several extensions suggest themselves. Local Fréchet regression or
+Nadaraya--Watson-type smoothing would address the bias that both global methods
+exhibit under the nonlinear DGP of Section~\ref{sec:app_additional_scenarios}.
+Richer families of transport maps \parencite{PanaretosZemel2016} could generate more
+demanding shape variation than our sine-perturbation scenario. For inference rather
+than point estimation, \textcite{PetersenLiuDivani2021} provide confidence bands for
+Fréchet regression in the Wasserstein context. And on the practical side, a
+sample-size-dependent bandwidth choice in the density estimation step, together with
+a more sophisticated estimator of the support location than linear interpolation,
+would give the comparison in the estimated-density scenarios sharper contours.
 
-A possible area for improvement in the simulation study is the possibility to examine
-a more complex DGP. \textcite{PanaretosZemel2016} provide some
-examples of optimal transport maps that are useful for this process.
-
-Building more inferential tools for the Fréchet regression in Wasserstein context,
-\textcite{PetersenLiuDivani2021} developed an approach for computing confidence bands.
-
-In summary, while both Fréchet regression and functional regression have their merits
-and demerits, the former's simplicity and adaptability make it a compelling choice for
-many applications in fda. The latter, although powerful, suffers from high computational
-and theoretical overhead, making it less user-friendly and more prone to bias and errors.
-
-By laying out the mathematical foundations and practical implications of these methods,
-this thesis aims to provide a robust framework for future work in this intriguing and
-rapidly evolving field.
+In summary, when densities are the response, global Fréchet regression is the more
+robust default: it is simpler to apply, never leaves the density space, and its
+losses under misspecification are modest, whereas the transformation method's losses
+under support uncertainty are not.

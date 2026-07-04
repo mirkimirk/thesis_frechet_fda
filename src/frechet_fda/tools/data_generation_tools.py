@@ -6,27 +6,35 @@ Petersen and Mueller (2016)'s simulation study.
 import warnings
 
 import numpy as np
+from scipy.stats import norm, truncnorm
+
 from frechet_fda.function_class import Function
 from frechet_fda.tools.kernel_methods import (
     boundary_corrected_density_estimator,
     density_estimator,
 )
 from frechet_fda.tools.numerics_tools import riemann_sum_cumulative
-from scipy.stats import norm, truncnorm
 
 
 def gen_predictor_values_regression(
-    size: int = 100, pred_bounds: tuple = (-1, 1), seed: int = None,
+    size: int = 100,
+    pred_bounds: tuple = (-1, 1),
+    seed: int = None,
 ):
     """Generates scalar predictor for Fréchet regression."""
     predictor = np.random.default_rng(seed).uniform(
-        pred_bounds[0], pred_bounds[1], size,
+        pred_bounds[0],
+        pred_bounds[1],
+        size,
     )
     return np.sort(predictor)
 
 
 def gen_params_regression(
-    mu_params: dict, sigma_params: dict, predictor: np.ndarray, seed: int = None,
+    mu_params: dict,
+    sigma_params: dict,
+    predictor: np.ndarray,
+    seed: int = None,
 ):
     """Generates mus and sigmas for conditional distributions in regression context.
 
@@ -36,7 +44,8 @@ def gen_params_regression(
     """
     # Generate mus that linearly depend on x
     mus = np.random.default_rng(seed).normal(
-        loc=mu_params["mu0"] + mu_params["beta"] * predictor, scale=mu_params["v1"],
+        loc=mu_params["mu0"] + mu_params["beta"] * predictor,
+        scale=mu_params["v1"],
     )
     # Generate sigmas that linearly depend on x
     sh = (
@@ -59,8 +68,110 @@ def gen_y_qf(mu: np.ndarray, sigma: np.ndarray, eval_grid: np.ndarray):
     return [Function(eval_grid, y) for y in ys]
 
 
+def transport_qfs(a_vals: np.ndarray, eval_grid: np.ndarray) -> list[Function]:
+    """Quantile functions of sine-perturbed uniform distributions on [0, 1].
+
+    Each quantile function is the transport map
+    Q(u) = u + a * sin(2 * pi * u) / (2 * pi) applied to the uniform
+    distribution, which is strictly increasing for |a| < 1. All resulting
+    distributions share the common support [0, 1].
+
+    """
+    perturbation = np.sin(2 * np.pi * eval_grid) / (2 * np.pi)
+    ys = eval_grid[np.newaxis, ...] + a_vals[..., np.newaxis] * perturbation
+    return [Function(eval_grid, y) for y in ys]
+
+
+def gen_transport_qfs_regression(
+    predictor: np.ndarray,
+    eval_grid: np.ndarray,
+    alpha: float = 0.5,
+    noise: float = 0.25,
+    seed: int = None,
+) -> list[Function]:
+    """Generate qfs with common support [0, 1] in a regression context.
+
+    The conditional distributions arise from perturbing the uniform distribution
+    with the transport map u + a * sin(2 * pi * u) / (2 * pi), where
+    a = alpha * x + eps and eps ~ U(-noise, noise). Since E[a | x] = alpha * x,
+    the true conditional Fréchet mean has the quantile function
+    u + alpha * x * sin(2 * pi * u) / (2 * pi), i.e., the truth is linear in the
+    space of quantile functions. Requires |alpha * x| + noise < 1 so that all
+    sampled maps are strictly increasing.
+
+    """
+    eps = np.random.default_rng(seed).uniform(-noise, noise, len(predictor))
+    return transport_qfs(alpha * predictor + eps, eval_grid)
+
+
+def lqd_linear_qfs(
+    predictor: np.ndarray,
+    eval_grid: np.ndarray,
+    c0: float = 0.0,
+    eps: np.ndarray = None,
+) -> list[Function]:
+    """Quantile functions of distributions that are linear in LQD space.
+
+    The log quantile densities are psi(u) = c0 + x * cos(pi * u) (+ eps), so the
+    qdfs are q(u) = exp(psi(u)) and the qfs are their antiderivatives with
+    Q(0) = 0, i.e., all supports start at zero.
+
+    """
+    psi = c0 + predictor[..., np.newaxis] * np.cos(np.pi * eval_grid)[np.newaxis, ...]
+    if eps is not None:
+        psi += eps[..., np.newaxis]
+    return [Function(eval_grid, row).integrate() for row in np.exp(psi)]
+
+
+def gen_lqd_linear_qfs_regression(
+    predictor: np.ndarray,
+    eval_grid: np.ndarray,
+    c0: float = 0.0,
+    noise_sd: float = 0.1,
+    seed: int = None,
+) -> list[Function]:
+    """Generate qfs whose LQD transforms are linear in the predictor.
+
+    The log quantile densities follow the functional linear model
+    psi_i(u) = c0 + x_i * cos(pi * u) + eps_i with scalar noise
+    eps_i ~ N(0, noise_sd^2), so the functional regression model after LQD
+    transformation is correctly specified, while the conditional quantile
+    functions are nonlinear in x.
+
+    """
+    eps = np.random.default_rng(seed).normal(0, noise_sd, len(predictor))
+    return lqd_linear_qfs(predictor, eval_grid, c0, eps)
+
+
+def gen_params_nonlinear_regression(
+    mu_params: dict,
+    sigma_params: dict,
+    predictor: np.ndarray,
+    seed: int = None,
+):
+    """Generates mus and sigmas that depend nonlinearly on the predictor.
+
+    Nonlinear analogue of gen_params_regression: the conditional location is
+    mu0 + beta * sin(pi * x) and the conditional scale is sigma0 + gamma * x^2,
+    with the same noise structure as in the linear scenario. Neither global
+    Fréchet regression nor the functional linear model after LQD transformation
+    is correctly specified under this DGP.
+
+    """
+    mu_means = mu_params["mu0"] + mu_params["beta"] * np.sin(np.pi * predictor)
+    sigma_means = sigma_params["sigma0"] + sigma_params["gamma"] * predictor**2
+    mus = np.random.default_rng(seed).normal(loc=mu_means, scale=mu_params["v1"])
+    sh = sigma_means**2 / sigma_params["v2"]
+    sc = sigma_params["v2"] / sigma_means
+    sigmas = np.random.default_rng(seed).gamma(shape=sh, scale=sc)
+
+    return mus, sigmas
+
+
 def gen_sample_points_from_qfs(
-    quantile_functions: list[Function], size: int = 100, seed: int = None,
+    quantile_functions: list[Function],
+    size: int = 100,
+    seed: int = None,
 ):
     """Generate a sample of observation points for given distributions.
 
@@ -151,12 +262,17 @@ def make_estimated_pdf(
     # Check if we're only dealing with one single density
     if bias_corrected:
         return boundary_corrected_density_estimator(
-            x_vals=pdfs_x, sample_of_points=sample_points, h=bandwidth, kernel_type=kern,
+            x_vals=pdfs_x,
+            sample_of_points=sample_points,
+            h=bandwidth,
+            kernel_type=kern,
         )
-    else:
-        return density_estimator(
-            x_vals=pdfs_x, sample_of_points=sample_points, h=bandwidth, kernel_type=kern,
-        )
+    return density_estimator(
+        x_vals=pdfs_x,
+        sample_of_points=sample_points,
+        h=bandwidth,
+        kernel_type=kern,
+    )
 
 
 # Truncated normal pdf
