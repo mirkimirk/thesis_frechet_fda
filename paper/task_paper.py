@@ -2,7 +2,7 @@
 import shutil
 
 import pytask
-from frechet_fda.config import BLD, PAPER_DIR
+from config import BLD, PAPER_DIR
 from pytask_latex import compilation_steps as cs
 
 documents = ["frechet_fda", "frechet_fda_pres"]

@@ -3,13 +3,13 @@
 import numpy as np
 from scipy.sparse.linalg import eigsh
 
-from frechet_fda.function_class import Function
-from frechet_fda.tools.function_tools import (
+from function_class import Function
+from tools.function_tools import (
     inverse_log_qd_transform,
     mean_func,
     quantile_distance,
 )
-from frechet_fda.tools.numerics_tools import riemann_sum_cumulative
+from tools.numerics_tools import riemann_sum_cumulative
 
 
 def compute_mean_and_centered_data(function_sample: list[Function]) -> list[Function]:
@@ -183,10 +183,16 @@ def k_optimal(
 
     save_specific_fve: Whether you want to save the fraction of variance explained for
     a particular truncation value k. If so, specify how many pcs to incorporate.
+
+    If the threshold p cannot be reached with the eigenfunctions/FPC scores available
+    (e.g. because gen_qdtransformation_pcs was only asked to compute a limited number
+    of components), the search stops at that maximum and returns the best FVE reached
+    instead of indexing past the end of the eigenfunctions/fpc_scores.
     """
     fv = 0
     k_opt = 0
-    while fv < p:
+    max_k = len(eigenfunctions)
+    while fv < p and k_opt < max_k:
         k_opt += 1
         trunc_reps_transforms = karhunen_loeve(
             mean_function,

@@ -8,12 +8,12 @@ import warnings
 import numpy as np
 from scipy.stats import norm, truncnorm
 
-from frechet_fda.function_class import Function
-from frechet_fda.tools.kernel_methods import (
+from function_class import Function
+from tools.kernel_methods import (
     boundary_corrected_density_estimator,
     density_estimator,
 )
-from frechet_fda.tools.numerics_tools import riemann_sum_cumulative
+from tools.numerics_tools import riemann_sum_cumulative
 
 
 def gen_predictor_values_regression(

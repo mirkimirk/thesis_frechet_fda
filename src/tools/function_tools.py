@@ -1,7 +1,7 @@
 """This module contains tools to use with the distribution class."""
 
 import numpy as np
-from frechet_fda.function_class import Function
+from function_class import Function
 
 
 def make_function_objects(xy_tuples: list[tuple]) -> list[Function]:

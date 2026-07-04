@@ -22,13 +22,15 @@ mean ISE values is printed.
 
 """
 
+import os
 import pickle
 import time
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import numpy as np
 
-from frechet_fda.config import SRC
-from frechet_fda.tools.data_generation_tools import (
+from config import SRC
+from tools.data_generation_tools import (
     gen_lqd_linear_qfs_regression,
     gen_params_nonlinear_regression,
     gen_predictor_values_regression,
@@ -37,8 +39,8 @@ from frechet_fda.tools.data_generation_tools import (
     lqd_linear_qfs,
     transport_qfs,
 )
-from frechet_fda.tools.frechet_tools import ise_wasserstein, solve_frechet_qp
-from frechet_fda.tools.function_tools import (
+from tools.frechet_tools import ise_wasserstein, solve_frechet_qp
+from tools.function_tools import (
     inverse_log_qd_transform,
     log_qd_transform,
 )
@@ -64,6 +66,13 @@ LQD_NOISE_SD = 0.1
 # Scenario 4: nonlinear location-scale process (noise structure as in scenario 1)
 MU_PARAMS = {"mu0": 0, "beta": 4, "v1": 0.25}
 SIGMA_PARAMS = {"sigma0": 3, "gamma": 2, "v2": 2}
+
+
+def _resolve_n_jobs(n_jobs):
+    """Normalize the requested number of worker processes."""
+    if n_jobs is None or n_jobs == -1:
+        return os.cpu_count() or 1
+    return max(1, int(n_jobs))
 
 
 def frechet_ise(qfs, predictor_vals, true_qfs):
@@ -139,8 +148,28 @@ def true_scenario_qfs(scenario):
     raise ValueError(msg)
 
 
-def run_simulation(scenarios=("transport", "lqd_linear", "nonlinear")):
-    """Run the Monte Carlo study and return ISE arrays per scenario and method."""
+def _run_replication(scenario, i):
+    """Run one Monte Carlo replication for all sample sizes."""
+    true_qfs = true_scenario_qfs(scenario)
+    frechet_values = np.zeros(len(SAMPLE_SIZES))
+    lqd_values = np.zeros(len(SAMPLE_SIZES))
+
+    for j, n in enumerate(SAMPLE_SIZES):
+        seed = 10_000 * (i + 1) + n  # unique seed per rep and sample size
+        predictor_vals = gen_predictor_values_regression(
+            n,
+            PREDICTOR_BOUNDS,
+            seed,
+        )
+        qfs = gen_scenario_sample(scenario, predictor_vals, seed)
+        frechet_values[j] = frechet_ise(qfs, predictor_vals, true_qfs)
+        lqd_values[j] = lqd_ise(qfs, predictor_vals, true_qfs)
+
+    return scenario, i, frechet_values, lqd_values
+
+
+def _run_simulation_sequential(scenarios, progress_every):
+    """Run the Monte Carlo study in the original sequential order."""
     results = {
         scenario: {
             "frechet": np.zeros((M_REPS, len(SAMPLE_SIZES))),
@@ -149,31 +178,60 @@ def run_simulation(scenarios=("transport", "lqd_linear", "nonlinear")):
         for scenario in scenarios
     }
     for scenario in scenarios:
-        true_qfs = true_scenario_qfs(scenario)
         start = time.time()
         for i in range(M_REPS):
-            for j, n in enumerate(SAMPLE_SIZES):
-                seed = 10_000 * (i + 1) + n  # unique seed per rep and sample size
-                predictor_vals = gen_predictor_values_regression(
-                    n,
-                    PREDICTOR_BOUNDS,
-                    seed,
-                )
-                qfs = gen_scenario_sample(scenario, predictor_vals, seed)
-                results[scenario]["frechet"][i, j] = frechet_ise(
-                    qfs,
-                    predictor_vals,
-                    true_qfs,
-                )
-                results[scenario]["lqd"][i, j] = lqd_ise(
-                    qfs,
-                    predictor_vals,
-                    true_qfs,
-                )
-            if (i + 1) % 10 == 0:
+            _, _, frechet_values, lqd_values = _run_replication(scenario, i)
+            results[scenario]["frechet"][i] = frechet_values
+            results[scenario]["lqd"][i] = lqd_values
+            if (i + 1) % progress_every == 0 or i + 1 == M_REPS:
                 elapsed = time.time() - start
                 print(  # noqa: T201
                     f"{scenario}: rep {i + 1}/{M_REPS} done "
+                    f"({elapsed:.0f}s elapsed)",
+                    flush=True,
+                )
+    return results
+
+
+def run_simulation(
+    scenarios=("transport", "lqd_linear", "nonlinear"),
+    n_jobs=None,
+    progress_every=10,
+):
+    """Run the Monte Carlo study and return ISE arrays per scenario and method."""
+    n_jobs = _resolve_n_jobs(n_jobs)
+    if n_jobs == 1:
+        return _run_simulation_sequential(scenarios, progress_every)
+
+    results = {
+        scenario: {
+            "frechet": np.zeros((M_REPS, len(SAMPLE_SIZES))),
+            "lqd": np.zeros((M_REPS, len(SAMPLE_SIZES))),
+        }
+        for scenario in scenarios
+    }
+    completed = dict.fromkeys(scenarios, 0)
+    start = time.time()
+    jobs = [(scenario, i) for scenario in scenarios for i in range(M_REPS)]
+
+    print(f"Running with {n_jobs} worker processes")  # noqa: T201
+    with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+        futures = [
+            executor.submit(_run_replication, scenario, i)
+            for scenario, i in jobs
+        ]
+        for future in as_completed(futures):
+            scenario, i, frechet_values, lqd_values = future.result()
+            results[scenario]["frechet"][i] = frechet_values
+            results[scenario]["lqd"][i] = lqd_values
+            completed[scenario] += 1
+            if (
+                completed[scenario] % progress_every == 0
+                or completed[scenario] == M_REPS
+            ):
+                elapsed = time.time() - start
+                print(  # noqa: T201
+                    f"{scenario}: {completed[scenario]}/{M_REPS} reps done "
                     f"({elapsed:.0f}s elapsed)",
                     flush=True,
                 )

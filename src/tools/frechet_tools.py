@@ -2,12 +2,12 @@
 
 import numpy as np
 import quadprog
-from frechet_fda.function_class import Function
-from frechet_fda.tools.function_tools import (
+from function_class import Function
+from tools.function_tools import (
     function_values_on_common_grid,
     quantile_distance,
 )
-from frechet_fda.tools.numerics_tools import riemann_sum
+from tools.numerics_tools import riemann_sum
 
 
 def _empirical_weight_function(

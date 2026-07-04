@@ -4,7 +4,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from frechet_fda.tools.numerics_tools import difference_quotient, riemann_sum_cumulative
+from tools.numerics_tools import difference_quotient, riemann_sum_cumulative
 
 
 class Function:
